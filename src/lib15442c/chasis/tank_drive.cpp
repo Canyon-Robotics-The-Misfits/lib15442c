@@ -53,3 +53,7 @@ std::vector<double> lib15442c::TankDrive::get_temps() {
 
     return left;
 }
+
+double lib15442c::TankDrive::get_track_width() {
+    return track_width;
+}

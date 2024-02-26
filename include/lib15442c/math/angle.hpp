@@ -47,35 +47,37 @@ namespace lib15442c {
          * @param target The target angle
          * @return double The error
          */
-        Angle error_from(Angle target);
+        lib15442c::Angle error_from(lib15442c::Angle target);
 
-        Angle operator+(const Angle& rhs);
-        Angle operator-(const Angle& rhs);
-        Angle operator*(const Angle& rhs);
-        Angle operator/(const Angle& rhs);
+        void operator=(const lib15442c::Angle& rhs);
 
-        void operator=(const Angle& rhs);
+        lib15442c::Angle operator+(const lib15442c::Angle& rhs);
+        lib15442c::Angle operator-(const lib15442c::Angle& rhs);
+        lib15442c::Angle operator*(const lib15442c::Angle& rhs);
+        lib15442c::Angle operator/(const lib15442c::Angle& rhs);
 
-        void operator+=(const Angle& rhs);
-        void operator-=(const Angle& rhs);
-        void operator*=(const Angle& rhs);
-        void operator/=(const Angle& rhs);
+        void operator+=(const lib15442c::Angle& rhs);
+        void operator-=(const lib15442c::Angle& rhs);
+        void operator*=(const lib15442c::Angle& rhs);
+        void operator/=(const lib15442c::Angle& rhs);
     };
 
-    /**
-     * @brief Create an Angle from a radian value
-     * 
-     * @param double The radian value
-     * @return Angle the angle
-     */
-    Angle operator ""_rad(long double);
-    Angle operator ""_rad(unsigned long long);
-    /**
-     * @brief Create an Angle from a degree value
-     * 
-     * @param double The degree value
-     * @return Angle the angle
-     */
-    Angle operator ""_deg(long double);
-    Angle operator ""_deg(unsigned long long);
+    inline namespace literals {
+        /**
+         * @brief Create an Angle from a radian value
+         * 
+         * @param double The radian value
+         * @return Angle the angle
+         */
+        lib15442c::Angle operator ""_rad(long double);
+        lib15442c::Angle operator ""_rad(unsigned long long);
+        /**
+         * @brief Create an Angle from a degree value
+         * 
+         * @param double The degree value
+         * @return Angle the angle
+         */
+        lib15442c::Angle operator ""_deg(long double);
+        lib15442c::Angle operator ""_deg(unsigned long long);
+    }
 }

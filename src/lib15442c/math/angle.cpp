@@ -65,3 +65,17 @@ void Angle::operator*=(const Angle& rhs) {
 void Angle::operator/=(const Angle& rhs) {
     theta = wrap(theta / rhs.theta);
 }
+
+
+Angle lib15442c::literals::operator ""_rad(long double value) {
+    return Angle::from_rad(value);
+}
+Angle lib15442c::literals::operator ""_rad(unsigned long long value) {
+    return Angle::from_rad(value);
+}
+Angle lib15442c::literals::operator ""_deg(long double value) {
+    return Angle::from_deg(value);
+}
+Angle lib15442c::literals::operator ""_deg(unsigned long long value) {
+    return Angle::from_deg(value);
+}

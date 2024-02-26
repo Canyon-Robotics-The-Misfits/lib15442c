@@ -40,6 +40,7 @@
  * You should add more #includes here
  */
 #include "lib15442c/api.hpp"
+using namespace lib15442c::literals;
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do

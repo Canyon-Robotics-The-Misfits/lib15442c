@@ -52,10 +52,4 @@ namespace lib15442c
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);
     };
-
-    void a() {
-        Pose test = Pose(0, 0, 0_deg);
-
-        test.rad();
-    }
 }

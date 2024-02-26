@@ -8,7 +8,6 @@ namespace lib15442c {
 
         Vec(): x(0), y(0) {};
 
-
     public:
         double x;
         double y;
@@ -26,7 +25,7 @@ namespace lib15442c {
          * 
          * @return Angle The angle
          */
-        Angle angle();
+        lib15442c::Angle angle();
 
         /**
          * @brief The angle between the point defined by this vector and another one
@@ -34,24 +33,24 @@ namespace lib15442c {
          * @param vector The other one
          * @return Angle The angle
          */
-        Angle angle_to(Vec vector);
+        lib15442c::Angle angle_to(lib15442c::Vec vector);
 
         /**
          * @brief Returns the normalized vector (same angle, magnitude of 1)
          * 
          * @return Vec The normalized vecotr
          */
-        Vec normalized();
+        lib15442c::Vec normalized();
 
 
-        Vec operator+(const Vec& rhs);
-        Vec operator-(const Vec& rhs);
+        lib15442c::Vec operator+(const lib15442c::Vec& rhs);
+        lib15442c::Vec operator-(const lib15442c::Vec& rhs);
 
-        void operator+=(const Vec& rhs);
-        void operator-=(const Vec& rhs);
+        void operator+=(const lib15442c::Vec& rhs);
+        void operator-=(const lib15442c::Vec& rhs);
 
-        Vec operator*(const double& rhs);
-        Vec operator/(const double& rhs);
+        lib15442c::Vec operator*(const double& rhs);
+        lib15442c::Vec operator/(const double& rhs);
 
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);

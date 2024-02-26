@@ -13,8 +13,8 @@ namespace lib15442c
         std::shared_ptr<pros::v5::AbstractMotor> right_motors;
 
         // Settings
-        float track_width;
-        float deg_inch_ratio;
+        double track_width;
+        double deg_inch_ratio;
 
     public:
         TankDrive(
