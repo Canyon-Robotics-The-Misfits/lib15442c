@@ -13,6 +13,13 @@ namespace lib15442c {
         Angle(): theta(0) {};
 
     public:
+
+        /**
+         * @brief Create a non-existant angle
+         * 
+         * @return Angle The angle
+         */
+        static Angle none();
         /**
          * @brief Create an Angle from a value in radians
          * 

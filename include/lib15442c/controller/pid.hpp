@@ -26,7 +26,7 @@ namespace lib15442c
         double calculate(double current, double target);
 
         /**
-         * @brief Calculate the outpit of the PID
+         * @brief Calculate the output of the PID
          * 
          * @param error The error from the target
          * @return double The PID output

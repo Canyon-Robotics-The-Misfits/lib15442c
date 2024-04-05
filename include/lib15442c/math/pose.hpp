@@ -52,4 +52,7 @@ namespace lib15442c
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);
     };
+
+    #define pos(x, y) lib15442c::Pose(x, y, lib15442c::Angle::from_rad(INFINITY))
+    #define posa(x, y, theta) lib15442c::Pose(x, y, theta)
 }

@@ -4,12 +4,15 @@
 using lib15442c::Angle;
 
 double Angle::wrap(double angle) {
-    if (std::isnan(angle))
+    if (std::isnan(angle) || angle == INFINITY)
         return angle;
 
     return fmod(angle + M_PI, 2 * M_PI) - M_PI;
 }
 
+Angle Angle::none() {
+    return Angle(INFINITY);
+}
 Angle Angle::from_rad(double rad) {
     return Angle(wrap(rad));
 }
