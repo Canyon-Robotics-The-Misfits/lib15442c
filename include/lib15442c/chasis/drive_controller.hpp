@@ -1,7 +1,11 @@
+#pragma once
+
 #include "drivetrain.hpp"
 #include "odometry.hpp"
 #include "lib15442c/controller/pid.hpp"
 #include "lib15442c/math/pose.hpp"
+
+#include <variant>
 
 namespace lib15442c
 {
@@ -20,7 +24,7 @@ namespace lib15442c
          * @brief The threshold which error need to be in to end
          *
          */
-        double threshold = 0.75;
+        lib15442c::Angle threshold = 0.75_deg;
 
         /**
          * @brief The timeout in case the move takes too long (ms)
@@ -45,6 +49,17 @@ namespace lib15442c
          */
         bool async = false;
     };
+
+    struct FaceAngle {
+        lib15442c::Angle angle;
+    };
+
+    struct FacePoint {
+        lib15442c::Pose pos;
+        lib15442c::Angle angle_offset;
+    };
+
+    using FaceTarget = std::variant<FaceAngle, FacePoint>;
 
     /**
      * @brief The parameters for the drive function
@@ -153,7 +168,7 @@ namespace lib15442c
             std::shared_ptr<IDrivetrain> drivetrain,
             std::shared_ptr<IOdometry> odometry,
             std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid,
-            double default_min_speed = 12) : drivetrain(drivetrain), odometry(odometry), drive_pid(drive_pid), turn_pid(turn_pid), default_min_speed(default_min_speed){};
+            double default_min_speed = 12);
 
         // turn functions
 
@@ -181,6 +196,14 @@ namespace lib15442c
          */
         void facePoint(lib15442c::Pose pos, lib15442c::Angle angle_offset = 0_rad, AngleParameters parameters = {});
 
+        /**
+         * @brief Face either an absolute angle or a point
+         * 
+         * @param face_target The target of the face command
+         * @param parameters Any extra parameters
+         */
+        void face(FaceTarget face_target, AngleParameters parameters = {});
+
         // drive functions
 
         /**
@@ -191,6 +214,12 @@ namespace lib15442c
          */
         void drive(double distance, DriveParameters parameters = {});
 
+        /**
+         * @brief Drive to a point with the boomerang controller
+         * 
+         * @param pos The position to drive to (if angle is specified, will try to end at that angle)
+         * @param parameters Any extra parameters
+         */
         void boomerang(lib15442c::Pose pos, BoomerangParameters parameters = {});
 
         // async functions
@@ -220,7 +249,7 @@ namespace lib15442c
          * @return bool Whether the wait ended at the right time or at the end of
          * the movement
          */
-        bool awaitNear(lib15442c::Pose pos, float distance = 1);
+        bool awaitNear(lib15442c::Vec pos, double distance = 1);
 
         /**
          * @brief Wait for the robot to be close to a certain angle, or for the
@@ -232,6 +261,6 @@ namespace lib15442c
          * @return bool Whether the wait ended at the right time or at the end of
          * the movement
          */
-        bool awaitAngle(float angle, float threshold = 2);
+        bool awaitAngle(lib15442c::Angle angle, lib15442c::Angle threshold = 2_deg);
     };
 }
