@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logger.hpp"
+
 #include "chasis/drive_controller.hpp"
 #include "chasis/drivetrain.hpp"
 #include "chasis/odometry.hpp"
