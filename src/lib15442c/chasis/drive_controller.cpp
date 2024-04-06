@@ -16,7 +16,7 @@ void lib15442c::DriveController::turn(lib15442c::Angle angle, AngleParameters pa
 
     Angle global_angle = odometry->getRotation() + angle;
 
-    face(FaceAngle { angle: global_angle }, parameters);
+    face(FaceAngleTarget { angle: global_angle }, parameters);
     
     INFO_TEXT("End turn!");
 }
@@ -25,7 +25,7 @@ void lib15442c::DriveController::faceAngle(lib15442c::Angle angle, AngleParamete
 {
     INFO("Start face angle... (%f deg)", angle.deg());
 
-    face(FaceAngle { angle });
+    face(FaceAngleTarget { angle });
     
     INFO_TEXT("End face angle!");
 }
@@ -34,7 +34,7 @@ void lib15442c::DriveController::facePoint(lib15442c::Pose point, lib15442c::Ang
 {
     INFO("Start face point... (%f, %f)", point.x, point.y);
 
-    face(FacePoint { point, angle_offset }, parameters);
+    face(FacePointTarget { point, angle_offset }, parameters);
     
     INFO_TEXT("End face point!");
 }
@@ -54,7 +54,7 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
     Angle target_angle;
 
     // Calculate target angle if facing a point
-    if (FacePoint *point_target = std::get_if<FacePoint>(&target))
+    if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
     {
         target_angle = odometry->getPosition().angle_to(point_target->pos.vec());
         if (point_target->pos.y - odometry->getY() < 0)
@@ -63,7 +63,7 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
         }
         target_angle += point_target->angle_offset;
     } else {
-        FaceAngle *angle_target = std::get_if<FaceAngle>(&target);
+        FaceAngleTarget *angle_target = std::get_if<FaceAngleTarget>(&target);
 
         target_angle = angle_target->angle;
     }
@@ -94,7 +94,7 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
     while (pros::competition::get_status() == comp_status)
     {
         // Calculate target angle if facing a point
-        if (FacePoint *point_target = std::get_if<FacePoint>(&target))
+        if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
         {
             target_angle = odometry->getPosition().angle_to(point_target->pos.vec());
             if (point_target->pos.y - odometry->getY() < 0)

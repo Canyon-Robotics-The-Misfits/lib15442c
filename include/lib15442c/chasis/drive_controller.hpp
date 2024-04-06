@@ -50,16 +50,16 @@ namespace lib15442c
         bool async = false;
     };
 
-    struct FaceAngle {
+    struct FaceAngleTarget {
         lib15442c::Angle angle;
     };
 
-    struct FacePoint {
+    struct FacePointTarget {
         lib15442c::Pose pos;
         lib15442c::Angle angle_offset;
     };
 
-    using FaceTarget = std::variant<FaceAngle, FacePoint>;
+    using FaceTarget = std::variant<FaceAngleTarget, FacePointTarget>;
 
     /**
      * @brief The parameters for the drive function
