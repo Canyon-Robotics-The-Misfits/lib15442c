@@ -20,6 +20,10 @@ Angle Angle::from_deg(double deg) {
     return Angle(wrap(deg * M_PI / 180.0));
 }
 
+bool Angle::is_none() {
+    return theta == INFINITY;
+}
+
 double Angle::rad() {
     return wrap(theta);
 }

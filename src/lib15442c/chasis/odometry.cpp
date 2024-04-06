@@ -1,5 +1,6 @@
 #include "lib15442c/chasis/odometry.hpp"
 #include "lib15442c/math/vector.hpp"
+#include "lib15442c/math/pose.hpp"
 #include "lib15442c/math/angle.hpp"
 
 #include <cmath>
@@ -49,6 +50,15 @@ lib15442c::Vec lib15442c::TrackerOdom::getPosition()
     position_mutex.unlock();
 
     return temp;
+}
+lib15442c::Pose lib15442c::TrackerOdom::getPose()
+{
+    position_mutex.lock();
+    Vec temp = position;
+    position_mutex.unlock();
+    Angle rotation = getRotation();
+
+    return posa(temp.x, temp.y, rotation);
 }
 
 void lib15442c::TrackerOdom::setPosition(lib15442c::Vec position)
@@ -215,6 +225,14 @@ lib15442c::Vec lib15442c::GPSOdom::getPosition()
 {
     auto gps_position = gps.get_position();
     lib15442c::Vec position = Vec(gps_position.x + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter);
+
+    return position * inches_per_meter;
+}
+lib15442c::Pose lib15442c::GPSOdom::getPose()
+{
+    auto gps_position = gps.get_position();
+    Angle rotation = getRotation();
+    Pose position = posa(gps_position.x + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter, rotation);
 
     return position * inches_per_meter;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace lib15442c {
     class Angle {
     protected:
@@ -9,10 +11,9 @@ namespace lib15442c {
         static double wrap(double angle);
 
         Angle(double theta): theta(theta) {};
-        
-        Angle(): theta(0) {};
 
     public:
+        Angle(): theta(INFINITY) {};
 
         /**
          * @brief Create a non-existant angle
@@ -47,6 +48,14 @@ namespace lib15442c {
          * @return double The angle
          */
         double deg();
+
+        /**
+         * @brief Whether the angle is non-existant
+         * 
+         * @return true The angle doesn't have a value
+         * @return false The angle has a value
+         */
+        bool is_none();
 
         /**
          * @brief Get the error from the current angle to a target angle

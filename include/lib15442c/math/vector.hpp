@@ -36,6 +36,14 @@ namespace lib15442c {
         lib15442c::Angle angle_to(lib15442c::Vec vector);
 
         /**
+         * @brief The distance between this vector and another one
+         * 
+         * @param vector The other one
+         * @return double The distance
+         */
+        double distance_to(lib15442c::Vec vector);
+
+        /**
          * @brief Returns the normalized vector (same angle, magnitude of 1)
          * 
          * @return Vec The normalized vecotr

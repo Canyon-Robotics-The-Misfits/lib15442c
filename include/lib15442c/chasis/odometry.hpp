@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "lib15442c/math/vector.hpp"
+#include "lib15442c/math/pose.hpp"
 #include "lib15442c/math/angle.hpp"
 
 #include "pros/rtos.hpp"
@@ -27,6 +28,10 @@ namespace lib15442c
          * @brief Get the position of the robot
          */
         virtual lib15442c::Vec getPosition() = 0;
+        /**
+         * @brief Get the pose of the robot
+         */
+        virtual lib15442c::Pose getPose() = 0;
 
         /**
          * @brief Set the x position of the robot
@@ -106,6 +111,7 @@ namespace lib15442c
         double getX();
         double getY();
         Vec getPosition();
+        Pose getPose();
 
         void setX(double x);
         void setY(double y);
@@ -139,6 +145,7 @@ namespace lib15442c
         double getX();
         double getY();
         Vec getPosition();
+        Pose getPose();
 
         void setX(double x);
         void setY(double y);

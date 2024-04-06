@@ -7,6 +7,7 @@ namespace lib15442c
 {
     class IDrivetrain
     {
+    public:
         /**
          * Move a skid-steer drive with a set left and right side voltage
          * @param left_speed The voltage of the left side
