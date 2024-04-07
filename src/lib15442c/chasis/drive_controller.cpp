@@ -252,6 +252,34 @@ void lib15442c::DriveController::drive(double distance, DriveParameters paramete
     INFO_TEXT("End Drive!");
 }
 
+void lib15442c::DriveController::drive_time(double voltage, double time, DriveTimeParameters parameters) {
+    double start_time = pros::millis();
+
+    turn_pid->reset();
+
+    while (pros::millis() - start_time < time) {
+        double current_time = pros::millis() - start_time;
+
+        double ramp_up_voltage = parameters.ramp_up ? parameters.ramp_speed * current_time : voltage;
+        double ramp_down_voltage = parameters.ramp_down ? -parameters.ramp_speed * (current_time - time) : voltage;
+        double drive_speed = std::min(ramp_up_voltage, voltage, ramp_down_voltage);
+
+        double turn_speed = 0;
+
+        if (!parameters.angle.is_none()) {
+            Angle error = odometry->getRotation().error_from(parameters.angle);
+
+            turn_speed = turn_pid->calculateError(error.deg());
+        }
+
+        drivetrain->move(drive_speed, turn_speed);
+
+        pros::delay(10);
+    }
+
+    drivetrain->move(0, 0);
+}
+
 bool lib15442c::DriveController::isDone(int timeout)
 {
     bool done = async_mutex.try_lock_for(std::chrono::milliseconds(timeout));

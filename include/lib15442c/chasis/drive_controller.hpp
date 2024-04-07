@@ -100,6 +100,32 @@ namespace lib15442c
         bool async = false;
     };
 
+    struct DriveTimeParameters {
+        /**
+         * @brief The angle to drive at to keep straight, defaults to the current angle
+         */
+        lib15442c::Angle angle = lib15442c::Angle::none();
+
+        /**
+         * @brief Whether to speed up at the start of the drive
+         */
+        bool ramp_up = false;
+        /**
+         * @brief Whether to speed down at the end of the drive
+         */
+        bool ramp_down = false;
+        /**
+         * @brief How fast to speed up/slow down at the start or end (voltage / second)
+         */
+        double ramp_speed = 127.0/0.25;
+
+
+        /**
+         * @brief Whether to run asynchronously
+         */
+        bool async = false;
+    };
+
     /**
      * @brief The parameters for the boomerang controller
      */
@@ -218,6 +244,15 @@ namespace lib15442c
          * @param parameters Any extra parameters
          */
         void drive(double distance, DriveParameters parameters = {});
+
+        /**
+         * @brief Drive for a set amount of time
+         * 
+         * @param voltage The voltage/speed to drive at
+         * @param time How long to drive for
+         * @param parameters Any extra parameters
+         */
+        void drive_time(double voltage, double time, DriveTimeParameters parameters = {});
 
         /**
          * @brief Drive to a point with the boomerang controller
