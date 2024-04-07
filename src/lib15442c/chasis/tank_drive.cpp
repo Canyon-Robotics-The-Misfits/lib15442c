@@ -72,6 +72,11 @@ std::vector<double> lib15442c::TankDrive::get_temps() {
 
     return left;
 }
+double lib15442c::TankDrive::max_temp() {
+    auto temps = get_temps();
+
+    return *max_element(temps.begin(), temps.end());
+}
 
 double lib15442c::TankDrive::get_track_width() {
     return track_width;

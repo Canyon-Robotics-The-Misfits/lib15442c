@@ -56,6 +56,12 @@ namespace lib15442c
          */
         virtual std::vector<double> get_temps() = 0;
         /**
+         * @brief Get the highest motor tempature in the drivetrain
+         * 
+         * @return double The highest motor tempature
+         */
+        virtual double max_temp() = 0;
+        /**
          * Get the track width of the drivetrain
          *
          * @return The track width
