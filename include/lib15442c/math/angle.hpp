@@ -71,11 +71,17 @@ namespace lib15442c {
         lib15442c::Angle operator-(const lib15442c::Angle& rhs);
         lib15442c::Angle operator*(const lib15442c::Angle& rhs);
         lib15442c::Angle operator/(const lib15442c::Angle& rhs);
+        
+        lib15442c::Angle operator*(const double& rhs);
+        lib15442c::Angle operator/(const double& rhs);
 
         void operator+=(const lib15442c::Angle& rhs);
         void operator-=(const lib15442c::Angle& rhs);
         void operator*=(const lib15442c::Angle& rhs);
         void operator/=(const lib15442c::Angle& rhs);
+        
+        void operator*=(const double& rhs);
+        void operator/=(const double& rhs);
     };
 
     inline namespace literals {

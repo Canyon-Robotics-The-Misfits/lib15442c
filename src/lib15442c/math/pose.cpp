@@ -1,4 +1,5 @@
 #include "pose.hpp"
+#include "vector.hpp"
 
 using lib15442c::Pose;
 using lib15442c::Vec;

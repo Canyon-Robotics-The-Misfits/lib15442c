@@ -56,6 +56,13 @@ Angle Angle::operator/(const Angle& rhs) {
     return Angle::from_rad(theta / rhs.theta);
 }
 
+Angle Angle::operator*(const double& rhs) {
+    return Angle::from_rad(theta * rhs);
+}
+Angle Angle::operator/(const double& rhs) {
+    return Angle::from_rad(theta / rhs);
+}
+
 void Angle::operator=(const Angle& rhs) {
     theta = rhs.theta;
 }
@@ -71,6 +78,13 @@ void Angle::operator*=(const Angle& rhs) {
 }
 void Angle::operator/=(const Angle& rhs) {
     theta = wrap(theta / rhs.theta);
+}
+
+void Angle::operator*=(const double& rhs) {
+    theta = wrap(theta * rhs);
+}
+void Angle::operator/=(const double& rhs) {
+    theta = wrap(theta / rhs);
 }
 
 

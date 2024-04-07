@@ -31,6 +31,25 @@ void lib15442c::TankDrive::move(double linear_speed, double turn_speed) {
         linear_speed - turn_speed
     );
 }
+void lib15442c::TankDrive::move_ratio(double linear_speed, double turn_speed) {
+    if (fabs(linear_speed + turn_speed) > 127)
+    {
+        float total_speed = fabs(linear_speed + turn_speed);
+        linear_speed = linear_speed / total_speed * 127;
+        turn_speed = turn_speed / total_speed * 127;
+    }
+    else if (fabs(linear_speed - turn_speed) > 127)
+    {
+        float total_speed = fabs(linear_speed - turn_speed);
+        linear_speed = linear_speed / total_speed * 127;
+        turn_speed = turn_speed / total_speed * 127;
+    }
+
+    tank(
+        linear_speed + turn_speed,
+        linear_speed - turn_speed
+    );
+}
 
 void lib15442c::TankDrive::move_speed(double linear_speed, double turn_speed) {
     // TODO

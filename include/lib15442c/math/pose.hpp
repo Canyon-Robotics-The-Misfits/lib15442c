@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vector.hpp"
 #include "angle.hpp"
+#include "vector.hpp"
 
 namespace lib15442c
 {
