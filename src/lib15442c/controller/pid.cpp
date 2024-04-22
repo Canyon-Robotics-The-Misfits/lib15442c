@@ -15,7 +15,21 @@ double lib15442c::PID::calculateError(double error) {
     double integral = total_error * kI;
     double derivative = (error - last_error) * kD;
 
-    if (lib15442c::sgn(error) != lib15442c::sgn(last_error)) {
+    if (reset_integral_on_cross && lib15442c::sgn(error) != lib15442c::sgn(last_error)) {
+        total_error = 0;
+    }
+
+    if (error < integral_active_zone) {
+        total_error += error;
+    } else {
+        total_error = 0;
+    }
+
+    if (total_error > integral_max) {
+        total_error = integral_max;
+    }
+
+    if (error < integral_reset_zone) {
         total_error = 0;
     }
 
