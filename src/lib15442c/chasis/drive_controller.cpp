@@ -2,6 +2,8 @@
 #include "lib15442c/math/math.hpp"
 #include "lib15442c/logger.hpp"
 
+#include <algorithm>
+
 #define LOGGER "Drive Controller"
 
 lib15442c::DriveController::DriveController(
@@ -75,8 +77,8 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
     double left_arc_distance = (parameters.arc_radius + drivetrain->get_track_width() / 2.0) * initial_error.rad();
     double right_arc_distance = (parameters.arc_radius - drivetrain->get_track_width() / 2.0) * initial_error.rad();
 
-    double left_ratio = lib15442c::sgn(left_arc_distance) * fabs(fmax(fmin(left_arc_distance / right_arc_distance, 1), -1));
-    double right_ratio = lib15442c::sgn(right_arc_distance) * fabs(fmax(fmin(right_arc_distance / left_arc_distance, 1), -1));
+    double left_ratio = lib15442c::sgn(left_arc_distance) * fabs(std::max(std::min(left_arc_distance / right_arc_distance, 1.0), -1.0));
+    double right_ratio = lib15442c::sgn(right_arc_distance) * fabs(std::max(std::min(right_arc_distance / left_arc_distance, 1.0), -1.0));
 
     if (parameters.arc_radius == 0)
     {
@@ -202,15 +204,15 @@ void lib15442c::DriveController::drive(double distance, DriveParameters paramete
 
         double speed = drive_pid->calculateError(error);
 
-        speed = fmin(fabs(speed), parameters.max_speed) * lib15442c::sgn(speed);
-        speed = fmax(fabs(speed), parameters.min_speed) * lib15442c::sgn(speed);
+        speed = std::min(fabs(speed), parameters.max_speed) * lib15442c::sgn(speed);
+        speed = std::max(fabs(speed), parameters.min_speed) * lib15442c::sgn(speed);
 
         if (fabs(speed) < 40)
         {
             total_error += error;
         }
 
-        speed += std::fmin(fabs(total_error) * 0.34, 30.0) * lib15442c::sgn(error);
+        speed += std::min(fabs(total_error) * 0.34, 30.0) * lib15442c::sgn(error);
 
         Angle angle_error = target_rotation.error_from(odometry->getRotation());
         double rot_speed = turn_pid->calculateError(angle_error.deg());
@@ -262,7 +264,7 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
 
         double ramp_up_voltage = parameters.ramp_up ? parameters.ramp_speed * current_time : voltage;
         double ramp_down_voltage = parameters.ramp_down ? -parameters.ramp_speed * (current_time - time) : voltage;
-        double drive_speed = std::min(ramp_up_voltage, voltage, ramp_down_voltage);
+        double drive_speed = std::min(ramp_up_voltage, std::min(voltage, ramp_down_voltage));
 
         double turn_speed = 0;
 

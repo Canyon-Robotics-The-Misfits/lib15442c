@@ -14,7 +14,7 @@ namespace lib15442c
         double integral_max = INFINITY;
         double integral_reset_zone = 0;
         bool reset_integral_on_cross = false;
-    }
+    };
 
     class PID
     {
