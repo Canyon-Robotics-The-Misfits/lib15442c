@@ -232,8 +232,9 @@ namespace lib15442c
          * 
          * @param face_target The target of the face command
          * @param parameters Any extra parameters
+         * @param log_ends Whether to log the start and end of the movement
          */
-        void face(FaceTarget face_target, AngleParameters parameters = {});
+        void face(FaceTarget face_target, AngleParameters parameters = {}, bool log_ends = true);
 
         // drive functions
 

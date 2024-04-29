@@ -12,7 +12,7 @@ void lib15442c::DriveController::turn(lib15442c::Angle angle, AngleParameters pa
 
     Angle global_angle = odometry->getRotation() + angle;
 
-    face(FaceAngleTarget { angle: global_angle }, parameters);
+    face(FaceAngleTarget { angle: global_angle }, parameters, false);
     
     INFO_TEXT("End turn!");
 }
@@ -21,7 +21,7 @@ void lib15442c::DriveController::faceAngle(lib15442c::Angle angle, AngleParamete
 {
     INFO("Start face angle... (%f deg)", angle.deg());
 
-    face(FaceAngleTarget { angle });
+    face(FaceAngleTarget { angle }, parameters, false);
     
     INFO_TEXT("End face angle!");
 }
@@ -30,12 +30,24 @@ void lib15442c::DriveController::facePoint(lib15442c::Pose point, lib15442c::Ang
 {
     INFO("Start face point... (%f, %f)", point.x, point.y);
 
-    face(FacePointTarget { point, angle_offset }, parameters);
+    face(FacePointTarget { point, angle_offset }, parameters, false);
     
     INFO_TEXT("End face point!");
 }
 
-void lib15442c::DriveController::face(FaceTarget target, AngleParameters parameters) {
+void lib15442c::DriveController::face(FaceTarget target, AngleParameters parameters, bool log_ends) {
+    if (log_ends) {
+        
+        if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
+        {
+            INFO("Start face... (%f, %f)", point_target->pos.x,point_target->pos.y);
+        } else {
+            FaceAngleTarget *angle_target = std::get_if<FaceAngleTarget>(&target);
+
+            INFO("Start face... (%f deg)", angle_target->angle.deg());
+        }
+    }
+
     if (parameters.async)
     {
         parameters.async = false;
@@ -149,4 +161,8 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
         drivetrain->move(0, 0);
     }
     async_mutex.unlock();
+
+    if (log_ends) {
+        INFO_TEXT("End face!");
+    }
 }
