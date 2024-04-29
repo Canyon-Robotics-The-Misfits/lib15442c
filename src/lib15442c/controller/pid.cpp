@@ -11,10 +11,6 @@ double lib15442c::PID::calculateError(double error) {
         last_error = error;
     }
 
-    double proportional = error * kP;
-    double integral = total_error * kI;
-    double derivative = (error - last_error) * kD;
-
     if (reset_integral_on_cross && lib15442c::sgn(error) != lib15442c::sgn(last_error)) {
         total_error = 0;
     }
@@ -33,9 +29,19 @@ double lib15442c::PID::calculateError(double error) {
         total_error = 0;
     }
 
+    double proportional = error * kP;
+    double integral = total_error * kI;
+    double derivative = (error - last_error) * kD;
+
     last_error = error;
 
-    return proportional + integral + derivative;
+    double output = proportional + integral + derivative;
+
+    if (std::fabs(output - last_output) > slew_rate) {
+        output = last_output + slew_rate * lib15442c::sgn(output - last_output);
+    }
+
+    return output;
 }
 
 void lib15442c::PID::reset() {
