@@ -89,3 +89,32 @@ std::vector<bool> PneumaticGroup::get_all_values()
     }
     return values;
 }
+
+
+MockPneumatic::MockPneumatic(bool default_state)
+    : current_state(default_state) {};
+
+void MockPneumatic::set_value(bool value)
+{
+    current_state = value;
+}
+
+void MockPneumatic::extend()
+{
+    set_value(true);
+}
+
+void MockPneumatic::retract()
+{
+    set_value(false);
+}
+
+void MockPneumatic::toggle()
+{
+    set_value(!get_value());
+}
+
+bool MockPneumatic::get_value()
+{
+    return current_state;
+}
