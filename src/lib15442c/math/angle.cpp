@@ -17,7 +17,7 @@ Angle Angle::from_rad(double rad) {
     return Angle(wrap(rad));
 }
 Angle Angle::from_deg(double deg) {
-    return Angle(wrap(deg * M_PI / 180.0));
+    return Angle(wrap(-deg * M_PI / 180.0));
 }
 
 bool Angle::is_none() {
@@ -28,7 +28,7 @@ double Angle::rad() {
     return wrap(theta);
 }
 double Angle::deg() {
-    return wrap(theta) * 180.0 / M_PI;
+    return wrap(-theta) * 180.0 / M_PI;
 }
 
 Angle Angle::error_from(Angle target) {

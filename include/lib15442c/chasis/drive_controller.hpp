@@ -146,16 +146,12 @@ namespace lib15442c
         /**
          * @brief The distance from the end in which the target point is ignored, and the program focuses on just getting the right angle
          */
-        double cross_track_threshold = 3;
-        /**
-         * @brief How much to prioritize turning over driving; Outside of this error threshold (degrees), the drive speed is reduced to prioritize turning
-         */
-        double turn_priority = 15;
+        double angle_priority_threshold = 3;
 
         /**
          * @brief The timeout in case the move takes too long (ms)
          */
-        double timeout = 5;
+        double timeout = 2000;
 
         /**
          * @brief The maximum speed

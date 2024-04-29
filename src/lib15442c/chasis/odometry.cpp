@@ -135,8 +135,8 @@ void lib15442c::TrackerOdom::startTask()
                 double angle = getRotation().rad();
 
                 // Modify the horizontal encoder to compensate for turning
-                perpendicular += (angle - offset_zero) * perpendicular_tracker_offset / degrees_per_inch;
-                parallel += (angle - offset_zero) * parallel_tracker_offset / degrees_per_inch;
+                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset / degrees_per_inch;
+                parallel -= (angle - offset_zero) * parallel_tracker_offset / degrees_per_inch;
 
                 // Calculate the change in the horizontal and vertical encoder
                 double deltaTheta = angle - last_angle;
@@ -151,7 +151,7 @@ void lib15442c::TrackerOdom::startTask()
                         sin(angle) * deltaParallel +
                             sin(angle + M_PI/2) * deltaPerpendicular,
                         cos(angle) * deltaParallel +
-                            cos(angle +  + M_PI/2) * deltaPerpendicular);
+                            cos(angle + M_PI/2) * deltaPerpendicular);
                 }
                 else
                 {
