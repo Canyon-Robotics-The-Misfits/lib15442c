@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pros/abstract_motor.hpp"
+#include "lib15442c/device/motor.hpp"
 #include "drivetrain.hpp"
 
 namespace lib15442c
@@ -9,8 +9,8 @@ namespace lib15442c
     {
     private:
         // Drivetrain Motors
-        std::shared_ptr<pros::AbstractMotor> left_motors;
-        std::shared_ptr<pros::AbstractMotor> right_motors;
+        std::shared_ptr<lib15442c::IMotor> left_motors;
+        std::shared_ptr<lib15442c::IMotor> right_motors;
 
         // Settings
         double track_width;
@@ -18,8 +18,8 @@ namespace lib15442c
 
     public:
         TankDrive(
-            std::shared_ptr<pros::AbstractMotor> left_motors,
-            std::shared_ptr<pros::AbstractMotor> right_motors,
+            std::shared_ptr<lib15442c::IMotor> left_motors,
+            std::shared_ptr<lib15442c::IMotor> right_motors,
             double wheel_diameter,
             double gear_ratio,
             double track_width
@@ -58,20 +58,14 @@ namespace lib15442c
          *
          * @param mode The mode to use
          */
-        void set_brake_mode(pros::v5::MotorBrake mode);
+        void set_brake_mode(lib15442c::MotorBrakeMode mode);
         /**
          * Get the brake mode of the drivetrain motors
          *
          * @return The mode the motors are on
          */
-        pros::v5::MotorBrake get_brake_mode();
+        lib15442c::MotorBrakeMode get_brake_mode();
 
-        /**
-         * Get the tempatures of the motors
-         *
-         * @return A list of the tempatures
-         */
-        std::vector<double> get_temps();
         /**
          * @brief Get the highest motor tempature in the drivetrain
          * 

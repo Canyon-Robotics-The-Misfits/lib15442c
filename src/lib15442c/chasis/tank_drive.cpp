@@ -3,8 +3,8 @@
 #include <cmath>
 
 lib15442c::TankDrive::TankDrive(
-    std::shared_ptr<pros::v5::AbstractMotor> left_motors,
-    std::shared_ptr<pros::v5::AbstractMotor> right_motors,
+    std::shared_ptr<lib15442c::IMotor> left_motors,
+    std::shared_ptr<lib15442c::IMotor> right_motors,
     double wheel_diameter,
     double gear_ratio,
     double track_width) : left_motors(left_motors),
@@ -12,11 +12,11 @@ lib15442c::TankDrive::TankDrive(
                          track_width(track_width),
                          deg_inch_ratio(wheel_diameter * M_PI * gear_ratio / 360.0)
 {
-    left_motors->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    right_motors->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    left_motors->set_brake_mode(MotorBrakeMode::COAST);
+    right_motors->set_brake_mode(MotorBrakeMode::COAST);
 
-    left_motors->tare_position();
-    right_motors->tare_position();
+    // left_motors->tare_position();
+    // right_motors->tare_position();
 }
 
 
@@ -55,27 +55,20 @@ void lib15442c::TankDrive::move_speed(double linear_speed, double turn_speed) {
     // TODO
 }
 
-void lib15442c::TankDrive::set_brake_mode(pros::v5::MotorBrake mode) {
+void lib15442c::TankDrive::set_brake_mode(MotorBrakeMode mode) {
     left_motors->set_brake_mode(mode);
     right_motors->set_brake_mode(mode);
 }
 
-pros::v5::MotorBrake lib15442c::TankDrive::get_brake_mode() {
+lib15442c::MotorBrakeMode lib15442c::TankDrive::get_brake_mode() {
     return left_motors->get_brake_mode();
 }
 
-std::vector<double> lib15442c::TankDrive::get_temps() {
-    auto left = left_motors->get_temperature_all();
-    auto right = right_motors->get_temperature_all();
-
-    left.insert( left.end(), right.begin(), right.end() );
-
-    return left;
-}
 double lib15442c::TankDrive::max_temp() {
-    auto temps = get_temps();
+    auto left = left_motors->get_temp();
+    auto right = right_motors->get_temp();
 
-    return *max_element(temps.begin(), temps.end());
+    return std::max(left, right);
 }
 
 double lib15442c::TankDrive::get_track_width() {

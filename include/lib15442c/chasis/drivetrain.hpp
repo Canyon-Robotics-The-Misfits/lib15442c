@@ -47,7 +47,7 @@ namespace lib15442c
          *
          * @return The mode the motors are on
          */
-        virtual pros::v5::MotorBrake get_brake_mode() = 0;
+        virtual lib15442c::MotorBrakeMode get_brake_mode() = 0;
 
         /**
          * Get the tempatures of the motors
