@@ -2,6 +2,7 @@
 
 using namespace lib15442c;
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 Pneumatic::Pneumatic(char adi_port, bool default_state, bool extended_state) :
     extender_port(INTERNAL_ADI_PORT), adi_port(adi_port), default_state(default_state), extended_state(extended_state)
 {
@@ -90,6 +91,7 @@ std::vector<bool> PneumaticGroup::get_all_values()
     return values;
 }
 
+#endif
 
 MockPneumatic::MockPneumatic(bool default_state)
     : current_state(default_state) {};

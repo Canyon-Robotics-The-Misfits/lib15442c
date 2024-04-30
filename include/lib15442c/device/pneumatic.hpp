@@ -1,6 +1,9 @@
 #pragma once
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 #include "pros/ext_adi.h"
+#endif
+
 #include <vector>
 #include <memory>
 
