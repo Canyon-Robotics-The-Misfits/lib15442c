@@ -12,7 +12,7 @@ namespace lib15442c
     /**
      * @brief The parameters for the turning functions
      */
-    struct AngleParameters
+    struct FaceParameters
     {
         /**
          * @brief The radius of the curved path to follow, 0 to turn in place
@@ -39,6 +39,11 @@ namespace lib15442c
          * @brief The minimum speed, defaults to the one set by the DriveController constructor
          */
         double min_speed = -1;
+
+        /**
+         * @brief Whether to spin the long way or the short way to get to a target
+         */
+        bool long_direction = false;
 
         /**
          * @brief Whether to use the chain exit condition instead of the normal one
@@ -205,14 +210,14 @@ namespace lib15442c
          * @param angle The angle to end at
          * @param parameters Any extra parameters
          */
-        void turn(lib15442c::Angle angle, AngleParameters parameters = {});
+        void turn(lib15442c::Angle angle, FaceParameters parameters = {});
 
         /**
          * @brief Face a global rotation
          * @param angle The angle to face
          * @param parameters Any extra parameters
          */
-        void faceAngle(lib15442c::Angle angle, AngleParameters parameters = {});
+        void faceAngle(lib15442c::Angle angle, FaceParameters parameters = {});
 
         /**
          * @brief Face a point in x-y space
@@ -221,7 +226,7 @@ namespace lib15442c
          * @param angle_offset An amount to offset the faced angle from the target point
          * @param parameters Any extra parameters
          */
-        void facePoint(lib15442c::Pose pos, lib15442c::Angle angle_offset = 0_rad, AngleParameters parameters = {});
+        void facePoint(lib15442c::Pose pos, lib15442c::Angle angle_offset = 0_rad, FaceParameters parameters = {});
 
         /**
          * @brief Face either an absolute angle or a point
@@ -230,7 +235,7 @@ namespace lib15442c
          * @param parameters Any extra parameters
          * @param log_ends Whether to log the start and end of the movement
          */
-        void face(FaceTarget face_target, AngleParameters parameters = {}, bool log_ends = true);
+        void face(FaceTarget face_target, FaceParameters parameters = {}, bool log_ends = true);
 
         // drive functions
 

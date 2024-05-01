@@ -6,7 +6,7 @@
 
 #define LOGGER "Turn Functions"
 
-void lib15442c::DriveController::turn(lib15442c::Angle angle, AngleParameters parameters)
+void lib15442c::DriveController::turn(lib15442c::Angle angle, FaceParameters parameters)
 {
     INFO("Start turn... (%f deg)", angle.deg());
 
@@ -17,7 +17,7 @@ void lib15442c::DriveController::turn(lib15442c::Angle angle, AngleParameters pa
     INFO_TEXT("End turn!");
 }
 
-void lib15442c::DriveController::faceAngle(lib15442c::Angle angle, AngleParameters parameters)
+void lib15442c::DriveController::faceAngle(lib15442c::Angle angle, FaceParameters parameters)
 {
     INFO("Start face angle... (%f deg)", angle.deg());
 
@@ -26,7 +26,7 @@ void lib15442c::DriveController::faceAngle(lib15442c::Angle angle, AngleParamete
     INFO_TEXT("End face angle!");
 }
 
-void lib15442c::DriveController::facePoint(lib15442c::Pose point, lib15442c::Angle angle_offset, AngleParameters parameters)
+void lib15442c::DriveController::facePoint(lib15442c::Pose point, lib15442c::Angle angle_offset, FaceParameters parameters)
 {
     INFO("Start face point... (%f, %f)", point.x, point.y);
 
@@ -35,7 +35,7 @@ void lib15442c::DriveController::facePoint(lib15442c::Pose point, lib15442c::Ang
     INFO_TEXT("End face point!");
 }
 
-void lib15442c::DriveController::face(FaceTarget target, AngleParameters parameters, bool log_ends) {
+void lib15442c::DriveController::face(FaceTarget target, FaceParameters parameters, bool log_ends) {
     if (log_ends) {
         
         if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
@@ -65,10 +65,6 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
     if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
     {
         target_angle = odometry->getPosition().angle_to(point_target->pos.vec());
-        if (point_target->pos.y - odometry->getY() < 0)
-        {
-            target_angle += 180_deg;
-        }
         target_angle += point_target->angle_offset;
     } else {
         FaceAngleTarget *angle_target = std::get_if<FaceAngleTarget>(&target);
@@ -99,16 +95,47 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
 
     auto comp_status = pros::competition::get_status();
 
+    if (parameters.long_direction)
+    {
+        Angle start_rotation = odometry->getRotation();
+        Angle start_error = start_rotation.error_from(target_angle);
+        Angle last_error = start_rotation.error_from(target_angle);
+
+        while (pros::competition::get_status() == comp_status)
+        {
+            // Calculate target angle if facing a point
+            if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
+            {
+                target_angle = odometry->getPosition().angle_to(point_target->pos.vec());
+                target_angle += point_target->angle_offset;
+            }
+
+            Angle rotation = odometry->getRotation();
+            Angle error = rotation.error_from(target_angle);
+
+            if ((int)pros::millis() - starting_time >= parameters.timeout)
+            {
+                WARN_TEXT("Face timed out!");
+                break;
+            }
+
+            // Stop turning the wrong way if error starts decreasing, meaning passed the opposite angle of the target
+            if ((error - last_error).deg() < 0) {
+                break;
+            }
+
+            drivetrain->move(0, parameters.max_speed * -sgn(start_error.deg()));
+
+            pros::delay(20);
+        }
+    }
+
     while (pros::competition::get_status() == comp_status)
     {
         // Calculate target angle if facing a point
         if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
         {
             target_angle = odometry->getPosition().angle_to(point_target->pos.vec());
-            if (point_target->pos.y - odometry->getY() < 0)
-            {
-                target_angle += 180_deg;
-            }
             target_angle += point_target->angle_offset;
         }
 
