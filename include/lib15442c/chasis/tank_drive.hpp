@@ -3,9 +3,11 @@
 #include "lib15442c/device/motor.hpp"
 #include "drivetrain.hpp"
 
+#include <memory>
+
 namespace lib15442c
 {
-    class TankDrive : virtual public IDrivetrain
+    class TankDrive : public virtual IDrivetrain
     {
     private:
         // Drivetrain Motors
@@ -44,7 +46,7 @@ namespace lib15442c
          * @param linear_speed The voltage to drive forward/back with
          * @param turn_speed The voltage to turn at
          */
-        virtual void move_ratio(double linear_speed, double turn_speed) = 0;
+        void move_ratio(double linear_speed, double turn_speed);
         /**
          * Move a drivetrain with a set linear and rotational speed (in/s)
          *

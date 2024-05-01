@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 namespace lib15442c
 {
@@ -40,7 +41,7 @@ namespace lib15442c
         double ratio = MOTOR_GREEN;
     };
 
-    class Motor : public IMotor {
+    class Motor : public virtual IMotor {
         int port;
         bool reversed;
         MotorBrakeMode brake_mode;
@@ -49,23 +50,23 @@ namespace lib15442c
     public:
         Motor(MotorParameters parameters);
 
-        void move(double voltage);
-        void move_velocity(double velocity);
+        void move(double voltage) override;
+        void move_velocity(double velocity) override;
 
-        void set_brake_mode(MotorBrakeMode brake_mode);
-        MotorBrakeMode get_brake_mode();
+        void set_brake_mode(MotorBrakeMode brake_mode) override;
+        MotorBrakeMode get_brake_mode() override;
 
-        void set_reversed(bool reversed);
-        bool get_reversed();
+        void set_reversed(bool reversed) override;
+        bool get_reversed() override;
 
-        double get_temp();
+        double get_temp() override;
 
-        void set_ratio(double ratio);
-        double get_ratio();
+        void set_ratio(double ratio) override;
+        double get_ratio() override;
     };
 
-    class MotorGroup : public IMotor {
-        std::vector<IMotor> motors;
+    class MotorGroup : public virtual IMotor {
+        std::vector<std::unique_ptr<IMotor>> motors;
 
     public:
         MotorGroup(std::vector<MotorParameters> parameters);

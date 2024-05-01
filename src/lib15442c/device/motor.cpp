@@ -80,57 +80,55 @@ double Motor::get_ratio()
 
 MotorGroup::MotorGroup(std::vector<MotorParameters> parameters)
 {
-    for (int i = 0; i < parameters.size(); i++) {
-        motors.push_back(
-            Motor(parameters[i])
-        );
+    for (int i = 0; i < (int)parameters.size(); i++) {
+        motors.push_back(std::make_unique<Motor>(parameters[i]));
     }
 }
 
 void MotorGroup::move(double voltage)
 {
-    for (int i = 0; i < motors.size(); i++) {
-        motors[i].move(voltage);
+    for (int i = 0; i < (int)motors.size(); i++) {
+        motors[i]->move(voltage);
     }
 }
 
 void MotorGroup::move_velocity(double velocity)
 {
-    for (int i = 0; i < motors.size(); i++) {
-        motors[i].move_velocity(velocity);
+    for (int i = 0; i < (int)motors.size(); i++) {
+        motors[i]->move_velocity(velocity);
     }
 }
 
 void MotorGroup::set_brake_mode(MotorBrakeMode brake_mode)
 {
-    for (int i = 0; i < motors.size(); i++) {
-        motors[i].set_brake_mode(brake_mode);
+    for (int i = 0; i < (int)motors.size(); i++) {
+        motors[i]->set_brake_mode(brake_mode);
     }
 }
 
 MotorBrakeMode MotorGroup::get_brake_mode()
 {
-    return motors[0].get_brake_mode();
+    return motors[0]->get_brake_mode();
 }
 
 void MotorGroup::set_reversed(bool reversed)
 {
-    for (int i = 0; i < motors.size(); i++) {
-        motors[i].set_reversed(reversed);
+    for (int i = 0; i < (int)motors.size(); i++) {
+        motors[i]->set_reversed(reversed);
     }
 }
 
 bool MotorGroup::get_reversed()
 {
-    return motors[0].get_reversed();
+    return motors[0]->get_reversed();
 }
 
 double MotorGroup::get_temp()
 {
-    double max = motors[0].get_temp();
+    double max = motors[0]->get_temp();
 
-    for (int i = 1; i < motors.size(); i++) {
-        double temp = motors[i].get_temp();
+    for (int i = 1; i < (int)motors.size(); i++) {
+        double temp = motors[i]->get_temp();
 
         if (temp > max) {
             max = temp;
@@ -142,14 +140,14 @@ double MotorGroup::get_temp()
 
 void MotorGroup::set_ratio(double ratio)
 {
-    for (int i = 0; i < motors.size(); i++) {
-        motors[i].set_ratio(ratio);
+    for (int i = 0; i < (int)motors.size(); i++) {
+        motors[i]->set_ratio(ratio);
     }
 }
 
 double MotorGroup::get_ratio()
 {
-    return motors[0].get_ratio();
+    return motors[0]->get_ratio();
 }
 
 #endif
