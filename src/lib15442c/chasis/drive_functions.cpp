@@ -8,6 +8,7 @@
 
 void lib15442c::DriveController::drive(double distance, DriveParameters parameters)
 {
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     if (parameters.async)
     {
         parameters.async = false;
@@ -18,6 +19,7 @@ void lib15442c::DriveController::drive(double distance, DriveParameters paramete
         return;
     }
     async_mutex.lock();
+    #endif
 
     INFO("Start Drive... (%f in)", distance);
 
@@ -98,7 +100,9 @@ void lib15442c::DriveController::drive(double distance, DriveParameters paramete
     {
         drivetrain->move(0, 0);
     }
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     async_mutex.unlock();
+    #endif
 
     INFO_TEXT("End Drive!");
 }

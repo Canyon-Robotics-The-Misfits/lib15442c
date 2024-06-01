@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pros/abstract_motor.hpp"
+#include "../device/motor.hpp"
 #include <vector>
 
 namespace lib15442c
@@ -41,20 +41,14 @@ namespace lib15442c
          *
          * @param mode The mode to use
          */
-        virtual void set_brake_mode(pros::v5::MotorBrake mode) = 0;
+        virtual void set_brake_mode(lib15442c::MotorBrakeMode mode) = 0;
         /**
          * Get the brake mode of the drivetrain motors
          *
          * @return The mode the motors are on
          */
-        virtual pros::v5::MotorBrake get_brake_mode() = 0;
+        virtual lib15442c::MotorBrakeMode get_brake_mode() = 0;
 
-        /**
-         * Get the tempatures of the motors
-         *
-         * @return A list of the tempatures
-         */
-        virtual std::vector<double> get_temps() = 0;
         /**
          * @brief Get the highest motor tempature in the drivetrain
          * 

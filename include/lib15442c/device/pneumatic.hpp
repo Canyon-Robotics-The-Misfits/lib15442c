@@ -1,6 +1,9 @@
 #pragma once
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 #include "pros/ext_adi.h"
+#endif
+
 #include <vector>
 #include <memory>
 
@@ -14,6 +17,8 @@ namespace lib15442c
         virtual void toggle() = 0;
         virtual bool get_value() = 0;
     };
+
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
     class Pneumatic : public IPneumatic
     {
@@ -131,5 +136,53 @@ namespace lib15442c
          * @return false if the pneumatics are retracted
          */
         std::vector<bool> get_all_values();
+    };
+
+    #endif
+
+    class MockPneumatic : public IPneumatic {
+    private:
+        bool current_state;
+
+    public:
+        /**
+         * @brief Construct a new Pneumatic
+         *
+         * @param default_state The default state of the pneumatic
+         */
+        MockPneumatic(bool default_state = false);
+
+        /**
+         * @brief Set the value of the pneumatic
+         *
+         * @param value The value to set it to
+         */
+        void set_value(bool value);
+
+        /**
+         * @brief Extend the pneumatic
+         *
+         */
+        void extend();
+
+        /**
+         * @brief Retract the pneumatic
+         *
+         */
+        void retract();
+
+        /**
+         * @brief Toggle the value of the pneumatic
+         *
+         */
+        void toggle();
+
+        /**
+         * @brief Get the value of the pneumatic
+         *
+         * @return true if the pneumatic is extended
+         * @return false if the pneumatic is retracted
+         */
+        bool get_value();
     };
 }

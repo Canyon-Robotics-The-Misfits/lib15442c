@@ -1,16 +1,18 @@
 #pragma once
 
-#include "pros/abstract_motor.hpp"
+#include "../device/motor.hpp"
 #include "drivetrain.hpp"
+
+#include <memory>
 
 namespace lib15442c
 {
-    class TankDrive : virtual public IDrivetrain
+    class TankDrive : public virtual IDrivetrain
     {
     private:
         // Drivetrain Motors
-        std::shared_ptr<pros::AbstractMotor> left_motors;
-        std::shared_ptr<pros::AbstractMotor> right_motors;
+        std::shared_ptr<lib15442c::IMotor> left_motors;
+        std::shared_ptr<lib15442c::IMotor> right_motors;
 
         // Settings
         double track_width;
@@ -18,8 +20,8 @@ namespace lib15442c
 
     public:
         TankDrive(
-            std::shared_ptr<pros::AbstractMotor> left_motors,
-            std::shared_ptr<pros::AbstractMotor> right_motors,
+            std::shared_ptr<lib15442c::IMotor> left_motors,
+            std::shared_ptr<lib15442c::IMotor> right_motors,
             double wheel_diameter,
             double gear_ratio,
             double track_width
@@ -44,7 +46,7 @@ namespace lib15442c
          * @param linear_speed The voltage to drive forward/back with
          * @param turn_speed The voltage to turn at
          */
-        virtual void move_ratio(double linear_speed, double turn_speed) = 0;
+        void move_ratio(double linear_speed, double turn_speed);
         /**
          * Move a drivetrain with a set linear and rotational speed (in/s)
          *
@@ -58,20 +60,14 @@ namespace lib15442c
          *
          * @param mode The mode to use
          */
-        void set_brake_mode(pros::v5::MotorBrake mode);
+        void set_brake_mode(lib15442c::MotorBrakeMode mode);
         /**
          * Get the brake mode of the drivetrain motors
          *
          * @return The mode the motors are on
          */
-        pros::v5::MotorBrake get_brake_mode();
+        lib15442c::MotorBrakeMode get_brake_mode();
 
-        /**
-         * Get the tempatures of the motors
-         *
-         * @return A list of the tempatures
-         */
-        std::vector<double> get_temps();
         /**
          * @brief Get the highest motor tempature in the drivetrain
          * 

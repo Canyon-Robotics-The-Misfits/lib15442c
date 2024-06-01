@@ -1,9 +1,19 @@
 #pragma once
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
+
 #include "pros/misc.h"
+#define GET_TIME pros::c::millis()
+
+#else
+
+#define GET_TIME 0
+
+#endif
+
 #include <math.h>
 
-#define TIME_SECONDS (int)(round(pros::c::millis() / 1000))
+#define TIME_SECONDS (int)(round(GET_TIME / 1000))
 #define LOG(mode, format, ...) printf("[%i:%02d " mode "] " LOGGER ": " format "\n", (int)floor(TIME_SECONDS / 60), TIME_SECONDS % 60, __VA_ARGS__)
 #define LOG_TEXT(mode, format) printf("[%i:%02d " mode "] " LOGGER ": " format "\n", (int)floor(TIME_SECONDS / 60), TIME_SECONDS % 60)
 

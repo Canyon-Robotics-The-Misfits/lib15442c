@@ -14,7 +14,7 @@ lib15442c::DriveController::DriveController(
 
 bool lib15442c::DriveController::isDone(int timeout)
 {
-    bool done = async_mutex.try_lock_for(std::chrono::milliseconds(timeout));
+    bool done = async_mutex.try_lock_for(timeout);
     if (done)
     {
         async_mutex.unlock();

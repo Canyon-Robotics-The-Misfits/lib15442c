@@ -7,6 +7,8 @@
 
 // Tracker Odom
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
+
 lib15442c::TrackerOdom::~TrackerOdom() {
     stopTask();
 }
@@ -94,6 +96,7 @@ void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)
 void lib15442c::TrackerOdom::startTask()
 {
 
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     task = pros::Task([this]
                                {
         inertial->tare();
@@ -148,10 +151,10 @@ void lib15442c::TrackerOdom::startTask()
                 if (deltaTheta == 0)
                 {
                     position += Vec(
-                        sin(angle) * deltaParallel +
-                            sin(angle + M_PI/2) * deltaPerpendicular,
                         cos(angle) * deltaParallel +
-                            cos(angle + M_PI/2) * deltaPerpendicular);
+                            cos(angle + M_PI/2) * deltaPerpendicular,
+                        sin(angle) * deltaParallel +
+                            sin(angle + M_PI/2) * deltaPerpendicular);
                 }
                 else
                 {
@@ -165,7 +168,7 @@ void lib15442c::TrackerOdom::startTask()
                     delta_y += (sin(angle + M_PI/2) - sin(last_angle + M_PI/2)) * radiusPerpendicular;
 
                     position += Vec(
-                        -delta_x,
+                        delta_x,
                         delta_y
                     );
                 }
@@ -188,6 +191,7 @@ void lib15442c::TrackerOdom::startTask()
             time += 10;
             tickTimer++;
         } });
+    #endif
 }
 
 void lib15442c::TrackerOdom::stopTask() {
@@ -251,3 +255,5 @@ void lib15442c::GPSOdom::setRotation(Angle rotation)
 {
     gps.set_rotation(rotation.deg() - rotation_offset);
 }
+
+#endif

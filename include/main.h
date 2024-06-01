@@ -34,7 +34,9 @@
  */
 #define PROS_USE_LITERALS
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 #include "api.h"
+#endif
 
 /**
  * You should add more #includes here
