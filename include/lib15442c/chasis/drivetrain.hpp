@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib15442c/device/motor.hpp"
+#include "../device/motor.hpp"
 #include <vector>
 
 namespace lib15442c

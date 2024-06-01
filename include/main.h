@@ -34,8 +34,6 @@
  */
 #define PROS_USE_LITERALS
 
-// #define LIB15442C_MOCK_DEVICES_ONLY
-
 #ifndef LIB15442C_MOCK_DEVICES_ONLY
 #include "api.h"
 #endif

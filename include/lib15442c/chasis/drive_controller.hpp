@@ -2,8 +2,9 @@
 
 #include "drivetrain.hpp"
 #include "odometry.hpp"
-#include "lib15442c/controller/pid.hpp"
-#include "lib15442c/math/pose.hpp"
+#include "../controller/pid.hpp"
+#include "../math/pose.hpp"
+#include "../rtos.hpp"
 
 #include <variant>
 
@@ -186,7 +187,7 @@ namespace lib15442c
         std::shared_ptr<PID> drive_pid;
         std::shared_ptr<PID> turn_pid;
 
-        pros::Mutex async_mutex;
+        lib15442c::Mutex async_mutex;
 
         double default_min_speed;
 

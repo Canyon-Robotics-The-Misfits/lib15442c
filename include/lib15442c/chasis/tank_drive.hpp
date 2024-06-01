@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib15442c/device/motor.hpp"
+#include "../device/motor.hpp"
 #include "drivetrain.hpp"
 
 #include <memory>

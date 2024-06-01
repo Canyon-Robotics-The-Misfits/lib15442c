@@ -48,6 +48,7 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
         }
     }
 
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     if (parameters.async)
     {
         parameters.async = false;
@@ -58,6 +59,7 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
         return;
     }
     async_mutex.lock();
+    #endif
 
     Angle target_angle;
 
@@ -160,7 +162,9 @@ void lib15442c::DriveController::face(FaceTarget target, AngleParameters paramet
     {
         drivetrain->move(0, 0);
     }
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     async_mutex.unlock();
+    #endif
 
     if (log_ends) {
         INFO_TEXT("End face!");

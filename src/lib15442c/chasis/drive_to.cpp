@@ -7,6 +7,7 @@
 
 void lib15442c::DriveController::boomerang(lib15442c::Pose target_pos, BoomerangParameters parameters)
 {
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     if (parameters.async)
     {
         parameters.async = false;
@@ -17,6 +18,7 @@ void lib15442c::DriveController::boomerang(lib15442c::Pose target_pos, Boomerang
         return;
     }
     async_mutex.lock();
+    #endif
     
     INFO("Start boomerang... (%f, %f)", target_pos.x, target_pos.y);
 
@@ -104,7 +106,9 @@ void lib15442c::DriveController::boomerang(lib15442c::Pose target_pos, Boomerang
         drivetrain->move(0, 0);
     }
 
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
     async_mutex.unlock();
+    #endif
     
     INFO_TEXT("End boomerang!");
 }

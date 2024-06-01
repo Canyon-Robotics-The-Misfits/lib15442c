@@ -2,14 +2,16 @@
 
 #include <memory>
 
-#include "lib15442c/math/vector.hpp"
-#include "lib15442c/math/pose.hpp"
-#include "lib15442c/math/angle.hpp"
+#include "../math/vector.hpp"
+#include "../math/pose.hpp"
+#include "../math/angle.hpp"
 
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 #include "pros/rtos.hpp"
 #include "pros/rotation.hpp"
 #include "pros/gps.hpp"
 #include "pros/imu.hpp"
+#endif
 
 namespace lib15442c
 {
@@ -63,6 +65,8 @@ namespace lib15442c
          */
         virtual void setRotation(lib15442c::Angle rotation) = 0;
     };
+    
+    #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
     class TrackerOdom : public virtual IOdometry
     {
@@ -154,4 +158,6 @@ namespace lib15442c
         Angle getRotation();
         void setRotation(Angle rotation);
     };
+
+    #endif
 }
