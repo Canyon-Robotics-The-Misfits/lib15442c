@@ -65,3 +65,8 @@ void Vec::operator/=(const double& rhs)
     x /= rhs;
     y /= rhs;
 }
+
+double Vec::dot(Vec& rhs)
+{
+    return (x * rhs.x) + (y * rhs.y);
+}

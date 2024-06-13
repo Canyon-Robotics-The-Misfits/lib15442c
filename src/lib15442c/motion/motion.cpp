@@ -3,7 +3,7 @@
 void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::shared_ptr<IOdometry> odometry, bool ignore_async)
 {
     if (!ignore_async && isAsync()) {
-        pros::Task([this, drivetrain, odometry] {
+        task = pros::Task([this, drivetrain, odometry] {
             execute(drivetrain, odometry, true);
         });
 
@@ -30,7 +30,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
 
         auto out = calculate(drivetrain, current_pose, time_since_start);
 
-        drivetrain->move_ratio(out.first, out.second);
+        drivetrain->move_ratio(out.linear_output, out.rotational_output);
 
         pros::delay(10);
     }
@@ -42,4 +42,20 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     async_mutex.lock();
     is_running = false;
     async_mutex.unlock();
+}
+
+bool lib15442c::IMotion::isRunning() {
+    async_mutex.lock();
+    bool temp = is_running;
+    async_mutex.unlock();
+
+    return temp;
+}
+
+void lib15442c::IMotion::stop() {
+    async_mutex.lock();
+    is_running = false;
+    async_mutex.unlock();
+
+    task.join(); // wait for the task to end
 }

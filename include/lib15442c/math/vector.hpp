@@ -12,6 +12,7 @@ namespace lib15442c {
         double x;
         double y;
 
+
         Vec(double x, double y): x(x), y(y) {};
 
         /**
@@ -62,5 +63,7 @@ namespace lib15442c {
 
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);
+
+        double dot(Vec& rhs);
     };
 }

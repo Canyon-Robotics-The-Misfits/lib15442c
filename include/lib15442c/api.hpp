@@ -17,3 +17,5 @@
 #include "math/math.hpp"
 #include "math/pose.hpp"
 #include "math/vector.hpp"
+
+#include "motion/motion.hpp"

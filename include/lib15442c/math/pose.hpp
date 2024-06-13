@@ -12,6 +12,20 @@ namespace lib15442c
         Angle angle;
 
         Pose(double x, double y, Angle angle) : x(x), y(y), angle(angle) {};
+
+        /**
+         * @brief Make a new empty pose
+         * 
+         * @return Pose An empty pose
+         */
+        static Pose none();
+
+        /**
+         * @brief Get if the Pose doesn't exist
+         * 
+         * @return Whether it doesn't exist
+         */
+        bool is_none();
         
         /**
          * @brief Return the angle in radians
@@ -53,6 +67,6 @@ namespace lib15442c
         void operator/=(const double& rhs);
     };
 
-    #define pos(x, y) lib15442c::Pose(x, y, lib15442c::Angle::from_rad(INFINITY))
+    #define pos(x, y) lib15442c::Pose(x, y, lib15442c::Angle::none())
     #define posa(x, y, theta) lib15442c::Pose(x, y, theta)
 }

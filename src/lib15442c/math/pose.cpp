@@ -5,6 +5,18 @@ using lib15442c::Pose;
 using lib15442c::Vec;
 using lib15442c::Angle;
 
+Pose Pose::none() {
+    return Pose(
+        INFINITY,
+        INFINITY,
+        Angle::none()
+    );
+}
+
+bool Pose::is_none() {
+    return (x == INFINITY) && (y == INFINITY) && angle.is_none();
+}
+
 double Pose::rad() {
     return angle.rad();
 }
