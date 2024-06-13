@@ -1,8 +1,8 @@
-#include "motion.hpp"
+#include "pid_motions.hpp"
 #include "lib15442c/math/math.hpp"
 #include "lib15442c/logger.hpp"
 
-#define LOGGER "Drive Face"
+#define LOGGER "Face"
 
 lib15442c::Face::Face(FaceTarget target, std::shared_ptr<PID> pid, FaceParameters params, std::string name)
     : target(target), pid(pid), params(params), name(name) {};
