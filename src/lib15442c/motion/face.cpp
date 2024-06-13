@@ -33,7 +33,7 @@ lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
     }
 }
 
-lib15442c::CalculateOutput lib15442c::Face::calculate(Pose pose, double time_since_start, double delta_time)
+lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_start, double delta_time)
 {
 
     // Calculate target angle if facing a point
@@ -43,7 +43,7 @@ lib15442c::CalculateOutput lib15442c::Face::calculate(Pose pose, double time_sin
 
     if (fabs(error.deg()) < params.threshold.deg())
     {
-        time_correct += 20;
+        time_correct += delta_time;
     }
     else
     {
@@ -51,32 +51,23 @@ lib15442c::CalculateOutput lib15442c::Face::calculate(Pose pose, double time_sin
     }
 
     bool chainCondition = params.chained && (sgn(error.deg()) != sgn(initial_error.deg()) || fabs(error.deg()) < 10);
-    if (time_correct >= 100 || chainCondition)
+    if (time_correct >= params.threshold_time || chainCondition)
     {
-        return {
-            linear_output : 0,
-            rotational_output : 0,
-            exit : true
-        };
+        return MotionOutputExit {};
     }
 
     if (time_since_start >= params.timeout)
     {
         WARN_TEXT("Face timed out!");
-        return {
-            linear_output : 0,
-            rotational_output : 0,
-            exit : true
-        };
+        return MotionOutputExit {};
     }
 
     double rot_speed = pid->calculateError(error.deg());
 
     rot_speed = std::clamp(fabs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);
 
-    return {
+    return MotionOutputSpeeds {
         linear_output : 0,
         rotational_output : rot_speed,
-        exit : false
     };
 }

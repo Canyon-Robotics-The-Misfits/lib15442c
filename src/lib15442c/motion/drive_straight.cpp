@@ -21,7 +21,7 @@ void lib15442c::DriveStraight::initialize(Pose pose)
     starting_position = pose;
 }
 
-lib15442c::CalculateOutput lib15442c::DriveStraight::calculate(Pose pose, double time_since_start, double delta_time)
+lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double time_since_start, double delta_time)
 {
     double distance_traveled = starting_position.vec().distance_to(pose.vec());
     double error = target_distance - (distance_traveled * lib15442c::sgn(target_distance));
@@ -46,26 +46,17 @@ lib15442c::CalculateOutput lib15442c::DriveStraight::calculate(Pose pose, double
 
     if (time_correct >= params.threshold_time || (params.chained && fabs(distance_traveled) >= fabs(target_distance) - params.threshold))
     {
-        return {
-            linear_output : speed,
-            rotational_output : rot_speed,
-            exit : true
-        };
+        return MotionOutputExit {};
     }
 
     if (time_since_start >= params.threshold)
     {
         WARN_TEXT("drive timed out!");
-        return {
-            linear_output : speed,
-            rotational_output : rot_speed,
-            exit : true
-        };
+        return MotionOutputExit {};
     }
 
-    return {
+    return MotionOutputSpeeds {
         linear_output : speed,
         rotational_output : rot_speed,
-        exit : false
     };
 }

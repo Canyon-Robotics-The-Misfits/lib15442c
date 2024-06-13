@@ -17,6 +17,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     async_mutex.unlock();
 
     int start_time = pros::millis();
+    int last_time = pros::millis();
 
     while (true) {
         async_mutex.lock();
@@ -26,11 +27,22 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
         async_mutex.unlock();
 
         Pose current_pose = odometry->getPose();
-        int time_since_start = pros::millis() - start_time;
 
-        auto out = calculate(drivetrain, current_pose, time_since_start);
+        int now = pros::millis();
+        int time_since_start = now - start_time;
 
-        drivetrain->move_ratio(out.linear_output, out.rotational_output);
+        auto out = calculate(current_pose, time_since_start, now - last_time);
+
+        last_time = now;
+
+        if (MotionOutputSpeeds *speeds = std::get_if<MotionOutputSpeeds>(&out))
+        {
+            drivetrain->move_ratio(speeds->linear_output, speeds->rotational_output);
+        }
+        else
+        {
+            break;
+        }
 
         pros::delay(10);
     }

@@ -16,6 +16,15 @@ namespace lib15442c {
         bool exit;
     };
 
+    struct MotionOutputSpeeds {
+        double linear_output;
+        double rotational_output;
+    };
+
+    struct MotionOutputExit {};
+
+    using MotionOutput = std::variant<MotionOutputSpeeds, MotionOutputExit>;
+
     class IMotion {
     protected:
         virtual bool isAsync() = 0;
@@ -26,7 +35,7 @@ namespace lib15442c {
         pros::Task task = pros::Task([] { return; });
 
     public:
-        virtual CalculateOutput calculate(std::shared_ptr<IDrivetrain> drivetrain, Pose pose, double time_since_start) = 0;
+        virtual MotionOutput calculate(Pose pose, double time_since_start, double delta_time) = 0;
         virtual void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose) = 0;
 
         /**
@@ -109,7 +118,7 @@ namespace lib15442c {
         DriveStraight(double target_distance, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveParameters params = {});
         void initialize(Pose pose);
 
-        CalculateOutput calculate(Pose pose, double time_since_start, double delta_time);
+        MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
     
     /**
@@ -128,6 +137,10 @@ namespace lib15442c {
          *
          */
         lib15442c::Angle threshold = 0.75_deg;
+        /**
+         * @brief The time the error needs to be within the threshold for in order to exit
+         */
+        double threshold_time = 40;
 
         /**
          * @brief The timeout in case the move takes too long (ms)
@@ -188,6 +201,6 @@ namespace lib15442c {
         Face(FaceTarget target_distance, std::shared_ptr<PID> pid, FaceParameters params = {});
         void initialize(Pose pose);
 
-        CalculateOutput calculate(Pose pose, double time_since_start, double delta_time);
+        MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
 }
