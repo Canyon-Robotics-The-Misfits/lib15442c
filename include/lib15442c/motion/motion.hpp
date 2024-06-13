@@ -28,6 +28,7 @@ namespace lib15442c {
     class IMotion {
     protected:
         virtual bool isAsync() = 0;
+        virtual std::string getName() = 0;
 
         lib15442c::Mutex async_mutex;
         bool is_running = false;
@@ -103,6 +104,7 @@ namespace lib15442c {
     class DriveStraight : public virtual IMotion {
     protected:
         bool isAsync();
+        std::string getName();
     
     private:
         double target_distance;
@@ -114,8 +116,10 @@ namespace lib15442c {
         double time_correct = 0;
         Pose starting_position = Pose::none();
 
+        std::string name;
+
     public:
-        DriveStraight(double target_distance, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveParameters params = {});
+        DriveStraight(double target_distance, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveParameters params = {}, std::string name = "drive");
         void initialize(Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
@@ -185,6 +189,7 @@ namespace lib15442c {
     class Face : public virtual IMotion {
     protected:
         bool isAsync();
+        std::string getName();
     
     private:
         FaceTarget target;
@@ -195,10 +200,12 @@ namespace lib15442c {
         double time_correct = 0;
         Angle initial_error = Angle::none();
 
+        std::string name;
+
         static Angle getTargetAngle(FaceTarget target, Pose pose);
 
     public:
-        Face(FaceTarget target_distance, std::shared_ptr<PID> pid, FaceParameters params = {});
+        Face(FaceTarget target_distance, std::shared_ptr<PID> pid, FaceParameters params = {}, std::string name = "face");
         void initialize(Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);

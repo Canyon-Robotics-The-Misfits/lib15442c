@@ -4,19 +4,24 @@
 
 #define LOGGER "Drive Face"
 
-lib15442c::Face::Face(FaceTarget target, std::shared_ptr<PID> pid, FaceParameters params)
-    : target(target), pid(pid), params(params){};
+lib15442c::Face::Face(FaceTarget target, std::shared_ptr<PID> pid, FaceParameters params, std::string name)
+    : target(target), pid(pid), params(params), name(name) {};
+
+bool lib15442c::Face::isAsync()
+{
+    return params.async;
+}
+
+std::string lib15442c::Face::getName()
+{
+    return name;
+}
 
 void lib15442c::Face::initialize(Pose pose)
 {
     Angle target_angle = getTargetAngle(target, pose);
 
     initial_error = pose.angle.error_from(target_angle);
-}
-
-bool lib15442c::Face::isAsync()
-{
-    return params.async;
 }
 
 lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
@@ -70,7 +75,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
 
     if (time_since_start >= params.timeout)
     {
-        WARN_TEXT("Face timed out!");
+        WARN("\"%s\" timed out!", name.c_str());
         return MotionOutputExit{};
     }
 

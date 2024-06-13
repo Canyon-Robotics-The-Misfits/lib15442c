@@ -1,4 +1,7 @@
 #include "motion.hpp"
+#include "lib15442c/logger.hpp"
+
+#define LOGGER "Motion"
 
 void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::shared_ptr<IOdometry> odometry, bool ignore_async)
 {
@@ -11,6 +14,8 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
 
         return;
     }
+    
+    INFO("starting \"%s\"", getName().c_str());
 
     async_mutex.lock();
     is_running = true;
@@ -54,6 +59,8 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     async_mutex.lock();
     is_running = false;
     async_mutex.unlock();
+    
+    INFO("ending \"%s\"", getName().c_str());
 }
 
 bool lib15442c::IMotion::isRunning() {

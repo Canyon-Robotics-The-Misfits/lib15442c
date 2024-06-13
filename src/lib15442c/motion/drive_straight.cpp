@@ -4,12 +4,17 @@
 
 #define LOGGER "Drive Straight"
 
-lib15442c::DriveStraight::DriveStraight(double target_distance, std::shared_ptr<lib15442c::PID> drive_pid, std::shared_ptr<lib15442c::PID> turn_pid, lib15442c::DriveParameters params)
-    : target_distance(target_distance), drive_pid(drive_pid), turn_pid(turn_pid), params(params){};
+lib15442c::DriveStraight::DriveStraight(double target_distance, std::shared_ptr<lib15442c::PID> drive_pid, std::shared_ptr<lib15442c::PID> turn_pid, lib15442c::DriveParameters params, std::string name)
+    : target_distance(target_distance), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
 bool lib15442c::DriveStraight::isAsync()
 {
     return params.async;
+}
+
+std::string lib15442c::DriveStraight::getName()
+{
+    return name;
 }
 
 void lib15442c::DriveStraight::initialize(Pose pose)
@@ -63,7 +68,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
 
     if (time_since_start >= params.threshold)
     {
-        WARN_TEXT("drive timed out!");
+        WARN("\"%s\" timed out!", name.c_str());
         return MotionOutputExit{};
     }
 
