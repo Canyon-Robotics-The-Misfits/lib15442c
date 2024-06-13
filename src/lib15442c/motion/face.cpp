@@ -21,6 +21,7 @@ bool lib15442c::Face::isAsync()
 
 lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
 {
+    // Check which varient the target is, and find the target angle accordingly
     if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
     {
         return pose.vec().angle_to(point_target->pos.vec()) + point_target->angle_offset;
@@ -41,32 +42,44 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
 
     Angle error = pose.angle.error_from(target_angle);
 
-    if (fabs(error.deg()) < params.threshold.deg())
+    if (params.chained)
     {
-        time_correct += delta_time;
+        // if the error crossed 0 (passed target angle) or is within the threshold exit
+        if (sgn(error.deg()) != sgn(initial_error.deg()) || fabs(error.deg() < params.threshold.deg()))
+        {
+            return MotionOutputExit{};
+        }
     }
     else
     {
-        time_correct = 0;
-    }
+        // Must be within the threshold for `params.threshold_time` ms to exit
+        if (fabs(error.deg()) < params.threshold.deg())
+        {
+            time_correct += delta_time;
+        }
+        else
+        {
+            time_correct = 0;
+        }
 
-    bool chainCondition = params.chained && (sgn(error.deg()) != sgn(initial_error.deg()) || fabs(error.deg()) < 10);
-    if (time_correct >= params.threshold_time || chainCondition)
-    {
-        return MotionOutputExit {};
+        if (time_correct >= params.threshold_time)
+        {
+            return MotionOutputExit{};
+        }
     }
 
     if (time_since_start >= params.timeout)
     {
         WARN_TEXT("Face timed out!");
-        return MotionOutputExit {};
+        return MotionOutputExit{};
     }
 
     double rot_speed = pid->calculateError(error.deg());
 
+    // keep rot_speed between the min and max speeds
     rot_speed = std::clamp(fabs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);
 
-    return MotionOutputSpeeds {
+    return MotionOutputSpeeds{
         linear_output : 0,
         rotational_output : rot_speed,
     };

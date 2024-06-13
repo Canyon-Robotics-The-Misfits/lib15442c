@@ -16,7 +16,7 @@ void lib15442c::DriveStraight::initialize(Pose pose)
 {
     drive_pid.reset();
     turn_pid.reset();
-    
+
     time_correct = 0;
     starting_position = pose;
 }
@@ -28,34 +28,46 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
 
     double speed = drive_pid->calculateError(error);
 
+    // skeep speed between the min and max speed
     speed = std::clamp(fabs(speed), params.min_speed, params.max_speed) * lib15442c::sgn(speed);
 
+    // Angle correction to drive straight
     Angle angle_error = params.angle.error_from(pose.angle);
     double rot_speed = turn_pid->calculateError(angle_error.deg());
 
-    // std::cout << pros::millis() << ", " << error << ", " << speed << std::endl;
-
-    if (!params.chained && fabs(error) < params.threshold)
+    if (params.chained)
     {
-        time_correct += delta_time;
+        // if chained, exit after passing a line `params.threshold` inches in front of the target
+        if (fabs(distance_traveled) >= fabs(target_distance) - params.threshold)
+        {
+            return MotionOutputExit{};
+        }
     }
     else
     {
-        time_correct = 0;
-    }
+        // only exit if within the threshold for `params.threshold_time` ms
+        if (!params.chained && fabs(error) < params.threshold)
+        {
+            time_correct += delta_time;
+        }
+        else
+        {
+            time_correct = 0;
+        }
 
-    if (time_correct >= params.threshold_time || (params.chained && fabs(distance_traveled) >= fabs(target_distance) - params.threshold))
-    {
-        return MotionOutputExit {};
+        if (time_correct >= params.threshold_time)
+        {
+            return MotionOutputExit{};
+        }
     }
 
     if (time_since_start >= params.threshold)
     {
         WARN_TEXT("drive timed out!");
-        return MotionOutputExit {};
+        return MotionOutputExit{};
     }
 
-    return MotionOutputSpeeds {
+    return MotionOutputSpeeds{
         linear_output : speed,
         rotational_output : rot_speed,
     };
