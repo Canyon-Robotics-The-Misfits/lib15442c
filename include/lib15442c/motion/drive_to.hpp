@@ -73,10 +73,134 @@ namespace lib15442c
         std::string name;
 
     public:
-        Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params = {}, std::string name = "drive");
+        Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params = {}, std::string name = "boomerang");
         void initialize(Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
     
+    struct DriveToABParameters
+    {
+        /**
+         * @brief weight of facing the target point
+         */
+        double kp_alpha = 0.6;
+        /**
+         * @brief weight of ending at the target angle
+         */
+        double kp_beta = 0.6;
+
+
+        /**
+         * @brief Whether to go in reverse
+         */
+        bool backwards = false;
+        /**
+         * @brief How far away the robot should be from the end before the movement ends
+         */
+        double threshold = 1;
+
+        /**
+         * @brief The timeout in case the move takes too long (ms)
+         */
+        double timeout = 2000;
+
+        /**
+         * @brief The maximum speed
+         */
+        double max_speed = 127;
+        /**
+         * @brief The minimum speed, defaults to the one set by the DriveController constructor
+         */
+        double min_speed = -1;
+
+        /**
+         * @brief Whether to run asynchronously
+         */
+        bool async = false; 
+    };
+
+    class DriveToAB: public IMotion
+    {
+    protected:
+        bool isAsync();
+        std::string getName();
+
+    private:
+        Pose target_pose;
+
+        std::shared_ptr<PID> drive_pid;
+        DriveToABParameters params;
+
+        std::string name;
+
+    public:
+        DriveToAB(Pose target_pose, std::shared_ptr<PID> drive_pid, DriveToABParameters params = {}, std::string name = "drive to AB");
+        void initialize(Pose pose);
+
+        MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
+    };
+    
+    struct DriveToIntermediateParameters
+    {
+        /**
+         * @brief The threshold in which the algorithm should just try to stop at the right angle
+         */
+        double settle_threshold = 5;
+        /**
+         * @brief How far away to make the intermediate angle
+         */
+        double r = 10;
+
+
+        /**
+         * @brief Whether to go in reverse
+         */
+        bool backwards = false;
+        /**
+         * @brief How far away the robot should be from the end before the movement ends
+         */
+        double threshold = 1;
+
+        /**
+         * @brief The timeout in case the move takes too long (ms)
+         */
+        double timeout = 2000;
+
+        /**
+         * @brief The maximum speed
+         */
+        double max_speed = 127;
+        /**
+         * @brief The minimum speed, defaults to the one set by the DriveController constructor
+         */
+        double min_speed = -1;
+
+        /**
+         * @brief Whether to run asynchronously
+         */
+        bool async = false; 
+    };
+
+    class DriveToIntermediate: public IMotion
+    {
+    protected:
+        bool isAsync();
+        std::string getName();
+
+    private:
+        Pose target_pose;
+
+        std::shared_ptr<PID> drive_pid;
+        std::shared_ptr<PID> turn_pid;
+        DriveToIntermediateParameters params;
+
+        std::string name;
+
+    public:
+        DriveToIntermediate(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveToIntermediateParameters params = {}, std::string name = "Drive To Intermediate");
+        void initialize(Pose pose);
+
+        MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
+    };
 } // namespace lib15442c
