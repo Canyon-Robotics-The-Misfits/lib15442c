@@ -1,7 +1,7 @@
 #include "motion.hpp"
 #include "lib15442c/logger.hpp"
 
-#define LOGGER "Motion"
+#define LOGGER "motion.cpp"
 
 void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::shared_ptr<IOdometry> odometry, bool ignore_async)
 {

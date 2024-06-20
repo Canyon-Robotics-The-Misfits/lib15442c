@@ -4,7 +4,7 @@
 
 // #include <algorithm>
 
-// #define LOGGER "Drive Controller"
+// #define LOGGER "drive_controller.cpp"
 
 // lib15442c::DriveController::DriveController(
 //             std::shared_ptr<IDrivetrain> drivetrain,

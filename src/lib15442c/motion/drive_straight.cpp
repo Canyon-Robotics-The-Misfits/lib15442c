@@ -2,7 +2,7 @@
 #include "lib15442c/math/math.hpp"
 #include "lib15442c/logger.hpp"
 
-#define LOGGER "Drive Straight"
+#define LOGGER "drive_straight.cpp"
 
 lib15442c::DriveStraight::DriveStraight(double target_distance, std::shared_ptr<lib15442c::PID> drive_pid, std::shared_ptr<lib15442c::PID> turn_pid, lib15442c::DriveParameters params, std::string name)
     : target_distance(target_distance), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};

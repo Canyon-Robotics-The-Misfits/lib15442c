@@ -2,7 +2,7 @@
 // #include "lib15442c/logger.hpp"
 // #include "lib15442c/math/math.hpp"
 
-// #define LOGGER "Boomerang"
+// #define LOGGER "drive_to.cpp"
 
 
 // void lib15442c::DriveController::boomerang(lib15442c::Pose target_pos, BoomerangParameters parameters)

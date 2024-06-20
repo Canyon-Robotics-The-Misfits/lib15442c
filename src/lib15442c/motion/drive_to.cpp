@@ -2,7 +2,7 @@
 #include "lib15442c/math/math.hpp"
 #include "lib15442c/logger.hpp"
 
-#define LOGGER "Drive To"
+#define LOGGER "drive_to.cpp"
 
 lib15442c::Boomerang::Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params, std::string name)
     : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name){};
