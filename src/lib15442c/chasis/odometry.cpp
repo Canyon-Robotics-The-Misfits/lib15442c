@@ -248,12 +248,12 @@ void lib15442c::GPSOdom::setPosition(lib15442c::Vec position)
 
 lib15442c::Angle lib15442c::GPSOdom::getRotation()
 {
-    return Angle::from_deg(gps.get_rotation() + rotation_offset);
+    return Angle::from_deg(gps.get_heading() + rotation_offset);
 }
 
 void lib15442c::GPSOdom::setRotation(Angle rotation)
 {
-    gps.set_rotation(rotation.deg() - rotation_offset);
+    rotation_offset = rotation.deg();
 }
 
 #endif

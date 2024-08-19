@@ -78,10 +78,21 @@ double Motor::get_ratio()
 }
 
 
-MotorGroup::MotorGroup(std::vector<MotorParameters> parameters)
+MotorGroup::MotorGroup(std::initializer_list<MotorParameters> parameters)
 {
-    for (int i = 0; i < (int)parameters.size(); i++) {
-        motors.push_back(std::make_unique<Motor>(parameters[i]));
+    for (auto parameter : parameters) {
+        motors.push_back(std::make_unique<Motor>(parameter));
+    }
+}
+
+MotorGroup::MotorGroup(MotorGroupParameters parameters, std::initializer_list<std::int8_t> ports)
+{
+    for (auto port : ports) {
+        auto parameter = MotorParameters(parameters);
+
+        parameter.port = port;
+
+        motors.push_back(std::make_unique<Motor>(parameter));
     }
 }
 
