@@ -13,6 +13,7 @@ Motor::Motor(MotorParameters parameters)
     : port(parameters.port), reversed(parameters.reversed), brake_mode(parameters.brake_mode), ratio(parameters.ratio)
 {
     pros::c::motor_set_gearing(port, pros::E_MOTOR_GEAR_RED);
+    set_brake_mode(brake_mode);
 }
 
 void Motor::move(double voltage)

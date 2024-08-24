@@ -42,6 +42,9 @@ namespace lib15442c
 
     struct MotorParameters : public MotorGroupParameters {
         int port;
+        bool reversed = false;
+        MotorBrakeMode brake_mode = MotorBrakeMode::COAST;
+        double ratio = MOTOR_GREEN;
     };
 
     class Motor : public virtual IMotor {
