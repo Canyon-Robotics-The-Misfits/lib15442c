@@ -34,7 +34,13 @@ namespace lib15442c
 
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
-    struct MotorParameters {
+    struct MotorGroupParameters {
+        bool reversed = false;
+        MotorBrakeMode brake_mode = MotorBrakeMode::COAST;
+        double ratio = MOTOR_GREEN;
+    };
+
+    struct MotorParameters : public MotorGroupParameters {
         int port;
         bool reversed = false;
         MotorBrakeMode brake_mode = MotorBrakeMode::COAST;
@@ -69,7 +75,8 @@ namespace lib15442c
         std::vector<std::unique_ptr<IMotor>> motors;
 
     public:
-        MotorGroup(std::vector<MotorParameters> parameters);
+        MotorGroup(std::initializer_list<MotorParameters> parameters);
+        MotorGroup(MotorGroupParameters parameters, std::initializer_list<std::int8_t> ports);
 
         void move(double voltage);
         void move_velocity(double velocity);

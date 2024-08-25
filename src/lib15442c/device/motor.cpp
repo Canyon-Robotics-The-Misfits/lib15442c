@@ -13,6 +13,7 @@ Motor::Motor(MotorParameters parameters)
     : port(parameters.port), reversed(parameters.reversed), brake_mode(parameters.brake_mode), ratio(parameters.ratio)
 {
     pros::c::motor_set_gearing(port, pros::E_MOTOR_GEAR_RED);
+    set_brake_mode(brake_mode);
 }
 
 void Motor::move(double voltage)
@@ -78,10 +79,21 @@ double Motor::get_ratio()
 }
 
 
-MotorGroup::MotorGroup(std::vector<MotorParameters> parameters)
+MotorGroup::MotorGroup(std::initializer_list<MotorParameters> parameters)
 {
-    for (int i = 0; i < (int)parameters.size(); i++) {
-        motors.push_back(std::make_unique<Motor>(parameters[i]));
+    for (auto parameter : parameters) {
+        motors.push_back(std::make_unique<Motor>(parameter));
+    }
+}
+
+MotorGroup::MotorGroup(MotorGroupParameters parameters, std::initializer_list<std::int8_t> ports)
+{
+    for (auto port : ports) {
+        auto parameter = MotorParameters(parameters);
+
+        parameter.port = port;
+
+        motors.push_back(std::make_unique<Motor>(parameter));
     }
 }
 
