@@ -19,6 +19,19 @@ namespace lib15442c
     {
     public:
         /**
+         * @brief Set whether the position should be mirrored over the y-axis
+         * 
+         * @param mirrored 
+         */
+        virtual void setMirrored(bool mirrored) = 0;
+        /**
+         * @brief Get whether the position is mirrored over the y-axis
+         * 
+         * @return bool
+         */
+        virtual bool getMirrored() = 0;
+
+        /**
          * @brief Get the x position of the robot
          */
         virtual double getX() = 0;
@@ -68,6 +81,17 @@ namespace lib15442c
     
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
+    struct TrackerIMU
+    {
+        std::shared_ptr<pros::IMU> imu;
+        double scale;
+    };
+    struct TrackerWheel
+    {
+        std::shared_ptr<pros::Rotation> tracker;
+        double offset;
+    };
+
     class TrackerOdom : public virtual IOdometry
     {
     private:
@@ -81,6 +105,7 @@ namespace lib15442c
         double tracker_circumfrance;
         double perpendicular_tracker_offset;
         double parallel_tracker_offset;
+        bool mirrored;
 
         // Inertial 2
         std::shared_ptr<pros::v5::IMU> inertial_2;
@@ -99,18 +124,21 @@ namespace lib15442c
 
     public:
         TrackerOdom(
-            std::shared_ptr<pros::Rotation> parallel_tracker,
-            std::shared_ptr<pros::Rotation> perpendicular_tracker,
-            std::shared_ptr<pros::IMU> inertial, double inertial_scale,
-            double tracker_circumfrance, double perpendicular_tracker_offset, double parallel_tracker_offset,
-            std::shared_ptr<pros::IMU> inertial_2 = NULL, double inertial_scale_2 = 0) :
-
-                                                                                         parallel_tracker(parallel_tracker), perpendicular_tracker(perpendicular_tracker),
-                                                                                         inertial(inertial), inertial_scale(inertial_scale), tracker_circumfrance(tracker_circumfrance),
-                                                                                         perpendicular_tracker_offset(perpendicular_tracker_offset), parallel_tracker_offset(parallel_tracker_offset),
-                                                                                         inertial_2(inertial_2), inertial_scale_2(inertial_scale_2){};
+            TrackerWheel parallel_tracker,
+            TrackerWheel perpendicular_tracker,
+            double tracker_circumfrance,
+            bool mirrored,
+            TrackerIMU inertial,
+            TrackerIMU inertial_2 = { .imu = NULL, .scale = 0}) :
+                 parallel_tracker(parallel_tracker.tracker), perpendicular_tracker(perpendicular_tracker.tracker),
+                 inertial(inertial.imu), inertial_scale(inertial.scale), tracker_circumfrance(tracker_circumfrance),
+                 parallel_tracker_offset(parallel_tracker.offset), perpendicular_tracker_offset(perpendicular_tracker.offset), 
+                 mirrored(mirrored), inertial_2(inertial_2.imu), inertial_scale_2(inertial_2.scale){};
 
         ~TrackerOdom();
+
+        void setMirrored(bool mirrored);
+        bool getMirrored();
 
         double getX();
         double getY();
@@ -140,11 +168,15 @@ namespace lib15442c
         pros::GPS gps;
 
         double rotation_offset;
+        bool mirrored;
 
         static constexpr double inches_per_meter = 39.3701;
 
     public:
-        GPSOdom(int port, double x_offset, double y_offset, double rotation_offset);
+        GPSOdom(int port, double x_offset, double y_offset, double rotation_offset = 0, bool mirrored = false);
+
+        void setMirrored(bool mirrored);
+        bool getMirrored();
 
         double getX();
         double getY();

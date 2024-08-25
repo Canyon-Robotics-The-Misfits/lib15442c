@@ -13,6 +13,22 @@ lib15442c::TrackerOdom::~TrackerOdom() {
     stopTask();
 }
 
+void lib15442c::TrackerOdom::setMirrored(bool mirrored)
+{
+    position_mutex.lock();
+    this->mirrored = mirrored;
+    position_mutex.unlock();
+}
+
+bool lib15442c::TrackerOdom::getMirrored()
+{
+    position_mutex.lock();
+    bool temp = mirrored;
+    position_mutex.unlock();
+
+    return temp;
+}
+
 void lib15442c::TrackerOdom::setX(double val)
 {
     position_mutex.lock();
@@ -32,7 +48,7 @@ double lib15442c::TrackerOdom::getX()
     position_mutex.lock();
     double temp = position.x;
     position_mutex.unlock();
-
+    
     return temp;
 }
 
@@ -81,7 +97,7 @@ lib15442c::Angle lib15442c::TrackerOdom::getRotation()
     }
     position_mutex.unlock();
 
-    return Angle::from_deg((imu_1 + imu_2) / 2.0);
+    return Angle::from_deg((imu_1 + imu_2) / 2.0 * (getMirrored() ? -1 : 1));
 }
 
 void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)
@@ -201,9 +217,22 @@ void lib15442c::TrackerOdom::stopTask() {
 
 // GPS odom
 
-lib15442c::GPSOdom::GPSOdom(int port, double x_offset, double y_offset, double rotation_offset): gps(pros::GPS(port)), rotation_offset(rotation_offset) {
+lib15442c::GPSOdom::GPSOdom(int port, double x_offset, double y_offset, double rotation_offset, bool mirrored)
+    : gps(pros::GPS(port)), rotation_offset(rotation_offset), mirrored(mirrored)
+{
     gps.set_offset(x_offset, y_offset);
 };
+
+
+void lib15442c::GPSOdom::setMirrored(bool mirrored)
+{
+    this->mirrored = mirrored;
+}
+
+bool lib15442c::GPSOdom::getMirrored()
+{
+    return mirrored;
+}
 
 void lib15442c::GPSOdom::setX(double val)
 {
@@ -217,28 +246,28 @@ void lib15442c::GPSOdom::setY(double val)
 
 double lib15442c::GPSOdom::getX()
 {
-    return gps.get_position().x * inches_per_meter + 72;
+    return getPosition().x;
 }
 
 double lib15442c::GPSOdom::getY()
 {
-    return gps.get_position().y * inches_per_meter + 72;
+    return getPosition().y;
 }
 
 lib15442c::Vec lib15442c::GPSOdom::getPosition()
 {
     auto gps_position = gps.get_position();
-    lib15442c::Vec position = Vec(gps_position.x + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter);
+    lib15442c::Vec position = Vec(gps_position.x * (mirrored ? -1 : 1) + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter);
 
     return position * inches_per_meter;
 }
 lib15442c::Pose lib15442c::GPSOdom::getPose()
 {
-    auto gps_position = gps.get_position();
+    auto gps_position = getPosition();
     Angle rotation = getRotation();
-    Pose position = posa(gps_position.x + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter, rotation);
+    Pose position = posa(gps_position.x, gps_position.y, rotation);
 
-    return position * inches_per_meter;
+    return position;
 }
 
 void lib15442c::GPSOdom::setPosition(lib15442c::Vec position)
@@ -248,7 +277,7 @@ void lib15442c::GPSOdom::setPosition(lib15442c::Vec position)
 
 lib15442c::Angle lib15442c::GPSOdom::getRotation()
 {
-    return Angle::from_deg(gps.get_heading() + rotation_offset);
+    return Angle::from_deg((gps.get_heading() + rotation_offset) * (getMirrored() ? -1 : 1));
 }
 
 void lib15442c::GPSOdom::setRotation(Angle rotation)
