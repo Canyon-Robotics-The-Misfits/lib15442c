@@ -11,8 +11,8 @@ namespace lib15442c
     {
     private:
         // Drivetrain Motors
-        std::shared_ptr<lib15442c::IMotor> left_motors;
-        std::shared_ptr<lib15442c::IMotor> right_motors;
+        std::shared_ptr<lib15442c::MotorGroup> left_motors;
+        std::shared_ptr<lib15442c::MotorGroup> right_motors;
 
         // Settings
         double track_width;
@@ -20,8 +20,8 @@ namespace lib15442c
 
     public:
         TankDrive(
-            std::shared_ptr<lib15442c::IMotor> left_motors,
-            std::shared_ptr<lib15442c::IMotor> right_motors,
+            std::shared_ptr<lib15442c::MotorGroup> left_motors,
+            std::shared_ptr<lib15442c::MotorGroup> right_motors,
             double wheel_diameter,
             double gear_ratio,
             double track_width
@@ -80,5 +80,14 @@ namespace lib15442c
          * @return The track width
          */
         double get_track_width();
+
+        /**
+         * @brief Check if the drivetrain motors are installed
+         * 
+         * @return bool
+         */
+        bool is_installed();
+        
+        std::vector<int> get_uninstalled_motors();
     };
 }

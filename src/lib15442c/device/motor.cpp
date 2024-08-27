@@ -12,7 +12,7 @@ using lib15442c::MotorGroup;
 Motor::Motor(MotorParameters parameters)
     : port(parameters.port), reversed(parameters.reversed), brake_mode(parameters.brake_mode), ratio(parameters.ratio)
 {
-    pros::c::motor_set_gearing(port, pros::E_MOTOR_GEAR_RED);
+    pros::c::motor_set_gearing(port, pros::E_MOTOR_GEAR_RED); // always set to red, modified to proper ratio in other funcs
     set_brake_mode(brake_mode);
 }
 
@@ -76,6 +76,16 @@ void Motor::set_ratio(double ratio)
 double Motor::get_ratio()
 {
     return ratio;
+}
+
+bool Motor::is_installed()
+{
+    return pros::c::motor_get_gearing(port) != pros::E_MOTOR_GEARSET_INVALID;
+}
+
+int Motor::get_port()
+{
+    return port;
 }
 
 
@@ -160,6 +170,35 @@ void MotorGroup::set_ratio(double ratio)
 double MotorGroup::get_ratio()
 {
     return motors[0]->get_ratio();
+}
+
+bool MotorGroup::is_installed()
+{
+    bool installed = true;
+
+    for (int i = 0; i < (int)motors.size(); i++) {
+        if (!motors[i]->is_installed()) 
+        {
+            installed = false;
+            break;
+        }
+    }
+
+    return installed;
+}
+
+std::vector<int> MotorGroup::get_uninstalled_motors()
+{
+    std::vector<int> uninstalled = std::vector<int>();
+
+    for (int i = 0; i < (int)motors.size(); i++) {
+        if (!motors[i]->is_installed()) 
+        {
+            uninstalled.push_back(motors[i]->get_port());
+        }
+    }
+
+    return uninstalled;
 }
 
 #endif

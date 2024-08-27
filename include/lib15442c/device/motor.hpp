@@ -30,6 +30,8 @@ namespace lib15442c
 
         virtual void set_ratio(double ratio) = 0;
         virtual double get_ratio() = 0;
+
+        virtual bool is_installed() = 0;
     };
 
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
@@ -69,10 +71,14 @@ namespace lib15442c
 
         void set_ratio(double ratio) override;
         double get_ratio() override;
+
+        bool is_installed();
+
+        int get_port();
     };
 
     class MotorGroup : public virtual IMotor {
-        std::vector<std::unique_ptr<IMotor>> motors;
+        std::vector<std::unique_ptr<Motor>> motors;
 
     public:
         MotorGroup(std::initializer_list<MotorParameters> parameters);
@@ -91,6 +97,9 @@ namespace lib15442c
 
         void set_ratio(double ratio);
         double get_ratio();
+
+        bool is_installed();
+        std::vector<int> get_uninstalled_motors();
     };
 
     #endif

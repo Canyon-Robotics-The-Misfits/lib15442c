@@ -61,6 +61,13 @@ namespace lib15442c
          * @return The track width
          */
         virtual double get_track_width() = 0;
+        
+        /**
+         * @brief Check if the drivetrain motors are installed
+         * 
+         * @return bool
+         */
+        bool is_installed();
     };
 
 }

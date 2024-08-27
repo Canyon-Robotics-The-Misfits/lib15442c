@@ -3,8 +3,8 @@
 #include <cmath>
 
 lib15442c::TankDrive::TankDrive(
-    std::shared_ptr<lib15442c::IMotor> left_motors,
-    std::shared_ptr<lib15442c::IMotor> right_motors,
+    std::shared_ptr<lib15442c::MotorGroup> left_motors,
+    std::shared_ptr<lib15442c::MotorGroup> right_motors,
     double wheel_diameter,
     double gear_ratio,
     double track_width) : left_motors(left_motors),
@@ -73,4 +73,19 @@ double lib15442c::TankDrive::max_temp() {
 
 double lib15442c::TankDrive::get_track_width() {
     return track_width;
+}
+
+bool lib15442c::TankDrive::is_installed()
+{
+    return left_motors->is_installed() && right_motors->is_installed();
+}
+
+std::vector<int> lib15442c::TankDrive::get_uninstalled_motors()
+{
+    auto left = left_motors->get_uninstalled_motors();
+    auto right = right_motors->get_uninstalled_motors();
+
+    left.insert( left.end(), right.begin(), right.end() );
+
+    return left;
 }
