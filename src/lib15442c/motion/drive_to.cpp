@@ -17,7 +17,7 @@ std::string lib15442c::Boomerang::getName()
     return name;
 }
 
-void lib15442c::Boomerang::initialize(Pose pose)
+void lib15442c::Boomerang::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
     drive_pid.reset();
     turn_pid.reset();
@@ -103,7 +103,7 @@ std::string lib15442c::DriveToAB::getName()
     return name;
 }
 
-void lib15442c::DriveToAB::initialize(Pose pose)
+void lib15442c::DriveToAB::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
     drive_pid.reset();
 }
@@ -166,7 +166,7 @@ std::string lib15442c::DriveToIntermediate::getName()
     return name;
 }
 
-void lib15442c::DriveToIntermediate::initialize(Pose pose)
+void lib15442c::DriveToIntermediate::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
     drive_pid.reset();
 }

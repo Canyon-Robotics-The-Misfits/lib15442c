@@ -80,7 +80,7 @@ namespace lib15442c
 
     public:
         Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params = {}, std::string name = "boomerang");
-        void initialize(Pose pose);
+        void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
@@ -147,7 +147,7 @@ namespace lib15442c
 
     public:
         DriveToAB(Pose target_pose, std::shared_ptr<PID> drive_pid, DriveToABParameters params = {}, std::string name = "drive to AB");
-        void initialize(Pose pose);
+        void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
@@ -215,7 +215,7 @@ namespace lib15442c
 
     public:
         DriveToIntermediate(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveToIntermediateParameters params = {}, std::string name = "Drive To Intermediate");
-        void initialize(Pose pose);
+        void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };

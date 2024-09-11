@@ -73,7 +73,7 @@ namespace lib15442c
 
     public:
         DriveStraight(double target_distance, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveParameters params = {}, std::string name = "drive");
-        void initialize(Pose pose);
+        void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };
@@ -167,7 +167,7 @@ namespace lib15442c
 
     public:
         Face(FaceTarget target_distance, std::shared_ptr<PID> pid, FaceParameters params = {}, std::string name = "face");
-        void initialize(Pose pose);
+        void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
     };

@@ -17,7 +17,7 @@ std::string lib15442c::Face::getName()
     return name;
 }
 
-void lib15442c::Face::initialize(Pose pose)
+void lib15442c::Face::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
     Angle target_angle = getTargetAngle(target, pose);
 

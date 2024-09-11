@@ -18,4 +18,7 @@
 #include "math/pose.hpp"
 #include "math/vector.hpp"
 
+#include "motion/drive_to.hpp"
+#include "motion/end_condition.hpp"
 #include "motion/motion.hpp"
+#include "motion/pid_motions.hpp"
