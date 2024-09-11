@@ -103,8 +103,8 @@ namespace lib15442c
         // Settings
         double inertial_scale;
         double tracker_circumfrance;
-        double perpendicular_tracker_offset;
         double parallel_tracker_offset;
+        double perpendicular_tracker_offset;
         bool mirrored;
 
         // Inertial 2

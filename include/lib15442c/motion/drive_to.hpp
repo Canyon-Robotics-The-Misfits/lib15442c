@@ -1,6 +1,7 @@
 #pragma once
 
 #include "motion.hpp"
+#include "end_condition.hpp"
 
 namespace lib15442c
 {
@@ -39,6 +40,11 @@ namespace lib15442c
          * @brief The minimum speed, defaults to the one set by the DriveController constructor
          */
         double min_speed = -1;
+
+        /**
+         * @brief An extra end condition for special cases
+         */
+        EndCondition end_condition = default_end_condition;
 
         /**
          * @brief Whether to use the chain exit condition instead of the normal one
@@ -115,6 +121,11 @@ namespace lib15442c
         double min_speed = -1;
 
         /**
+         * @brief An extra end condition for special cases
+         */
+        EndCondition end_condition = default_end_condition;
+
+        /**
          * @brief Whether to run asynchronously
          */
         bool async = false; 
@@ -175,6 +186,11 @@ namespace lib15442c
          * @brief The minimum speed, defaults to the one set by the DriveController constructor
          */
         double min_speed = -1;
+
+        /**
+         * @brief An extra end condition for special cases
+         */
+        EndCondition end_condition = default_end_condition;
 
         /**
          * @brief Whether to run asynchronously

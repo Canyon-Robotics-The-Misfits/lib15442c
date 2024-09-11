@@ -79,6 +79,12 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
         return MotionOutputExit{};
     }
 
+    if (params.end_condition(pose))
+    {
+        WARN("\"%s\" reached end condition!", name.c_str());
+        return MotionOutputExit{};
+    }
+
     double rot_speed = pid->calculateError(error.deg());
 
     // keep rot_speed between the min and max speeds

@@ -82,6 +82,12 @@ namespace lib15442c {
         
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);
+
+        bool operator==(const lib15442c::Angle& rhs);
+        bool operator<(const lib15442c::Angle& rhs);
+        bool operator>(const lib15442c::Angle& rhs);
+        bool operator<=(const lib15442c::Angle& rhs);
+        bool operator>=(const lib15442c::Angle& rhs);
     };
 
     inline namespace literals {

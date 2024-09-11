@@ -141,6 +141,12 @@ lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_s
         return MotionOutputExit{};
     }
 
+    if (params.end_condition(pose))
+    {
+        WARN("\"%s\" reached end condition!", name.c_str());
+        return MotionOutputExit{};
+    }
+
     return MotionOutputSpeeds{
         linear_output : linear_velocity,
         rotational_output : angular_velocity

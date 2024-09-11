@@ -88,6 +88,23 @@ void Angle::operator/=(const double& rhs) {
 }
 
 
+bool Angle::operator==(const Angle& rhs) {
+    return theta == rhs.theta;
+}
+bool Angle::operator>(const Angle& rhs) {
+    return this->operator-(rhs).theta > 0;
+}
+bool Angle::operator<(const Angle& rhs) {
+    return this->operator-(rhs).theta < 0;
+}
+bool Angle::operator>=(const Angle& rhs) {
+    return this->operator-(rhs).theta >= 0;
+}
+bool Angle::operator<=(const Angle& rhs) {
+    return this->operator-(rhs).theta <= 0;
+}
+
+
 Angle lib15442c::literals::operator ""_rad(long double value) {
     return Angle::from_rad(value);
 }

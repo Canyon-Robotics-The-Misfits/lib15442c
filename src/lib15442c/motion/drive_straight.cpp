@@ -72,6 +72,12 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         return MotionOutputExit{};
     }
 
+    if (params.end_condition(pose))
+    {
+        WARN("\"%s\" reached end condition!", name.c_str());
+        return MotionOutputExit{};
+    }
+
     return MotionOutputSpeeds{
         linear_output : speed,
         rotational_output : rot_speed,
