@@ -29,7 +29,7 @@ lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
     // Check which varient the target is, and find the target angle accordingly
     if (FacePointTarget *point_target = std::get_if<FacePointTarget>(&target))
     {
-        return pose.vec().angle_to(point_target->pos.vec()) + point_target->angle_offset;
+        return pose.vec().angle_to(point_target->pos) + point_target->angle_offset;
     }
     else
     {

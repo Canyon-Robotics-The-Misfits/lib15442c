@@ -140,7 +140,7 @@ namespace lib15442c
 
     struct FacePointTarget
     {
-        lib15442c::Pose pos;
+        lib15442c::Vec pos;
         lib15442c::Angle angle_offset;
     };
 
@@ -166,7 +166,7 @@ namespace lib15442c
         static Angle getTargetAngle(FaceTarget target, Pose pose);
 
     public:
-        Face(FaceTarget target_distance, std::shared_ptr<PID> pid, FaceParameters params = {}, std::string name = "face");
+        Face(FaceTarget target, std::shared_ptr<PID> pid, FaceParameters params = {}, std::string name = "face");
         void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
