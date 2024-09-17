@@ -90,6 +90,7 @@ namespace lib15442c
     {
         std::shared_ptr<pros::Rotation> tracker;
         double offset;
+        double diameter;
     };
 
     class TrackerOdom : public virtual IOdometry
@@ -102,9 +103,10 @@ namespace lib15442c
 
         // Settings
         double inertial_scale;
-        double tracker_circumfrance;
         double parallel_tracker_offset;
+        double parallel_tracker_circumfrance;
         double perpendicular_tracker_offset;
+        double perpendicular_tracker_circumfrance;
         bool mirrored;
 
         // Inertial 2
@@ -126,13 +128,13 @@ namespace lib15442c
         TrackerOdom(
             TrackerWheel parallel_tracker,
             TrackerWheel perpendicular_tracker,
-            double tracker_circumfrance,
             bool mirrored,
             TrackerIMU inertial,
             TrackerIMU inertial_2 = { .imu = NULL, .scale = 0}) :
                  parallel_tracker(parallel_tracker.tracker), perpendicular_tracker(perpendicular_tracker.tracker),
-                 inertial(inertial.imu), inertial_scale(inertial.scale), tracker_circumfrance(tracker_circumfrance),
-                 parallel_tracker_offset(parallel_tracker.offset), perpendicular_tracker_offset(perpendicular_tracker.offset), 
+                 inertial(inertial.imu), inertial_scale(inertial.scale),
+                 parallel_tracker_offset(parallel_tracker.offset), parallel_tracker_circumfrance(parallel_tracker.diameter * M_PI),
+                 perpendicular_tracker_offset(perpendicular_tracker.offset), perpendicular_tracker_circumfrance(perpendicular_tracker.diameter * M_PI),
                  mirrored(mirrored), inertial_2(inertial_2.imu), inertial_scale_2(inertial_2.scale){};
 
         ~TrackerOdom();

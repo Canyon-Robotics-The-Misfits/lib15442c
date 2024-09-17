@@ -129,7 +129,8 @@ void lib15442c::TrackerOdom::startTask()
         double offset_zero = 0;
         double last_angle = getRotation().rad();
 
-        double degrees_per_inch = tracker_circumfrance / 360 / 1.00771827217;
+        double degrees_per_inch_parallel = parallel_tracker_circumfrance / 360 / 1.00771827217;
+        double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360 / 1.00771827217;
         // double degrees_per_inch = tracker_circumfrance / 360;
 
         while (true)
@@ -154,13 +155,13 @@ void lib15442c::TrackerOdom::startTask()
                 double angle = getRotation().rad();
 
                 // Modify the horizontal encoder to compensate for turning
-                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset / degrees_per_inch;
-                parallel -= (angle - offset_zero) * parallel_tracker_offset / degrees_per_inch;
+                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset / degrees_per_inch_perpendicular;
+                parallel -= (angle - offset_zero) * parallel_tracker_offset / degrees_per_inch_parallel;
 
                 // Calculate the change in the horizontal and vertical encoder
                 double deltaTheta = angle - last_angle;
-                double deltaParallel = (parallel - last_parallel) * degrees_per_inch;
-                double deltaPerpendicular = (perpendicular - last_perpendicular) * degrees_per_inch;
+                double deltaParallel = (parallel - last_parallel) * degrees_per_inch_parallel;
+                double deltaPerpendicular = (perpendicular - last_perpendicular) * degrees_per_inch_perpendicular;
 
                 position_mutex.lock();
 
