@@ -78,7 +78,7 @@ lib15442c::Pose lib15442c::TrackerOdom::getPose()
     position_mutex.unlock();
     Angle rotation = getRotation();
 
-    return posa(temp.x, temp.y, rotation);
+    return pose(temp.x, temp.y, rotation);
 }
 
 void lib15442c::TrackerOdom::setPosition(lib15442c::Vec position)
@@ -278,7 +278,7 @@ lib15442c::Pose lib15442c::GPSOdom::getPose()
 {
     auto gps_position = getPosition();
     Angle rotation = getRotation();
-    Pose position = posa(gps_position.x, gps_position.y, rotation);
+    Pose position = pose(gps_position.x, gps_position.y, rotation);
 
     return position;
 }
