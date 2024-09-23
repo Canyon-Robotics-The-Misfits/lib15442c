@@ -45,15 +45,15 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     }
 
     bool above_approach_line = pose.y > tan(target_pose.angle.rad()) * (pose.x - target_pose.x) + target_pose.y;
-    if (params.chained && fabs(error) < params.chain_threshold && initial_above_approach_line != above_approach_line)
+    if (params.chained && abs(error) < params.chain_threshold && initial_above_approach_line != above_approach_line)
     {
         return MotionOutputExit{};
     }
-    else if (params.chained && fabs(error) < params.threshold)
+    else if (params.chained && abs(error) < params.threshold)
     {
         return MotionOutputExit{};
     }
-    else if (!params.chained && fabs(error) < params.threshold)
+    else if (!params.chained && abs(error) < params.threshold)
     {
         return MotionOutputExit{};
     }
@@ -117,7 +117,7 @@ lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_s
 
     Angle alpha = Angle::from_rad(atan2(target_pose.y - pose.y, target_pose.x - pose.x) - robot_angle.rad());
 
-    Angle beta = target_pose.angle - robot_angle - alpha;
+    Angle beta = (target_pose.angle + (params.backwards ? 180_deg : 0_deg)) - robot_angle - alpha;
 
     float angular_velocity = params.kp_alpha * alpha.rad() - params.kp_beta * beta.rad();
 
@@ -169,6 +169,7 @@ std::string lib15442c::DriveToIntermediate::getName()
 void lib15442c::DriveToIntermediate::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
     drive_pid->reset_pid();
+    turn_pid->reset_pid();
 }
 
 lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, double time_since_start, double delta_time)
@@ -189,7 +190,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
     }
 
     Angle turnError;
-    if (fabs(alpha.deg()) < fabs(beta.deg()))
+    if (abs(alpha.deg()) < abs(beta.deg()))
     {
         turnError = errorTerm1 + alpha;
     }
@@ -204,7 +205,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
         turnError = target_pose.angle - pose.angle;
     }
 
-    float linear_velocity = drive_pid->calculateError(distance);
+    float linear_velocity = drive_pid->calculateError(distance) * (params.backwards ? -1 : 1);
     float angular_velocity = turn_pid->calculateError(turnError.deg());
 
     if (abs(linear_velocity) > params.max_speed)
