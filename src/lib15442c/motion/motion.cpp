@@ -24,7 +24,9 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     int start_time = pros::millis();
     int last_time = pros::millis();
 
-    while (true) {
+    auto start_status = pros::competition::get_status();
+
+    while (pros::competition::get_status() == start_status) {
         async_mutex.lock();
         if (!is_running) {
             break;

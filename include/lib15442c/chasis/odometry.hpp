@@ -130,7 +130,7 @@ namespace lib15442c
             TrackerWheel perpendicular_tracker,
             bool mirrored,
             TrackerIMU inertial,
-            TrackerIMU inertial_2 = { .imu = NULL, .scale = 0}) :
+            TrackerIMU inertial_2 = { .imu = std::make_shared<pros::IMU>(22), .scale = 0}) :
                  parallel_tracker(parallel_tracker.tracker), perpendicular_tracker(perpendicular_tracker.tracker),
                  inertial(inertial.imu), inertial_scale(inertial.scale),
                  parallel_tracker_offset(parallel_tracker.offset), parallel_tracker_circumfrance(parallel_tracker.diameter * M_PI),

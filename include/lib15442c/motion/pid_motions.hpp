@@ -34,9 +34,9 @@ namespace lib15442c
          */
         double max_speed = 127;
         /**
-         * @brief The minimum speed, defaults to the one set by the DriveController constructor
+         * @brief The minimum speed
          */
-        double min_speed = -1;
+        double min_speed = 17;
 
         /**
          * @brief An extra end condition for special cases

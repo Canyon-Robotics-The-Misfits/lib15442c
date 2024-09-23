@@ -67,6 +67,8 @@ lib15442c::Vec lib15442c::TrackerOdom::getPosition()
     Vec temp = position;
     position_mutex.unlock();
 
+    // std::cout << inertial->get_rotation() * inertial_scale << ", " << parallel_tracker->get_position() / 100.0 * parallel_tracker_circumfrance / 360 / 1.00771827217 << ", " << perpendicular_tracker->get_position() / 100.0 * perpendicular_tracker_circumfrance / 360 / 1.00771827217 << std::endl;
+
     return temp;
 }
 lib15442c::Pose lib15442c::TrackerOdom::getPose()
@@ -92,7 +94,7 @@ lib15442c::Angle lib15442c::TrackerOdom::getRotation()
     double imu_1 = inertial->get_rotation() * inertial_scale;
     double imu_2 = imu_1;
 
-    if (inertial_scale_2 != 0) {
+    if (inertial_2->is_installed()) {
         imu_2 = inertial_2->get_rotation() * inertial_scale_2;
     }
     position_mutex.unlock();
@@ -113,6 +115,10 @@ void lib15442c::TrackerOdom::startTask()
 {
 
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
+
+    parallel_tracker->set_position(0);
+    perpendicular_tracker->set_position(0);
+
     task = pros::Task([this]
                                {
         inertial->tare();
@@ -154,9 +160,15 @@ void lib15442c::TrackerOdom::startTask()
                 // Get the current robot rotation
                 double angle = getRotation().rad();
 
+                if (std::isnan(angle))
+                {
+                    last_angle = 0;
+                    continue;
+                }
+
                 // Modify the horizontal encoder to compensate for turning
-                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset / degrees_per_inch_perpendicular;
-                parallel -= (angle - offset_zero) * parallel_tracker_offset / degrees_per_inch_parallel;
+                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset;
+                parallel -= (angle - offset_zero) * parallel_tracker_offset;
 
                 // Calculate the change in the horizontal and vertical encoder
                 double deltaTheta = angle - last_angle;
@@ -192,7 +204,7 @@ void lib15442c::TrackerOdom::startTask()
 
                 // Log position in terminal
                 // if (tickTimer % 10 == 0)
-                //     std::cout << position.x << ", " << position.y << std::endl;
+                //     std::cout << angle << ", " << position.x << ", " << position.y << std::endl;
 
                 position_mutex.unlock(); // unlock the mutex
 

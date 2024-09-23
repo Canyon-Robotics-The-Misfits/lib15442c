@@ -41,6 +41,8 @@ double lib15442c::PID::calculateError(double error) {
         output = last_output + slew_rate * lib15442c::sgn(output - last_output);
     }
 
+    last_output = output;
+
     return output;
 }
 

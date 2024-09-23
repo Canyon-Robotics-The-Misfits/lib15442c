@@ -90,8 +90,6 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     // keep rot_speed between the min and max speeds
     rot_speed = std::clamp(fabs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);
 
-    // std::cout << time_since_start << ", " << error.deg() << ", " << rot_speed << std::endl;
-
     return MotionOutputSpeeds{
         linear_output : 0,
         rotational_output : rot_speed,

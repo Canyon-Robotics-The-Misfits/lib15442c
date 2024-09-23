@@ -19,8 +19,8 @@ std::string lib15442c::DriveStraight::getName()
 
 void lib15442c::DriveStraight::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
-    drive_pid.reset();
-    turn_pid.reset();
+    drive_pid->reset();
+    turn_pid->reset();
 
     time_correct = 0;
     starting_position = pose;
@@ -66,7 +66,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         }
     }
 
-    if (time_since_start >= params.threshold)
+    if (time_since_start >= params.timeout)
     {
         WARN("\"%s\" timed out!", name.c_str());
         return MotionOutputExit{};

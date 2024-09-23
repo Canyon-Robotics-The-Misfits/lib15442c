@@ -100,7 +100,7 @@ namespace lib15442c
          * @param distance The distance to drive (inches)
          * @param parameters Any extra parameters
          */
-        std::shared_ptr<DriveStraight> drive(double distance, DriveParameters parameters = {}, std::string name = "drive");
+        std::shared_ptr<lib15442c::DriveStraight> drive(double distance, DriveParameters parameters = {}, std::string name = "drive");
 
         /**
          * @brief Drive for a set amount of time
