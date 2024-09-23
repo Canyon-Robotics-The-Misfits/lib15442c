@@ -2,14 +2,48 @@
 #include "lib15442c/math/vector.hpp"
 #include "lib15442c/math/pose.hpp"
 #include "lib15442c/math/angle.hpp"
+#include "lib15442c/logger.hpp"
 
 #include <cmath>
 
-// Tracker Odom
+#define LOGGER "odometry.cpp"
 
 #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
-lib15442c::TrackerOdom::~TrackerOdom() {
+lib15442c::TrackerOdom::TrackerOdom(
+    TrackerWheel parallel_tracker,
+    TrackerWheel perpendicular_tracker,
+    bool mirrored,
+    TrackerIMU inertial,
+    TrackerIMU inertial_2) : parallel_tracker(parallel_tracker.tracker), perpendicular_tracker(perpendicular_tracker.tracker),
+                             inertial(inertial.imu), inertial_scale(inertial.scale),
+                             parallel_tracker_offset(parallel_tracker.offset), parallel_tracker_circumfrance(parallel_tracker.diameter * M_PI),
+                             perpendicular_tracker_offset(perpendicular_tracker.offset), perpendicular_tracker_circumfrance(perpendicular_tracker.diameter * M_PI),
+                             mirrored(mirrored), inertial_2(inertial_2.imu), inertial_scale_2(inertial_2.scale)
+{
+    if (!this->parallel_tracker->is_installed())
+    {
+        ERROR("Parallel Tracker is not detected on port %d!", this->parallel_tracker->get_port());
+    }
+    if (!this->perpendicular_tracker->is_installed())
+    {
+        ERROR("Perpendicular Tracker is not detected on port %d!", this->perpendicular_tracker->get_port());
+    }
+    if (!this->inertial->is_installed())
+    {
+        ERROR("IMU is not detected on port %d!", this->inertial->get_port());
+    }
+    if (this->inertial_2->get_port() != 22 && !this->inertial_2->is_installed())
+    {
+        ERROR("IMU 2 is not detected on port %d!", this->inertial_2->get_port());
+    }
+
+    this->parallel_tracker->reset_position();
+    this->perpendicular_tracker->reset_position();
+}
+
+lib15442c::TrackerOdom::~TrackerOdom()
+{
     stopTask();
 }
 
@@ -48,7 +82,7 @@ double lib15442c::TrackerOdom::getX()
     position_mutex.lock();
     double temp = position.x;
     position_mutex.unlock();
-    
+
     return temp;
 }
 
@@ -94,7 +128,8 @@ lib15442c::Angle lib15442c::TrackerOdom::getRotation()
     double imu_1 = inertial->get_rotation() * inertial_scale;
     double imu_2 = imu_1;
 
-    if (inertial_2->is_installed()) {
+    if (inertial_2->is_installed())
+    {
         imu_2 = inertial_2->get_rotation() * inertial_scale_2;
     }
     position_mutex.unlock();
@@ -114,13 +149,10 @@ void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)
 void lib15442c::TrackerOdom::startTask()
 {
 
-    #ifndef LIB15442C_MOCK_DEVICES_ONLY
-
-    parallel_tracker->set_position(0);
-    perpendicular_tracker->set_position(0);
+#ifndef LIB15442C_MOCK_DEVICES_ONLY
 
     task = pros::Task([this]
-                               {
+                      {
         inertial->tare();
         if (inertial_scale_2 != 0) {
             inertial_2->tare();
@@ -220,10 +252,11 @@ void lib15442c::TrackerOdom::startTask()
             time += 10;
             tickTimer++;
         } });
-    #endif
+#endif
 }
 
-void lib15442c::TrackerOdom::stopTask() {
+void lib15442c::TrackerOdom::stopTask()
+{
     task.notify();
     task.join();
 }
@@ -235,7 +268,6 @@ lib15442c::GPSOdom::GPSOdom(int port, double x_offset, double y_offset, double r
 {
     gps.set_offset(x_offset, y_offset);
 };
-
 
 void lib15442c::GPSOdom::setMirrored(bool mirrored)
 {
