@@ -46,6 +46,10 @@ namespace lib15442c {
          */
         bool isRunning();
         /**
+         * @brief Block until the motion ends
+         */
+        void await();
+        /**
          * @brief Stop the motion if it is currently running
          * 
          */

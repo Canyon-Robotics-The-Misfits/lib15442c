@@ -73,6 +73,15 @@ bool lib15442c::IMotion::isRunning() {
     return temp;
 }
 
+void lib15442c::IMotion::await()
+{
+    auto inital_status = pros::competition::get_status();
+    while (isRunning() && pros::competition::get_status() == inital_status)
+    {
+        pros::delay(10);
+    }
+}
+
 void lib15442c::IMotion::stop() {
     async_mutex.lock();
     is_running = false;

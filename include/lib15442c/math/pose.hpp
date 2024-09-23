@@ -68,5 +68,5 @@ namespace lib15442c
     };
 
     #define pos(x, y) lib15442c::Pose(x, y, lib15442c::Angle::none())
-    #define posa(x, y, theta) lib15442c::Pose(x, y, theta)
+    #define pose(x, y, theta) lib15442c::Pose(x, y, theta)
 }
