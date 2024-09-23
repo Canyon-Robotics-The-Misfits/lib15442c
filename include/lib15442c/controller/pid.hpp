@@ -90,6 +90,6 @@ namespace lib15442c
         /**
          * @brief Reset the PID total_error and last_error
          */
-        void reset();
+        void reset_pid();
     };
 } // namespace lib15442c

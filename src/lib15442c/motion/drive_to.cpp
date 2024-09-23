@@ -19,8 +19,8 @@ std::string lib15442c::Boomerang::getName()
 
 void lib15442c::Boomerang::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
-    drive_pid.reset();
-    turn_pid.reset();
+    drive_pid->reset_pid();
+    turn_pid->reset_pid();
 
     initial_above_approach_line = pose.y > tan(target_pose.angle.rad()) * (pose.x - target_pose.x) + target_pose.y;
 }
@@ -105,7 +105,7 @@ std::string lib15442c::DriveToAB::getName()
 
 void lib15442c::DriveToAB::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
-    drive_pid.reset();
+    drive_pid->reset_pid();
 }
 
 lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_since_start, double delta_time)
@@ -168,7 +168,7 @@ std::string lib15442c::DriveToIntermediate::getName()
 
 void lib15442c::DriveToIntermediate::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
-    drive_pid.reset();
+    drive_pid->reset_pid();
 }
 
 lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, double time_since_start, double delta_time)

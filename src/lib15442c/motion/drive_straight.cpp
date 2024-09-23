@@ -19,8 +19,8 @@ std::string lib15442c::DriveStraight::getName()
 
 void lib15442c::DriveStraight::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose)
 {
-    drive_pid->reset();
-    turn_pid->reset();
+    drive_pid->reset_pid();
+    turn_pid->reset_pid();
 
     time_correct = 0;
     starting_position = pose;

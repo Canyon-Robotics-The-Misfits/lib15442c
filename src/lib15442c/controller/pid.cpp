@@ -46,7 +46,7 @@ double lib15442c::PID::calculateError(double error) {
     return output;
 }
 
-void lib15442c::PID::reset() {
+void lib15442c::PID::reset_pid() {
     total_error = 0;
     last_error = INFINITY;
 }

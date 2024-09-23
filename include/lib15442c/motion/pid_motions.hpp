@@ -27,7 +27,7 @@ namespace lib15442c
         /**
          * @brief The timeout in case the move takes too long (ms)
          */
-        double timeout = 1000;
+        double timeout = 1500;
 
         /**
          * @brief The maximum speed
