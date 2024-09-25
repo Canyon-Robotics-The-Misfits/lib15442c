@@ -51,7 +51,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
             break;
         }
 
-        pros::delay(10);
+        pros::delay(20);
     }
 
     if (!isAsync()) {

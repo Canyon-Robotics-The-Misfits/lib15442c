@@ -33,10 +33,15 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
 
     double speed = drive_pid->calculateError(error);
 
-    // skeep speed between the min and max speed
-    speed = std::clamp(fabs(speed), params.min_speed, params.max_speed) * lib15442c::sgn(speed);
+    // keep speed between the min and max speed
+    speed = std::clamp(fabs(speed), params.min_speed, params.max_speed) * lib15442c::sgn(error);
 
     // Angle correction to drive straight
+    if (params.angle.is_none())
+    {
+        params.angle = pose.angle;
+    }
+
     Angle angle_error = params.angle.error_from(pose.angle);
     double rot_speed = turn_pid->calculateError(angle_error.deg());
 
@@ -77,6 +82,8 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         WARN("\"%s\" reached end condition!", name.c_str());
         return MotionOutputExit{};
     }
+
+    // std::cout << time_since_start << ", " << error << ", " << speed << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : speed,

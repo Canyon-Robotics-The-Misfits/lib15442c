@@ -18,7 +18,7 @@ namespace lib15442c
         /**
          * @brief The threshold which error must be in to end
          */
-        double threshold = 0.1;
+        double threshold = 0.5;
         /**
          * @brief The time the error needs to be within the threshold for in order to exit
          */
@@ -36,7 +36,7 @@ namespace lib15442c
         /**
          * @brief The minimum speed
          */
-        double min_speed = 17;
+        double min_speed = 8;
 
         /**
          * @brief An extra end condition for special cases
