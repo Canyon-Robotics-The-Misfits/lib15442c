@@ -7,11 +7,26 @@ double Vec::magnitude() {
     return sqrt(x * x + y * y);
 }
 lib15442c::Angle Vec::angle() {
-    return Angle::from_rad(atan2(y, x));
+    return Angle::from_rad(atan2(y, x) + ((x > 0) ? M_PI : 0));
 }
 
 lib15442c::Angle Vec::angle_to(Vec vector) {
-    return Angle::from_rad(atan((vector.y - y) / (vector.x - x)));
+    if (x != vector.x)
+    {
+        return Angle::from_rad(atan((vector.y - y) / (vector.x - x)) + ((x > vector.x) ? M_PI : 0.0));
+    }
+    else if (vector.y > y)
+    {
+        return Angle::from_rad(M_PI/2.0);
+    }
+    else if (vector.y < y)
+    {
+        return Angle::from_deg(-M_PI/2.0);
+    }
+    else
+    {
+        return Angle::none();
+    }
 }
 
 double Vec::distance_to(Vec vector) {

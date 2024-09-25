@@ -28,19 +28,19 @@ double Angle::rad() {
     return wrap(theta);
 }
 double Angle::deg() {
-    return wrap(-(theta - M_PI / 2.0)) * 180.0 / M_PI ;
+    return -(wrap(theta - (M_PI / 2.0)) * 180.0 / M_PI);
 }
 
 Angle Angle::error_from(Angle target) {
-    double a = deg();
-    double b = target.deg();
+    double a = rad();
+    double b = target.rad();
 
     double error = b - a;
     
-    if (fabs(error) > 180)
-        error -= sgn(error) * 360;
+    if (fabs(error) > M_PI)
+        error -= sgn(error) * 2.0 * M_PI;
 
-    return Angle::from_deg(error);
+    return Angle::from_rad(error);
 }
 
 Angle Angle::operator+(const Angle& rhs) {

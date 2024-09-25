@@ -5,7 +5,7 @@
 #define LOGGER "drive_to.cpp"
 
 lib15442c::Boomerang::Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params, std::string name)
-    : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name){};
+    : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
 bool lib15442c::Boomerang::isAsync()
 {
@@ -77,7 +77,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     }
 
     Angle angle_error = pose.angle.error_from(target_angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg()); // TODO: check if removed - breaks anything
+    double rot_speed = turn_pid->calculateError(angle_error.deg());
 
     if (abs(rot_speed) > 127)
     {
@@ -99,7 +99,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 }
 
 lib15442c::DriveToAB::DriveToAB(Pose target_pose, std::shared_ptr<PID> drive_pid, DriveToABParameters params, std::string name)
-    : target_pose(target_pose), drive_pid(drive_pid), params(params), name(name){};
+    : target_pose(target_pose), drive_pid(drive_pid), params(params), name(name) {};
 
 bool lib15442c::DriveToAB::isAsync()
 {
@@ -162,7 +162,7 @@ lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_s
 }
 
 lib15442c::DriveToIntermediate::DriveToIntermediate(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveToIntermediateParameters params, std::string name)
-    : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name){};
+    : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
 bool lib15442c::DriveToIntermediate::isAsync()
 {
