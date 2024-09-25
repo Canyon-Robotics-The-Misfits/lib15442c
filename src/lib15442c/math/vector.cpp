@@ -11,7 +11,7 @@ lib15442c::Angle Vec::angle() {
 }
 
 lib15442c::Angle Vec::angle_to(Vec vector) {
-    return Angle::from_rad(atan2(vector.y - y, vector.x - x) + ((vector.y - y < 0) ? 180 : 0));
+    return Angle::from_rad(atan((vector.y - y) / (vector.x - x)));
 }
 
 double Vec::distance_to(Vec vector) {

@@ -49,7 +49,7 @@ std::shared_ptr<lib15442c::Face> lib15442c::DriveController::face(FaceTarget fac
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    // movement->initialize(drivetrain, odometry->getPose());
     movement->execute(drivetrain, odometry);
 
     return movement;

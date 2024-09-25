@@ -190,7 +190,7 @@ void lib15442c::TrackerOdom::startTask()
                 double perpendicular = perpendicular_tracker->get_position() / 100.0;
 
                 // Get the current robot rotation
-                double angle = getRotation().rad();
+                double angle = getRotation().rad() - M_PI / 2.0;
 
                 if (std::isnan(angle))
                 {
@@ -213,9 +213,9 @@ void lib15442c::TrackerOdom::startTask()
                 {
                     position += Vec(
                         cos(angle) * deltaParallel +
-                            cos(angle + M_PI/2) * deltaPerpendicular,
+                            cos(angle) * deltaPerpendicular,
                         sin(angle) * deltaParallel +
-                            sin(angle + M_PI/2) * deltaPerpendicular);
+                            sin(angle) * deltaPerpendicular);
                 }
                 else
                 {
@@ -223,10 +223,10 @@ void lib15442c::TrackerOdom::startTask()
                     double radiusPerpendicular = deltaPerpendicular / deltaTheta;
 
                     double delta_x = (cos(angle) - cos(last_angle)) * radiusParallel;
-                    delta_x += (cos(angle + M_PI/2) - cos(last_angle + M_PI/2)) * radiusPerpendicular;
+                    delta_x += (cos(angle) - cos(last_angle)) * radiusPerpendicular;
 
                     double delta_y = (sin(angle) - sin(last_angle)) * radiusParallel;
-                    delta_y += (sin(angle + M_PI/2) - sin(last_angle + M_PI/2)) * radiusPerpendicular;
+                    delta_y += (sin(angle) - sin(last_angle)) * radiusPerpendicular;
 
                     position += Vec(
                         delta_x,
@@ -236,7 +236,7 @@ void lib15442c::TrackerOdom::startTask()
 
                 // Log position in terminal
                 // if (tickTimer % 10 == 0)
-                //     std::cout << angle << ", " << position.x << ", " << position.y << std::endl;
+                //     std::cout << position.x << ", " << position.y << std::endl;
 
                 position_mutex.unlock(); // unlock the mutex
 

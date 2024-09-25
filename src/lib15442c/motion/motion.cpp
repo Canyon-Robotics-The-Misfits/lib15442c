@@ -26,6 +26,8 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
 
     auto start_status = pros::competition::get_status();
 
+    // initialize(drivetrain, odometry->getPose());
+
     while (pros::competition::get_status() == start_status) {
         async_mutex.lock();
         if (!is_running) {

@@ -30,7 +30,7 @@ Vec Pose::vec() {
 
 void Pose::operator=(const Pose& rhs) {
     x = rhs.x;
-    y = rhs.x;
+    y = rhs.y;
     angle = rhs.angle;
 }
 

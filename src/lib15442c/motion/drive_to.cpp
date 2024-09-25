@@ -83,6 +83,14 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     {
         rot_speed = 127 * lib15442c::sgn(rot_speed);
     }
+    rot_speed = std::min(fabs(rot_speed), fabs(drive_speed) * 0.6) * lib15442c::sgn(rot_speed);
+
+    // if (angle_error.deg() != 0 /*&& turn_priority != -1*/)
+    // {
+    //     drive_speed *= fmax(fmin(fabs(15 / std::abs(angle_error.deg())), 1), 0);
+    // }
+
+    std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : drive_speed,
@@ -227,6 +235,8 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
     {
         return MotionOutputExit{};
     }
+
+    std::cout << time_since_start << "," << distance << "," << linear_velocity << "," << angular_velocity << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : linear_velocity,

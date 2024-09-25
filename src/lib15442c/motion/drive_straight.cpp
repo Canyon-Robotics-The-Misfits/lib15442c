@@ -23,11 +23,16 @@ void lib15442c::DriveStraight::initialize(std::shared_ptr<IDrivetrain> drivetrai
     turn_pid->reset_pid();
 
     time_correct = 0;
-    starting_position = pose;
+    starting_position = lib15442c::Pose::none();
 }
 
 lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double time_since_start, double delta_time)
 {
+    if (starting_position.is_none())
+    {
+        starting_position = pose;
+    }
+
     double distance_traveled = starting_position.vec().distance_to(pose.vec());
     double error = target_distance - (distance_traveled * lib15442c::sgn(target_distance));
 
@@ -83,7 +88,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         return MotionOutputExit{};
     }
 
-    // std::cout << time_since_start << ", " << error << ", " << speed << std::endl;
+    // std::cout << time_since_start << ", " << error << ", " << speed << ", " << starting_position.y << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : speed,
