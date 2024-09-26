@@ -48,7 +48,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
     }
 
     Angle angle_error = pose.angle.error_from(params.angle);
-    double rot_speed = turn_pid->calculateError(angle_error.rad() * 180.0 / M_PI);
+    double rot_speed = turn_pid->calculateError(angle_error.deg_raw());
 
     if (params.chained)
     {

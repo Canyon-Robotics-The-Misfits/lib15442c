@@ -77,7 +77,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     }
 
     Angle angle_error = pose.angle.error_from(target_angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg());
+    double rot_speed = turn_pid->calculateError(angle_error.deg()); // TODO: find out why this isn't .deg_raw()
 
     if (abs(rot_speed) > 127)
     {

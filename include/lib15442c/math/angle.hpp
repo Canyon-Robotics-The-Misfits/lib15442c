@@ -48,6 +48,12 @@ namespace lib15442c {
          * @return double The angle
          */
         double deg();
+        /**
+         * @brief Return the value of the angle in degrees without modifying the 0 position or positive direction. This is usefull if the angle is a change in angle, not a global angle
+         * 
+         * @return double The angle
+         */
+        double deg_raw();
 
         /**
          * @brief Whether the angle is non-existant

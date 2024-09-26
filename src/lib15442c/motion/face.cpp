@@ -45,12 +45,12 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     // Calculate target angle if facing a point
     Angle target_angle = getTargetAngle(target, pose);
 
-    double error = pose.angle.error_from(target_angle).rad() * 180 / M_PI;
+    double error = pose.angle.error_from(target_angle).deg_raw();
 
     if (params.chained)
     {
         // if the error crossed 0 (passed target angle) or is within the threshold exit
-        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.rad() * 180.0 / M_PI))
+        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.deg_raw()))
         {
             return MotionOutputExit{};
         }
@@ -58,7 +58,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     else
     {
         // Must be within the threshold for `params.threshold_time` ms to exit
-        if (fabs(error) < params.threshold.deg())
+        if (fabs(error) < params.threshold.deg_raw())
         {
             time_correct += delta_time;
         }
@@ -88,7 +88,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     double rot_speed = pid->calculateError(-error);
 
     // keep rot_speed between the min and max speeds
-    rot_speed = std::clamp(fabs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);
+    rot_speed = std::clamp(abs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);
 
     return MotionOutputSpeeds{
         linear_output : 0,

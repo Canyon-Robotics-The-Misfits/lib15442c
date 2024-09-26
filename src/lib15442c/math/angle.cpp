@@ -30,6 +30,9 @@ double Angle::rad() {
 double Angle::deg() {
     return -(wrap(theta - (M_PI / 2.0)) * 180.0 / M_PI);
 }
+double Angle::deg_raw() {
+    return (wrap(theta) * 180.0 / M_PI);
+}
 
 Angle Angle::error_from(Angle target) {
     double a = rad();
