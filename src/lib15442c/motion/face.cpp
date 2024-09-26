@@ -21,7 +21,7 @@ void lib15442c::Face::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose p
 {
     Angle target_angle = getTargetAngle(target, pose);
 
-    initial_error = pose.angle.error_from(target_angle);
+    initial_error = pose.angle.error_from(target_angle).rad() * 180.0 / M_PI;
 }
 
 lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
@@ -45,12 +45,12 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     // Calculate target angle if facing a point
     Angle target_angle = getTargetAngle(target, pose);
 
-    Angle error = pose.angle.error_from(target_angle);
+    double error = pose.angle.error_from(target_angle).rad() * 180 / M_PI;
 
     if (params.chained)
     {
         // if the error crossed 0 (passed target angle) or is within the threshold exit
-        if (sgn(error.deg()) != sgn(initial_error.deg()) || fabs(error.deg() < params.threshold.deg()))
+        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.rad() * 180.0 / M_PI))
         {
             return MotionOutputExit{};
         }
@@ -58,7 +58,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     else
     {
         // Must be within the threshold for `params.threshold_time` ms to exit
-        if (fabs(error.deg()) < params.threshold.deg())
+        if (fabs(error) < params.threshold.deg())
         {
             time_correct += delta_time;
         }
@@ -85,7 +85,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
         return MotionOutputExit{};
     }
 
-    double rot_speed = pid->calculateError(-error.deg());
+    double rot_speed = pid->calculateError(-error);
 
     // keep rot_speed between the min and max speeds
     rot_speed = std::clamp(fabs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);

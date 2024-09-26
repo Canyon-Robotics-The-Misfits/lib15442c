@@ -47,8 +47,8 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         params.angle = pose.angle;
     }
 
-    Angle angle_error = params.angle.error_from(pose.angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg());
+    Angle angle_error = pose.angle.error_from(params.angle);
+    double rot_speed = turn_pid->calculateError(angle_error.rad() * 180.0 / M_PI);
 
     if (params.chained)
     {
@@ -88,7 +88,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
         return MotionOutputExit{};
     }
 
-    // std::cout << time_since_start << ", " << error << ", " << speed << ", " << starting_position.y << std::endl;
+    // std::cout << time_since_start << ", " << error << ", " << speed << ", " << pose.angle.rad() << ", " << params.angle.rad() << ", " << angle_error.rad() << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : speed,

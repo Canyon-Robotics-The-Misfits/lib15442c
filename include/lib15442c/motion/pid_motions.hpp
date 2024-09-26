@@ -159,7 +159,7 @@ namespace lib15442c
         FaceParameters params;
 
         double time_correct = 0;
-        Angle initial_error = Angle::none();
+        double initial_error = 0;
 
         std::string name;
 

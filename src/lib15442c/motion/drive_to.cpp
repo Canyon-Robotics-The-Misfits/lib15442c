@@ -83,7 +83,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     {
         rot_speed = 127 * lib15442c::sgn(rot_speed);
     }
-    rot_speed = std::min(fabs(rot_speed), fabs(drive_speed) * 0.6) * lib15442c::sgn(rot_speed);
+    // rot_speed = std::min(fabs(rot_speed), fabs(drive_speed) * 0.8) * lib15442c::sgn(rot_speed);
 
     // if (angle_error.deg() != 0 /*&& turn_priority != -1*/)
     // {

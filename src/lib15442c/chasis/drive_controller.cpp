@@ -49,7 +49,7 @@ std::shared_ptr<lib15442c::Face> lib15442c::DriveController::face(FaceTarget fac
         name
     );
 
-    // movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->getPose());
     movement->execute(drivetrain, odometry);
 
     return movement;
@@ -89,6 +89,11 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
 
     double start_time = pros::millis();
 
+    if (parameters.angle.is_none())
+    {
+        parameters.angle = odometry->getRotation();
+    }
+
     while (pros::millis() - start_time < time)
     {
         double current_time = pros::millis() - start_time;
@@ -120,7 +125,7 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
         double turn_speed = 0;
         if (!parameters.angle.is_none())
         {
-            turn_speed = turn_pid->calculateError(odometry->getRotation().error_from(parameters.angle).deg());
+            turn_speed = turn_pid->calculateError(odometry->getRotation().error_from(parameters.angle).rad() * 180.0 / M_PI);
         }
 
 
