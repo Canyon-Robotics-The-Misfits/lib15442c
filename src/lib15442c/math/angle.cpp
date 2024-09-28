@@ -31,7 +31,7 @@ double Angle::deg() {
     return -(wrap(theta - (M_PI / 2.0)) * 180.0 / M_PI);
 }
 double Angle::deg_raw() {
-    return (wrap(theta) * 180.0 / M_PI);
+    return wrap(theta) * 180.0 / M_PI;
 }
 
 Angle Angle::error_from(Angle target) {
@@ -119,4 +119,10 @@ Angle lib15442c::literals::operator ""_deg(long double value) {
 }
 Angle lib15442c::literals::operator ""_deg(unsigned long long value) {
     return Angle::from_deg(value);
+}
+Angle lib15442c::literals::operator ""_deg_raw(long double value) {
+    return Angle::from_rad(value * M_PI / 180.0);
+}
+Angle lib15442c::literals::operator ""_deg_raw(unsigned long long value) {
+    return Angle::from_rad(value * M_PI / 180.0);
 }

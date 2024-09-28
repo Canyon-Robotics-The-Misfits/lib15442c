@@ -134,7 +134,7 @@ lib15442c::Angle lib15442c::TrackerOdom::getRotation()
     }
     position_mutex.unlock();
 
-    return Angle::from_deg((imu_1 + imu_2) / 2.0 * (getMirrored() ? -1 : 1));
+    return Angle::from_deg((imu_1 + imu_2) / 2.0) * (getMirrored() ? -1 : 1);
 }
 
 void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)

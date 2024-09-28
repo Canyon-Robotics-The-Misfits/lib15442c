@@ -93,7 +93,7 @@ namespace lib15442c
          * @brief The threshold which error need to be in to end
          *
          */
-        lib15442c::Angle threshold = 0.75_deg;
+        lib15442c::Angle threshold = 1.5_deg_raw;
         /**
          * @brief The time the error needs to be within the threshold for in order to exit
          */
@@ -102,16 +102,16 @@ namespace lib15442c
         /**
          * @brief The timeout in case the move takes too long (ms)
          */
-        double timeout = 1000;
+        double timeout = 2500;
 
         /**
          * @brief The maximum speed
          */
         double max_speed = 127;
         /**
-         * @brief The minimum speed, defaults to the one set by the DriveController constructor
+         * @brief The minimum speed
          */
-        double min_speed = -1;
+        double min_speed = 23;
 
         /**
          * @brief Whether to spin the long way or the short way to get to a target

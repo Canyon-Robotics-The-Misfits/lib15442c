@@ -113,5 +113,13 @@ namespace lib15442c {
          */
         lib15442c::Angle operator ""_deg(long double);
         lib15442c::Angle operator ""_deg(unsigned long long);
+        /**
+         * @brief Create an Angle from a degree value (no offset 0 or direction change)
+         * 
+         * @param double The degree value
+         * @return Angle the angle
+         */
+        lib15442c::Angle operator ""_deg_raw(long double);
+        lib15442c::Angle operator ""_deg_raw(unsigned long long);
     }
 }

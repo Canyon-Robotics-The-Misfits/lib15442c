@@ -125,12 +125,15 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
         double turn_speed = 0;
         if (!parameters.angle.is_none())
         {
-            turn_speed = turn_pid->calculateError(odometry->getRotation().error_from(parameters.angle).rad() * 180.0 / M_PI);
+            double error = odometry->getRotation().error_from(parameters.angle).deg_raw();
+            turn_speed = -turn_pid->calculateError(error);
         }
 
 
         drivetrain->move(out, turn_speed);
     }
+
+    drivetrain->move(0, 0);
 
     INFO_TEXT("ending drive time");
 }
