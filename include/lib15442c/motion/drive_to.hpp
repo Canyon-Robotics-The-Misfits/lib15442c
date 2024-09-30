@@ -54,6 +54,8 @@ namespace lib15442c
          * @brief Whether to run asynchronously
          */
         bool async = false;
+
+        Angle weird_offset = 0_deg_raw;
         
         /**
          * @brief How far away the robot should be from the end before the the chain exit condition can succeed
