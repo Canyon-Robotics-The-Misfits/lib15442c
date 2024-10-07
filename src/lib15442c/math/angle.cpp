@@ -7,63 +7,60 @@ double Angle::wrap(double angle) {
     if (std::isnan(angle) || angle == INFINITY)
         return angle;
 
-    return fmod(angle + M_PI, 2 * M_PI) - M_PI;
+    return fmod(angle + 180, 360) - 180;
 }
 
 Angle Angle::none() {
     return Angle(INFINITY);
 }
 Angle Angle::from_rad(double rad) {
-    return Angle(wrap(rad));
+    return Angle(wrap(rad * 180.0 / M_PI));
 }
 Angle Angle::from_deg(double deg) {
-    return Angle(wrap(-deg * M_PI / 180.0 + M_PI / 2.0));
+    return Angle(wrap(deg));
 }
 
 bool Angle::is_none() {
-    return theta == INFINITY;
+    return theta == INFINITY || std::isnan(theta);
 }
 
 double Angle::rad() {
-    return wrap(theta);
+    return wrap(theta) * M_PI / 180.0;
 }
 double Angle::deg() {
-    return -(wrap(theta - (M_PI / 2.0)) * 180.0 / M_PI);
-}
-double Angle::deg_raw() {
-    return wrap(theta) * 180.0 / M_PI;
+    return wrap(theta);
 }
 
 Angle Angle::error_from(Angle target) {
-    double a = rad();
-    double b = target.rad();
+    double a = deg();
+    double b = target.deg();
 
     double error = b - a;
     
-    if (fabs(error) > M_PI)
-        error -= sgn(error) * 2.0 * M_PI;
+    if (fabs(error) > 180)
+        error -= sgn(error) * 360;
 
-    return Angle::from_rad(error);
+    return Angle::from_deg(error);
 }
 
 Angle Angle::operator+(const Angle& rhs) {
-    return Angle::from_rad(theta + rhs.theta);
+    return Angle::from_deg(theta + rhs.theta);
 }
 Angle Angle::operator-(const Angle& rhs) {
-    return Angle::from_rad(theta - rhs.theta);
+    return Angle::from_deg(theta - rhs.theta);
 }
 Angle Angle::operator*(const Angle& rhs) {
-    return Angle::from_rad(theta * rhs.theta);
+    return Angle::from_deg(theta * rhs.theta);
 }
 Angle Angle::operator/(const Angle& rhs) {
-    return Angle::from_rad(theta / rhs.theta);
+    return Angle::from_deg(theta / rhs.theta);
 }
 
 Angle Angle::operator*(const double& rhs) {
-    return Angle::from_rad(theta * rhs);
+    return Angle::from_deg(theta * rhs);
 }
 Angle Angle::operator/(const double& rhs) {
-    return Angle::from_rad(theta / rhs);
+    return Angle::from_deg(theta / rhs);
 }
 
 void Angle::operator=(const Angle& rhs) {
@@ -119,10 +116,4 @@ Angle lib15442c::literals::operator ""_deg(long double value) {
 }
 Angle lib15442c::literals::operator ""_deg(unsigned long long value) {
     return Angle::from_deg(value);
-}
-Angle lib15442c::literals::operator ""_deg_raw(long double value) {
-    return Angle::from_rad(value * M_PI / 180.0);
-}
-Angle lib15442c::literals::operator ""_deg_raw(unsigned long long value) {
-    return Angle::from_rad(value * M_PI / 180.0);
 }

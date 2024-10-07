@@ -54,8 +54,6 @@ namespace lib15442c
          * @brief Whether to run asynchronously
          */
         bool async = false;
-
-        Angle weird_offset = 0_deg_raw;
         
         /**
          * @brief How far away the robot should be from the end before the the chain exit condition can succeed
@@ -163,7 +161,7 @@ namespace lib15442c
         /**
          * @brief How far away to make the intermediate angle
          */
-        double r = 10;
+        double r = 12;
 
 
         /**
@@ -178,7 +176,7 @@ namespace lib15442c
         /**
          * @brief The timeout in case the move takes too long (ms)
          */
-        double timeout = 2000;
+        double timeout = 2500;
 
         /**
          * @brief The maximum speed

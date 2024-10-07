@@ -21,7 +21,7 @@ void lib15442c::Face::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose p
 {
     Angle target_angle = getTargetAngle(target, pose);
 
-    initial_error = pose.angle.error_from(target_angle).deg_raw();
+    initial_error = pose.angle.error_from(target_angle).deg();
 }
 
 lib15442c::Angle lib15442c::Face::getTargetAngle(FaceTarget target, Pose pose)
@@ -45,12 +45,12 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     // Calculate target angle if facing a point
     Angle target_angle = getTargetAngle(target, pose);
 
-    double error = pose.angle.error_from(target_angle).deg_raw();
+    double error = pose.angle.error_from(target_angle).deg();
 
     if (params.chained)
     {
         // if the error crossed 0 (passed target angle) or is within the threshold exit
-        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.rad() * 180.0 / M_PI))
+        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.deg()))
         {
             return MotionOutputExit{};
         }
@@ -58,7 +58,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     else
     {
         // Must be within the threshold for `params.threshold_time` ms to exit
-        if (fabs(error) < params.threshold.rad() * 180.0 / M_PI)
+        if (fabs(error) < params.threshold.deg())
         {
             time_correct += delta_time;
         }

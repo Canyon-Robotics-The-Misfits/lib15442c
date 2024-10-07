@@ -190,7 +190,7 @@ void lib15442c::TrackerOdom::startTask()
                 double perpendicular = perpendicular_tracker->get_position() / 100.0;
 
                 // Get the current robot rotation
-                double angle = getRotation().rad() - M_PI / 2.0;
+                double angle = getRotation().rad();
 
                 if (std::isnan(angle))
                 {
@@ -208,25 +208,32 @@ void lib15442c::TrackerOdom::startTask()
                 double deltaPerpendicular = (perpendicular - last_perpendicular) * degrees_per_inch_perpendicular;
 
                 position_mutex.lock();
+                
+                if (std::isnan(position.x) || std::isnan(position.y))
+                {
+                    position.x = 0;
+                    position.y = 0;
+                    continue;
+                }
 
                 if (deltaTheta == 0)
                 {
                     position += Vec(
-                        cos(angle) * deltaParallel +
-                            cos(angle) * deltaPerpendicular,
-                        sin(angle) * deltaParallel +
-                            sin(angle) * deltaPerpendicular);
+                        cos(-angle) * deltaParallel +
+                            cos(-angle + M_PI / 2.0) * deltaPerpendicular,
+                        sin(-angle) * deltaParallel +
+                            sin(-angle + M_PI / 2.0) * deltaPerpendicular);
                 }
                 else
                 {
                     double radiusParallel = deltaParallel / deltaTheta;
                     double radiusPerpendicular = deltaPerpendicular / deltaTheta;
 
-                    double delta_x = (cos(angle) - cos(last_angle)) * radiusParallel;
-                    delta_x += (cos(angle) - cos(last_angle)) * radiusPerpendicular;
+                    double delta_x = (cos(-angle) - cos(-last_angle)) * radiusParallel;
+                    delta_x += (cos(-angle + M_PI / 2.0) - cos(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
-                    double delta_y = (sin(angle) - sin(last_angle)) * radiusParallel;
-                    delta_y += (sin(angle) - sin(last_angle)) * radiusPerpendicular;
+                    double delta_y = (sin(-angle) - sin(-last_angle)) * radiusParallel;
+                    delta_y += (sin(-angle + M_PI / 2.0) - sin(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
                     position += Vec(
                         delta_x,

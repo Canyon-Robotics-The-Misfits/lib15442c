@@ -93,7 +93,7 @@ namespace lib15442c
          * @brief The threshold which error need to be in to end
          *
          */
-        lib15442c::Angle threshold = 1.5_deg_raw;
+        lib15442c::Angle threshold = 1.5_deg;
         /**
          * @brief The time the error needs to be within the threshold for in order to exit
          */

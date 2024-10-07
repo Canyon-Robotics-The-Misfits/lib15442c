@@ -33,7 +33,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 
     if (!target_pose.angle.is_none())
     {
-        caret -= pos(cos(target_pose.angle.rad()), sin(target_pose.angle.rad())) * params.lead * error;
+        caret -= pos(cos(target_pose.angle.rad() - M_PI / 2.0), sin(target_pose.angle.rad() + M_PI / 2.0)) * params.lead * error;
     }
 
     Angle target_angle = pose.vec().angle_to(caret.vec()) + (180_deg * params.backwards);
@@ -76,8 +76,8 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
         drive_speed = params.min_speed * lib15442c::sgn(drive_speed);
     }
 
-    Angle angle_error = pose.angle.error_from(target_angle + params.weird_offset);
-    double rot_speed = turn_pid->calculateError(-angle_error.deg_raw() + (target_pose.y > pose.y && target_pose.x < pose.x ? 90 : 0));
+    Angle angle_error = pose.angle.error_from(target_angle);
+    double rot_speed = turn_pid->calculateError(angle_error.deg());
 
     if (abs(rot_speed) > 127)
     {
@@ -90,7 +90,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     //     drive_speed *= fmax(fmin(fabs(15 / std::abs(angle_error.deg())), 1), 0);
     // }
 
-    // std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg_raw() << std::endl;
+    // std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : drive_speed,
@@ -209,7 +209,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
 
     if (distance < params.settle_threshold)
     {
-        distance = distance * sgn(cos(turnError.rad()));
+        distance = distance * sgn(cos(turnError.rad() - M_PI / 2.0));
         turnError = target_pose.angle - pose.angle;
     }
 

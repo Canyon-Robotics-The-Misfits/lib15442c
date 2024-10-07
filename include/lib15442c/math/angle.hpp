@@ -5,7 +5,7 @@
 namespace lib15442c {
     class Angle {
     protected:
-        // The angle, in radians from -PI to PI
+        // The angle, in degrees from -180 to 180
         double theta;
 
         static double wrap(double angle);
@@ -48,12 +48,6 @@ namespace lib15442c {
          * @return double The angle
          */
         double deg();
-        /**
-         * @brief Return the value of the angle in degrees without modifying the 0 position or positive direction. This is usefull if the angle is a change in angle, not a global angle
-         * 
-         * @return double The angle
-         */
-        double deg_raw();
 
         /**
          * @brief Whether the angle is non-existant
@@ -113,13 +107,5 @@ namespace lib15442c {
          */
         lib15442c::Angle operator ""_deg(long double);
         lib15442c::Angle operator ""_deg(unsigned long long);
-        /**
-         * @brief Create an Angle from a degree value (no offset 0 or direction change)
-         * 
-         * @param double The degree value
-         * @return Angle the angle
-         */
-        lib15442c::Angle operator ""_deg_raw(long double);
-        lib15442c::Angle operator ""_deg_raw(unsigned long long);
     }
 }

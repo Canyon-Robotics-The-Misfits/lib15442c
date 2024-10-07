@@ -125,8 +125,8 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
         double turn_speed = 0;
         if (!parameters.angle.is_none())
         {
-            double error = odometry->getRotation().error_from(parameters.angle).deg_raw();
-            turn_speed = -turn_pid->calculateError(error);
+            double error = odometry->getRotation().error_from(parameters.angle).deg();
+            turn_speed = turn_pid->calculateError(error);
         }
 
 

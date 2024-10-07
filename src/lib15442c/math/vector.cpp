@@ -7,26 +7,11 @@ double Vec::magnitude() {
     return sqrt(x * x + y * y);
 }
 lib15442c::Angle Vec::angle() {
-    return Angle::from_rad(atan2(y, x) + ((x > 0) ? M_PI : 0));
+    return Angle::from_rad(atan2(x, y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
 }
 
 lib15442c::Angle Vec::angle_to(Vec vector) {
-    if (x != vector.x)
-    {
-        return Angle::from_rad(atan((vector.y - y) / (vector.x - x)) + ((x > vector.x) ? M_PI : 0.0));
-    }
-    else if (vector.y > y)
-    {
-        return Angle::from_rad(M_PI/2.0);
-    }
-    else if (vector.y < y)
-    {
-        return Angle::from_deg(-M_PI/2.0);
-    }
-    else
-    {
-        return Angle::none();
-    }
+    return Angle::from_rad(atan2(vector.x - x, vector.y - y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
 }
 
 double Vec::distance_to(Vec vector) {
@@ -34,9 +19,7 @@ double Vec::distance_to(Vec vector) {
 }
 
 Vec Vec::normalized() {
-    Angle vec_angle = angle();
-
-    return Vec(cos(vec_angle.rad()), sin(vec_angle.rad()));
+    return *this / magnitude();
 }
 
 // Vec + Vec operators
