@@ -82,7 +82,7 @@ namespace lib15442c
 
     public:
         MotorGroup(std::initializer_list<MotorParameters> parameters);
-        MotorGroup(MotorGroupParameters parameters, std::initializer_list<std::int8_t> ports);
+        MotorGroup(MotorGroupParameters parameters, std::initializer_list<int> ports);
 
         void move(double voltage);
         void move_velocity(double velocity);

@@ -13,6 +13,11 @@ Motor::Motor(MotorParameters parameters)
     : port(parameters.port), reversed(parameters.reversed), brake_mode(parameters.brake_mode), ratio(parameters.ratio)
 {
     pros::c::motor_set_gearing(port, pros::E_MOTOR_GEAR_RED); // always set to red, modified to proper ratio in other funcs
+    if (port < 0)
+    {
+        port = abs(port);
+        reversed = true;
+    }
     set_brake_mode(brake_mode);
 }
 
@@ -96,7 +101,7 @@ MotorGroup::MotorGroup(std::initializer_list<MotorParameters> parameters)
     }
 }
 
-MotorGroup::MotorGroup(MotorGroupParameters parameters, std::initializer_list<std::int8_t> ports)
+MotorGroup::MotorGroup(MotorGroupParameters parameters, std::initializer_list<int> ports)
 {
     for (auto port : ports) {
         auto parameter = MotorParameters(parameters);
