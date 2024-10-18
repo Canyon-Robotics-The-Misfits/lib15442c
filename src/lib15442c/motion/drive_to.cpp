@@ -33,7 +33,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 
     if (!target_pose.angle.is_none())
     {
-        caret -= pos(cos(target_pose.angle.rad() - M_PI / 2.0), sin(target_pose.angle.rad() + M_PI / 2.0)) * params.lead * error;
+        caret -= pos(cos(-target_pose.angle.rad() + M_PI / 2.0), sin(-target_pose.angle.rad() + M_PI / 2.0)) * params.lead * error;
     }
 
     Angle target_angle = pose.vec().angle_to(caret.vec()) + (180_deg * params.backwards);
@@ -41,19 +41,16 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     // If it is close to the end, focus on getting to the right angle and use cross track error
     if (error < params.angle_priority_threshold && !target_pose.angle.is_none())
     {
-        target_angle = target_pose.angle;
+        target_angle = target_pose.angle + (180_deg * params.backwards);
     }
 
-    bool above_approach_line = pose.y > tan(target_pose.angle.rad()) * (pose.x - target_pose.x) + target_pose.y;
+    bool above_approach_line = pose.y > (-1.0 / tan(-target_pose.angle.rad())) * (pose.x - target_pose.x) + target_pose.y;
     if (params.chained && abs(error) < params.chain_threshold && initial_above_approach_line != above_approach_line)
     {
         return MotionOutputExit{};
     }
-    else if (params.chained && abs(error) < params.threshold)
-    {
-        return MotionOutputExit{};
-    }
-    else if (!params.chained && abs(error) < params.threshold)
+    
+    if (abs(error) < params.threshold)
     {
         return MotionOutputExit{};
     }
@@ -90,7 +87,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     //     drive_speed *= fmax(fmin(fabs(15 / std::abs(angle_error.deg())), 1), 0);
     // }
 
-    // std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
+    std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : drive_speed,
@@ -194,7 +191,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
 
     if (alpha.deg() < 0)
     {
-        beta = Angle::from_deg(-beta.deg());
+        beta = -beta;
     }
 
     Angle turnError;
@@ -209,7 +206,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
 
     if (distance < params.settle_threshold)
     {
-        distance = distance * sgn(cos(turnError.rad() - M_PI / 2.0));
+        distance = distance * sgn(cos(turnError.rad()));
         turnError = target_pose.angle - pose.angle;
     }
 
@@ -236,7 +233,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
         return MotionOutputExit{};
     }
 
-    // std::cout << time_since_start << "," << distance << "," << linear_velocity << "," << angular_velocity << std::endl;
+    std::cout << time_since_start << "," << pose.x << ", " << pose.y << "," << linear_velocity << "," << angular_velocity << std::endl;
 
     return MotionOutputSpeeds{
         linear_output : linear_velocity,

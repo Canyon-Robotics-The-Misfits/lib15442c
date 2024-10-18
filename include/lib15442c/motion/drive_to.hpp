@@ -171,7 +171,7 @@ namespace lib15442c
         /**
          * @brief How far away the robot should be from the end before the movement ends
          */
-        double threshold = 1;
+        double threshold = 0.75;
 
         /**
          * @brief The timeout in case the move takes too long (ms)

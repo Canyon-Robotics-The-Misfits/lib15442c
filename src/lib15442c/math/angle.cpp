@@ -42,6 +42,9 @@ Angle Angle::error_from(Angle target) {
 
     return Angle::from_deg(error);
 }
+Angle Angle::operator-() {
+    return Angle::from_deg(-deg());
+}
 
 Angle Angle::operator+(const Angle& rhs) {
     return Angle::from_deg(theta + rhs.theta);

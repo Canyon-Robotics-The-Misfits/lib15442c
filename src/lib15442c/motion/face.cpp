@@ -85,7 +85,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
         return MotionOutputExit{};
     }
 
-    double rot_speed = -pid->calculateError(error);
+    double rot_speed = pid->calculateError(error);
 
     // keep rot_speed between the min and max speeds
     rot_speed = std::clamp(abs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);

@@ -111,7 +111,7 @@ namespace lib15442c
         /**
          * @brief The minimum speed
          */
-        double min_speed = 23;
+        double min_speed = 21;
 
         /**
          * @brief Whether to spin the long way or the short way to get to a target

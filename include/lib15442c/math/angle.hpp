@@ -66,6 +66,8 @@ namespace lib15442c {
         lib15442c::Angle error_from(lib15442c::Angle target);
 
         void operator=(const lib15442c::Angle& rhs);
+        
+        lib15442c::Angle operator-();
 
         lib15442c::Angle operator+(const lib15442c::Angle& rhs);
         lib15442c::Angle operator-(const lib15442c::Angle& rhs);
