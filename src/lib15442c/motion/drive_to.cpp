@@ -33,7 +33,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 
     if (!target_pose.angle.is_none())
     {
-        caret -= pos(cos(-target_pose.angle.rad() + M_PI / 2.0), sin(-target_pose.angle.rad() + M_PI / 2.0)) * params.lead * error;
+        caret -= pos(cos(-target_pose.angle.rad() + M_PI / 2.0 + (M_PI * params.backwards)), sin(-target_pose.angle.rad() + M_PI / 2.0 + (M_PI * params.backwards))) * params.lead * error;
     }
 
     Angle target_angle = pose.vec().angle_to(caret.vec()) + (180_deg * params.backwards);
@@ -61,7 +61,10 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
         return MotionOutputExit{};
     }
 
-    double drive_speed = drive_pid->calculateError(error) * (params.backwards ? -1 : 1);
+    Angle angle_error = (pose.angle).error_from(target_angle);
+    double rot_speed = turn_pid->calculateError(angle_error.deg());
+
+    double drive_speed = drive_pid->calculateError(error) * (params.backwards ? -1 : 1) * (abs(angle_error.deg()) > 90.0 ? -1 : 1);
 
     if (abs(drive_speed) > params.max_speed)
     {
@@ -72,9 +75,6 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     {
         drive_speed = params.min_speed * lib15442c::sgn(drive_speed);
     }
-
-    Angle angle_error = pose.angle.error_from(target_angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg());
 
     if (abs(rot_speed) > 127)
     {
