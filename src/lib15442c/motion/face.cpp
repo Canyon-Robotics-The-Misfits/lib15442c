@@ -50,7 +50,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
     if (params.chained)
     {
         // if the error crossed 0 (passed target angle) or is within the threshold exit
-        if (sgn(error) != sgn(initial_error) || fabs(error < params.threshold.deg()))
+        if (sgn(error) != sgn(initial_error) || fabs(error) < params.threshold.deg())
         {
             return MotionOutputExit{};
         }
