@@ -39,6 +39,9 @@ namespace lib15442c
         bool async = false;
     };
 
+    /**
+     * A wrapper class for the drivetrain and movement classes to make using them more convenient
+     */
     class DriveController
     {
     private:
@@ -48,14 +51,11 @@ namespace lib15442c
         std::shared_ptr<PID> drive_pid;
         std::shared_ptr<PID> turn_pid;
 
-        double default_min_speed;
-
     public:
         DriveController(
             std::shared_ptr<IDrivetrain> drivetrain,
             std::shared_ptr<IOdometry> odometry,
-            std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid,
-            double default_min_speed = 12);
+            std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid);
 
         // turn functions
 
@@ -64,6 +64,7 @@ namespace lib15442c
          *
          * @param angle The angle to end at
          * @param parameters Any extra parameters
+         * @param name The name of the movement
          */
         std::shared_ptr<lib15442c::Face> turn(lib15442c::Angle angle, FaceParameters parameters = {}, std::string name = "turn");
 
@@ -71,6 +72,7 @@ namespace lib15442c
          * @brief Face a global rotation
          * @param angle The angle to face
          * @param parameters Any extra parameters
+         * @param name The name of the movement
          */
         std::shared_ptr<lib15442c::Face> face_angle(lib15442c::Angle angle, FaceParameters parameters = {}, std::string name = "face angle");
 
@@ -80,6 +82,7 @@ namespace lib15442c
          * @param pos The position to face
          * @param angle_offset An amount to offset the faced angle from the target point
          * @param parameters Any extra parameters
+         * @param name The name of the movement
          */
         std::shared_ptr<lib15442c::Face> face_point(lib15442c::Vec pos, lib15442c::Angle angle_offset = 0_rad, FaceParameters parameters = {}, std::string name = "face point");
 
@@ -88,7 +91,7 @@ namespace lib15442c
          * 
          * @param face_target The target of the face command
          * @param parameters Any extra parameters
-         * @param log_ends Whether to log the start and end of the movement
+         * @param name The name of the movement
          */
         std::shared_ptr<lib15442c::Face> face(FaceTarget face_target, FaceParameters parameters = {}, std::string name = "face");
 
@@ -99,6 +102,7 @@ namespace lib15442c
          *
          * @param distance The distance to drive (inches)
          * @param parameters Any extra parameters
+         * @param name The name of the movement
          */
         std::shared_ptr<lib15442c::DriveStraight> drive(double distance, DriveParameters parameters = {}, std::string name = "drive");
 
@@ -116,6 +120,7 @@ namespace lib15442c
          * 
          * @param pos The position to drive to (if angle is specified, will try to end at that angle)
          * @param parameters Any extra parameters
+         * @param name The name of the movement
          */
         std::shared_ptr<Boomerang> boomerang(lib15442c::Pose pos, BoomerangParameters parameters = {}, std::string name = "boomerang");
 

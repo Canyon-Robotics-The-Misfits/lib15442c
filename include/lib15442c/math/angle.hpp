@@ -3,6 +3,9 @@
 #include <cmath>
 
 namespace lib15442c {
+    /**
+     * A class to manage angles. Handles both angle wrapping and unit conversion
+     */
     class Angle {
     protected:
         // The angle, in degrees from -180 to 180

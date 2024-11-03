@@ -5,6 +5,9 @@
 
 namespace lib15442c
 {
+    /**
+     * An abstract drivetrain
+     */
     class IDrivetrain
     {
     public:
@@ -18,21 +21,21 @@ namespace lib15442c
          * Move a drivetrain with a set linear and rotational voltage
          *
          * @param linear_speed The voltage to drive forward/back with
-         * @param turn_speed The voltage to turn at
+         * @param turn_speed The voltage to turn with
          */
         virtual void move(double linear_speed, double turn_speed) = 0;
         /**
          * Move a drivetrain with a set linear and rotational voltage, prioritizing turning over driving in case the max voltage is exceded
          *
          * @param linear_speed The voltage to drive forward/back with
-         * @param turn_speed The voltage to turn at
+         * @param turn_speed The voltage to turn with
          */
         virtual void move_ratio(double linear_speed, double turn_speed) = 0;
         /**
          * Move a drivetrain with a set linear and rotational speed (in/s)
          *
          * @param linear_speed The speed to drive forward/back with
-         * @param turn_speed The speed to turn at
+         * @param turn_speed The speed to turn with
          */
         virtual void move_speed(double linear_speed, double turn_speed) = 0;
 

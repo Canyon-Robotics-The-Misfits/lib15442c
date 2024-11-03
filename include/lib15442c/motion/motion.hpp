@@ -19,6 +19,9 @@ namespace lib15442c {
 
     using MotionOutput = std::variant<MotionOutputSpeeds, MotionOutputExit>;
 
+    /**
+     * An abstract motion algorithm
+     */
     class IMotion {
     protected:
         virtual bool is_async() = 0;
@@ -30,7 +33,21 @@ namespace lib15442c {
         pros::Task task = pros::Task([] { return; });
 
     public:
+        /**
+         * @brief Tick the algorithm once
+         * 
+         * @param pose The current robot pose
+         * @param time_since_start How much time has elapsed in milliseconds
+         * @param delta_time How much time has passed since the last tick
+         * @return MotionOutput The output of the algorithm for that tick
+         */
         virtual MotionOutput calculate(Pose pose, double time_since_start, double delta_time) = 0;
+        /**
+         * @brief Initialize the algorithm
+         * 
+         * @param drivetrain The drivetrain
+         * @param pose The initial robot pose
+         */
         virtual void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose) = 0;
 
         /**
@@ -51,7 +68,6 @@ namespace lib15442c {
         void await();
         /**
          * @brief Stop the motion if it is currently running
-         * 
          */
         void stop();
     };

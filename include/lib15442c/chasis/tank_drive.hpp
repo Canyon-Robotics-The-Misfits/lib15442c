@@ -7,6 +7,9 @@
 
 namespace lib15442c
 {
+    /**
+     * A "Tank" Drivetrain
+     */
     class TankDrive : public virtual IDrivetrain
     {
     private:
@@ -87,7 +90,12 @@ namespace lib15442c
          * @return bool
          */
         bool is_installed();
-        
+
+        /**
+         * @brief List by port which motors aren't installed
+         * 
+         * @return std::vector<int> 
+         */
         std::vector<int> get_uninstalled_motors();
     };
 }

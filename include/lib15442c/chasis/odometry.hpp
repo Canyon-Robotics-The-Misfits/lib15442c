@@ -15,6 +15,9 @@
 
 namespace lib15442c
 {
+    /**
+     * An abstract position tracking system
+     */
     class IOdometry
     {
     public:
@@ -81,18 +84,42 @@ namespace lib15442c
     
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
+    /**
+     * Settings for an inertial sensor
+     */
     struct TrackerIMU
     {
+        /**
+         * The inertial sensor
+         */
         std::shared_ptr<pros::IMU> imu;
+        /**
+         * How much to scale the output of the inertial by
+         */
         double scale;
     };
+    /**
+     * Stettings for a tracking wheel
+     */
     struct TrackerWheel
     {
+        /**
+         * The rotation sensor of the wheel
+         */
         std::shared_ptr<pros::Rotation> tracker;
+        /**
+         * How far away the wheel is from the center of rotation of the robot
+         */
         double offset;
+        /**
+         * The diameter of the wheel
+         */
         double diameter;
     };
 
+    /**
+     * Position tracking using two tracking wheels
+     */
     class TrackerOdom : public virtual IOdometry
     {
     private:
@@ -159,6 +186,9 @@ namespace lib15442c
         void stop_task();
     };
 
+    /**
+     * Position tracking using the Vex GPS sensor
+     */
     class GPSOdom : public virtual IOdometry
     {
     private:

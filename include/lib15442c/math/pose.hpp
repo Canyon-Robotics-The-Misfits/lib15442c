@@ -5,6 +5,9 @@
 
 namespace lib15442c
 {
+    /**
+     * @brief A robot pose; consists of a point in space and a heading
+     */
     class Pose {
     public:
         double x;
@@ -67,6 +70,12 @@ namespace lib15442c
         void operator/=(const double& rhs);
     };
 
+    /**
+     * @brief Define a pose without an angle
+     */
     #define pos(x, y) lib15442c::Pose(x, y, lib15442c::Angle::none())
+    /**
+     * @brief Define a pose with an angle
+     */
     #define pose(x, y, theta) lib15442c::Pose(x, y, theta)
 }

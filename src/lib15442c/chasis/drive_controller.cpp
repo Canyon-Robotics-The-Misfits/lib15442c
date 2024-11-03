@@ -9,8 +9,8 @@
 lib15442c::DriveController::DriveController(
             std::shared_ptr<IDrivetrain> drivetrain,
             std::shared_ptr<IOdometry> odometry,
-            std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid,
-            double default_min_speed) : drivetrain(drivetrain), odometry(odometry), drive_pid(drive_pid), turn_pid(turn_pid), default_min_speed(default_min_speed){};
+            std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid)
+            : drivetrain(drivetrain), odometry(odometry), drive_pid(drive_pid), turn_pid(turn_pid) {};
 
 
 std::shared_ptr<lib15442c::Face> lib15442c::DriveController::turn(lib15442c::Angle angle, FaceParameters parameters, std::string name)

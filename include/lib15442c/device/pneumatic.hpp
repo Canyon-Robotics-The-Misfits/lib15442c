@@ -9,6 +9,9 @@
 
 namespace lib15442c
 {
+    /**
+     * An abstract Pneumatic
+     */
     class IPneumatic {
     public:
         virtual void set_value(bool value) = 0;

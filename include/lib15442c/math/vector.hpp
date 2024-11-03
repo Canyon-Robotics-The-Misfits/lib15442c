@@ -3,6 +3,9 @@
 #include "angle.hpp"
 
 namespace lib15442c {
+    /**
+     * @brief A vector in 2D space
+     */
     class Vec {
     protected:
 
@@ -64,6 +67,12 @@ namespace lib15442c {
         void operator*=(const double& rhs);
         void operator/=(const double& rhs);
 
+        /**
+         * @brief Calculate the dot product with another vector
+         * 
+         * @param rhs The other vector
+         * @return double The dot product
+         */
         double dot(Vec& rhs);
     };
 }

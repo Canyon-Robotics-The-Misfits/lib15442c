@@ -42,6 +42,9 @@ namespace lib15442c
         double slew_rate = INFINITY;
     };
 
+    /**
+     * A generic PID controller
+     */
     class PID
     {
     private:
