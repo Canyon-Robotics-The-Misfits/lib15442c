@@ -178,7 +178,7 @@ namespace lib15442c
         double get_x();
         double get_y();
         Vec get_position();
-        Pose getPose();
+        Pose get_pose();
 
         void set_x(double x);
         void set_y(double y);

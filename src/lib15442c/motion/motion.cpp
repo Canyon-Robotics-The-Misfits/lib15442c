@@ -18,7 +18,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     INFO("starting \"%s\"", get_name().c_str());
 
     async_mutex.lock();
-    is_running = true;
+    task_enabled = true;
     async_mutex.unlock();
 
     int start_time = pros::millis();
@@ -30,7 +30,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
 
     while (pros::competition::get_status() == start_status) {
         async_mutex.lock();
-        if (!is_running) {
+        if (!task_enabled) {
             break;
         }
         async_mutex.unlock();
@@ -61,7 +61,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     }
 
     async_mutex.lock();
-    is_running = false;
+    task_enabled = false;
     async_mutex.unlock();
     
     INFO("ending \"%s\"", get_name().c_str());
@@ -69,7 +69,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
 
 bool lib15442c::IMotion::is_running() {
     async_mutex.lock();
-    bool temp = is_running;
+    bool temp = task_enabled;
     async_mutex.unlock();
 
     return temp;
@@ -86,7 +86,7 @@ void lib15442c::IMotion::await()
 
 void lib15442c::IMotion::stop() {
     async_mutex.lock();
-    is_running = false;
+    task_enabled = false;
     async_mutex.unlock();
 
     task.join(); // wait for the task to end

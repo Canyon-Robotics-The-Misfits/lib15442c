@@ -25,7 +25,7 @@ namespace lib15442c {
         virtual std::string get_name() = 0;
 
         lib15442c::Mutex async_mutex;
-        bool is_running = false;
+        bool task_enabled = false;
 
         pros::Task task = pros::Task([] { return; });
 
