@@ -72,7 +72,7 @@ namespace lib15442c
          * @param angle The angle to face
          * @param parameters Any extra parameters
          */
-        std::shared_ptr<lib15442c::Face> faceAngle(lib15442c::Angle angle, FaceParameters parameters = {}, std::string name = "face angle");
+        std::shared_ptr<lib15442c::Face> face_angle(lib15442c::Angle angle, FaceParameters parameters = {}, std::string name = "face angle");
 
         /**
          * @brief Face a point in x-y space
@@ -81,7 +81,7 @@ namespace lib15442c
          * @param angle_offset An amount to offset the faced angle from the target point
          * @param parameters Any extra parameters
          */
-        std::shared_ptr<lib15442c::Face> facePoint(lib15442c::Vec pos, lib15442c::Angle angle_offset = 0_rad, FaceParameters parameters = {}, std::string name = "face point");
+        std::shared_ptr<lib15442c::Face> face_point(lib15442c::Vec pos, lib15442c::Angle angle_offset = 0_rad, FaceParameters parameters = {}, std::string name = "face point");
 
         /**
          * @brief Face either an absolute angle or a point

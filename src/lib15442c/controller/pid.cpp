@@ -3,10 +3,10 @@
 
 double lib15442c::PID::calculate(double current, double target)
 {
-    return calculateError(target - current);
+    return calculate_error(target - current);
 }
 
-double lib15442c::PID::calculateError(double error) {
+double lib15442c::PID::calculate_error(double error) {
     if (last_error == INFINITY) {
         last_error = error;
     }

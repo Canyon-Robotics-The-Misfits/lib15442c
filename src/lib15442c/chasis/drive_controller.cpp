@@ -15,14 +15,14 @@ lib15442c::DriveController::DriveController(
 
 std::shared_ptr<lib15442c::Face> lib15442c::DriveController::turn(lib15442c::Angle angle, FaceParameters parameters, std::string name)
 {
-    return faceAngle(
-        odometry->getRotation() + angle,
+    return face_angle(
+        odometry->get_rotation() + angle,
         parameters,
         name
     );
 }
 
-std::shared_ptr<lib15442c::Face> lib15442c::DriveController::faceAngle(lib15442c::Angle angle, FaceParameters parameters, std::string name)
+std::shared_ptr<lib15442c::Face> lib15442c::DriveController::face_angle(lib15442c::Angle angle, FaceParameters parameters, std::string name)
 {
     return face(
         FaceAngleTarget{ angle: angle },
@@ -31,7 +31,7 @@ std::shared_ptr<lib15442c::Face> lib15442c::DriveController::faceAngle(lib15442c
     );
 }
 
-std::shared_ptr<lib15442c::Face> lib15442c::DriveController::facePoint(lib15442c::Vec pos, lib15442c::Angle angle_offset, FaceParameters parameters, std::string name)
+std::shared_ptr<lib15442c::Face> lib15442c::DriveController::face_point(lib15442c::Vec pos, lib15442c::Angle angle_offset, FaceParameters parameters, std::string name)
 {
     return face(
         FacePointTarget{ pos: pos, angle_offset: angle_offset },
@@ -49,7 +49,7 @@ std::shared_ptr<lib15442c::Face> lib15442c::DriveController::face(FaceTarget fac
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->get_pose());
     movement->execute(drivetrain, odometry);
 
     return movement;
@@ -65,7 +65,7 @@ std::shared_ptr<lib15442c::DriveStraight> lib15442c::DriveController::drive(doub
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->get_pose());
     movement->execute(drivetrain, odometry);
 
     return movement;
@@ -91,7 +91,7 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
 
     if (parameters.angle.is_none())
     {
-        parameters.angle = odometry->getRotation();
+        parameters.angle = odometry->get_rotation();
     }
 
     while (pros::millis() - start_time < time)
@@ -122,8 +122,8 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
         out *= lib15442c::sgn(voltage);
 
 
-        double error = odometry->getRotation().error_from(parameters.angle).deg();
-        double turn_speed = turn_pid->calculateError(error);
+        double error = odometry->get_rotation().error_from(parameters.angle).deg();
+        double turn_speed = turn_pid->calculate_error(error);
 
 
         drivetrain->move(out, turn_speed);
@@ -144,7 +144,7 @@ std::shared_ptr<lib15442c::Boomerang> lib15442c::DriveController::boomerang(lib1
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->get_pose());
     movement->execute(drivetrain, odometry);
 
     return movement;
@@ -160,7 +160,7 @@ std::shared_ptr<lib15442c::DriveToIntermediate> lib15442c::DriveController::driv
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->get_pose());
     movement->execute(drivetrain, odometry);
 
     return movement;
@@ -175,7 +175,7 @@ std::shared_ptr<lib15442c::DriveToAB> lib15442c::DriveController::drive_to_ab(li
         name
     );
 
-    movement->initialize(drivetrain, odometry->getPose());
+    movement->initialize(drivetrain, odometry->get_pose());
     movement->execute(drivetrain, odometry);
 
     return movement;

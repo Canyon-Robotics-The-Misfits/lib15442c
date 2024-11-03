@@ -7,12 +7,12 @@
 lib15442c::Boomerang::Boomerang(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, BoomerangParameters params, std::string name)
     : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
-bool lib15442c::Boomerang::isAsync()
+bool lib15442c::Boomerang::is_async()
 {
     return params.async;
 }
 
-std::string lib15442c::Boomerang::getName()
+std::string lib15442c::Boomerang::get_name()
 {
     return name;
 }
@@ -62,9 +62,9 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     }
 
     Angle angle_error = (pose.angle).error_from(target_angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg());
+    double rot_speed = turn_pid->calculate_error(angle_error.deg());
 
-    double drive_speed = drive_pid->calculateError(error) * (params.backwards ? -1 : 1) * (abs(angle_error.deg()) > 90.0 ? -1 : 1);
+    double drive_speed = drive_pid->calculate_error(error) * (params.backwards ? -1 : 1) * (abs(angle_error.deg()) > 90.0 ? -1 : 1);
 
     if (abs(drive_speed) > params.max_speed)
     {
@@ -98,12 +98,12 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 lib15442c::DriveToAB::DriveToAB(Pose target_pose, std::shared_ptr<PID> drive_pid, DriveToABParameters params, std::string name)
     : target_pose(target_pose), drive_pid(drive_pid), params(params), name(name) {};
 
-bool lib15442c::DriveToAB::isAsync()
+bool lib15442c::DriveToAB::is_async()
 {
     return params.async;
 }
 
-std::string lib15442c::DriveToAB::getName()
+std::string lib15442c::DriveToAB::get_name()
 {
     return name;
 }
@@ -116,7 +116,7 @@ void lib15442c::DriveToAB::initialize(std::shared_ptr<IDrivetrain> drivetrain, P
 lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_since_start, double delta_time)
 {
     float distance = pose.vec().distance_to(target_pose.vec());
-    float linear_velocity = drive_pid->calculateError(distance) * (params.backwards ? -1 : 1);
+    float linear_velocity = drive_pid->calculate_error(distance) * (params.backwards ? -1 : 1);
 
     Angle robot_angle = pose.angle + (params.backwards ? 180_deg : 0_deg);
 
@@ -161,12 +161,12 @@ lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_s
 lib15442c::DriveToIntermediate::DriveToIntermediate(Pose target_pose, std::shared_ptr<PID> drive_pid, std::shared_ptr<PID> turn_pid, DriveToIntermediateParameters params, std::string name)
     : target_pose(target_pose), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
-bool lib15442c::DriveToIntermediate::isAsync()
+bool lib15442c::DriveToIntermediate::is_async()
 {
     return params.async;
 }
 
-std::string lib15442c::DriveToIntermediate::getName()
+std::string lib15442c::DriveToIntermediate::get_name()
 {
     return name;
 }
@@ -210,8 +210,8 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
         turnError = target_pose.angle - pose.angle;
     }
 
-    float linear_velocity = drive_pid->calculateError(distance) * (params.backwards ? -1 : 1);
-    float angular_velocity = turn_pid->calculateError(turnError.deg());
+    float linear_velocity = drive_pid->calculate_error(distance) * (params.backwards ? -1 : 1);
+    float angular_velocity = turn_pid->calculate_error(turnError.deg());
 
     if (abs(linear_velocity) > params.max_speed)
     {

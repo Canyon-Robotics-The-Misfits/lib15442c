@@ -67,7 +67,7 @@ namespace lib15442c
          * 
          * @return bool
          */
-        bool is_installed();
+        virtual bool is_installed() = 0;
     };
 
 }

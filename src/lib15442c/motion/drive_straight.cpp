@@ -7,12 +7,12 @@
 lib15442c::DriveStraight::DriveStraight(double target_distance, std::shared_ptr<lib15442c::PID> drive_pid, std::shared_ptr<lib15442c::PID> turn_pid, lib15442c::DriveParameters params, std::string name)
     : target_distance(target_distance), drive_pid(drive_pid), turn_pid(turn_pid), params(params), name(name) {};
 
-bool lib15442c::DriveStraight::isAsync()
+bool lib15442c::DriveStraight::is_async()
 {
     return params.async;
 }
 
-std::string lib15442c::DriveStraight::getName()
+std::string lib15442c::DriveStraight::get_name()
 {
     return name;
 }
@@ -36,7 +36,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
     double distance_traveled = starting_position.vec().distance_to(pose.vec());
     double error = target_distance - (distance_traveled * lib15442c::sgn(target_distance));
 
-    double speed = drive_pid->calculateError(error);
+    double speed = drive_pid->calculate_error(error);
 
     // keep speed between the min and max speed
     speed = std::clamp(fabs(speed), params.min_speed, params.max_speed) * lib15442c::sgn(error);
@@ -48,7 +48,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
     }
 
     Angle angle_error = pose.angle.error_from(params.angle);
-    double rot_speed = turn_pid->calculateError(angle_error.deg());
+    double rot_speed = turn_pid->calculate_error(angle_error.deg());
 
     if (params.chained)
     {

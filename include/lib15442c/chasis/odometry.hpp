@@ -23,60 +23,60 @@ namespace lib15442c
          * 
          * @param mirrored 
          */
-        virtual void setMirrored(bool mirrored) = 0;
+        virtual void set_mirrored(bool mirrored) = 0;
         /**
          * @brief Get whether the position is mirrored over the y-axis
          * 
          * @return bool
          */
-        virtual bool getMirrored() = 0;
+        virtual bool get_mirrored() = 0;
 
         /**
          * @brief Get the x position of the robot
          */
-        virtual double getX() = 0;
+        virtual double get_x() = 0;
         /**
          * @brief Get the y position of the robot
          */
-        virtual double getY() = 0;
+        virtual double get_y() = 0;
         /**
          * @brief Get the position of the robot
          */
-        virtual lib15442c::Vec getPosition() = 0;
+        virtual lib15442c::Vec get_position() = 0;
         /**
          * @brief Get the pose of the robot
          */
-        virtual lib15442c::Pose getPose() = 0;
+        virtual lib15442c::Pose get_pose() = 0;
 
         /**
          * @brief Set the x position of the robot
          *
          * @param x The new x position
          */
-        virtual void setX(double x) = 0;
+        virtual void set_x(double x) = 0;
         /**
          * @brief Set the y position of the robot
          *
          * @param y The new y position
          */
-        virtual void setY(double y) = 0;
+        virtual void set_y(double y) = 0;
         /**
          * @brief Set the position of the robot
          *
          * @param position The new position
          */
-        virtual void setPosition(lib15442c::Vec position) = 0;
+        virtual void set_position(lib15442c::Vec position) = 0;
 
         /**
          * @brief Get the rotation of the robot
          */
-        virtual lib15442c::Angle getRotation() = 0;
+        virtual lib15442c::Angle get_rotation() = 0;
         /**
          * @brief Set the rotation of the robot
          *
          * @param rotation The new rotation of the robot
          */
-        virtual void setRotation(lib15442c::Angle rotation) = 0;
+        virtual void set_rotation(lib15442c::Angle rotation) = 0;
     };
     
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
@@ -134,29 +134,29 @@ namespace lib15442c
 
         ~TrackerOdom();
 
-        void setMirrored(bool mirrored);
-        bool getMirrored();
+        void set_mirrored(bool mirrored);
+        bool get_mirrored();
 
-        double getX();
-        double getY();
-        Vec getPosition();
-        Pose getPose();
+        double get_x();
+        double get_y();
+        Vec get_position();
+        Pose get_pose();
 
-        void setX(double x);
-        void setY(double y);
-        void setPosition(Vec position);
+        void set_x(double x);
+        void set_y(double y);
+        void set_position(Vec position);
 
-        Angle getRotation();
-        void setRotation(Angle rotation);
+        Angle get_rotation();
+        void set_rotation(Angle rotation);
 
         /**
          * @brief Start the odometry background task
          */
-        void startTask();
+        void start_task();
         /**
          * @brief Stop the odometry background task
          */
-        void stopTask();
+        void stop_task();
     };
 
     class GPSOdom : public virtual IOdometry
@@ -172,20 +172,20 @@ namespace lib15442c
     public:
         GPSOdom(int port, double x_offset, double y_offset, double rotation_offset = 0, bool mirrored = false);
 
-        void setMirrored(bool mirrored);
-        bool getMirrored();
+        void set_mirrored(bool mirrored);
+        bool get_mirrored();
 
-        double getX();
-        double getY();
-        Vec getPosition();
+        double get_x();
+        double get_y();
+        Vec get_position();
         Pose getPose();
 
-        void setX(double x);
-        void setY(double y);
-        void setPosition(Vec position);
+        void set_x(double x);
+        void set_y(double y);
+        void set_position(Vec position);
 
-        Angle getRotation();
-        void setRotation(Angle rotation);
+        Angle get_rotation();
+        void set_rotation(Angle rotation);
     };
 
     #endif

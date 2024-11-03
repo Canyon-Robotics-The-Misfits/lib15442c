@@ -44,17 +44,17 @@ lib15442c::TrackerOdom::TrackerOdom(
 
 lib15442c::TrackerOdom::~TrackerOdom()
 {
-    stopTask();
+    stop_task();
 }
 
-void lib15442c::TrackerOdom::setMirrored(bool mirrored)
+void lib15442c::TrackerOdom::set_mirrored(bool mirrored)
 {
     position_mutex.lock();
     this->mirrored = mirrored;
     position_mutex.unlock();
 }
 
-bool lib15442c::TrackerOdom::getMirrored()
+bool lib15442c::TrackerOdom::get_mirrored()
 {
     position_mutex.lock();
     bool temp = mirrored;
@@ -63,21 +63,21 @@ bool lib15442c::TrackerOdom::getMirrored()
     return temp;
 }
 
-void lib15442c::TrackerOdom::setX(double val)
+void lib15442c::TrackerOdom::set_x(double val)
 {
     position_mutex.lock();
     position.x = val;
     position_mutex.unlock();
 }
 
-void lib15442c::TrackerOdom::setY(double val)
+void lib15442c::TrackerOdom::set_y(double val)
 {
     position_mutex.lock();
     position.y = val;
     position_mutex.unlock();
 }
 
-double lib15442c::TrackerOdom::getX()
+double lib15442c::TrackerOdom::get_x()
 {
     position_mutex.lock();
     double temp = position.x;
@@ -86,7 +86,7 @@ double lib15442c::TrackerOdom::getX()
     return temp;
 }
 
-double lib15442c::TrackerOdom::getY()
+double lib15442c::TrackerOdom::get_y()
 {
     position_mutex.lock();
     double temp = position.y;
@@ -95,7 +95,7 @@ double lib15442c::TrackerOdom::getY()
     return temp;
 }
 
-lib15442c::Vec lib15442c::TrackerOdom::getPosition()
+lib15442c::Vec lib15442c::TrackerOdom::get_position()
 {
     position_mutex.lock();
     Vec temp = position;
@@ -105,24 +105,24 @@ lib15442c::Vec lib15442c::TrackerOdom::getPosition()
 
     return temp;
 }
-lib15442c::Pose lib15442c::TrackerOdom::getPose()
+lib15442c::Pose lib15442c::TrackerOdom::get_pose()
 {
     position_mutex.lock();
     Vec temp = position;
     position_mutex.unlock();
-    Angle rotation = getRotation();
+    Angle rotation = get_rotation();
 
     return pose(temp.x, temp.y, rotation);
 }
 
-void lib15442c::TrackerOdom::setPosition(lib15442c::Vec position)
+void lib15442c::TrackerOdom::set_position(lib15442c::Vec position)
 {
     position_mutex.lock();
     this->position = position;
     position_mutex.unlock();
 }
 
-lib15442c::Angle lib15442c::TrackerOdom::getRotation()
+lib15442c::Angle lib15442c::TrackerOdom::get_rotation()
 {
     position_mutex.lock();
     double imu_1 = inertial->get_rotation() * inertial_scale;
@@ -134,10 +134,10 @@ lib15442c::Angle lib15442c::TrackerOdom::getRotation()
     }
     position_mutex.unlock();
 
-    return Angle::from_deg((imu_1 + imu_2) / 2.0) * (getMirrored() ? -1 : 1);
+    return Angle::from_deg((imu_1 + imu_2) / 2.0) * (get_mirrored() ? -1 : 1);
 }
 
-void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)
+void lib15442c::TrackerOdom::set_rotation(Angle rotationOffset)
 {
     position_mutex.lock();
     rotation_offset = rotationOffset.deg();
@@ -146,7 +146,7 @@ void lib15442c::TrackerOdom::setRotation(Angle rotationOffset)
     pros::delay(15);
 }
 
-void lib15442c::TrackerOdom::startTask()
+void lib15442c::TrackerOdom::start_task()
 {
 
 #ifndef LIB15442C_MOCK_DEVICES_ONLY
@@ -165,7 +165,7 @@ void lib15442c::TrackerOdom::startTask()
         int tickTimer = 0;
 
         double offset_zero = 0;
-        double last_angle = getRotation().rad();
+        double last_angle = get_rotation().rad();
 
         double degrees_per_inch_parallel = parallel_tracker_circumfrance / 360 / 1.00771827217;
         double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360 / 1.00771827217;
@@ -190,7 +190,7 @@ void lib15442c::TrackerOdom::startTask()
                 double perpendicular = perpendicular_tracker->get_position() / 100.0;
 
                 // Get the current robot rotation
-                double angle = getRotation().rad();
+                double angle = get_rotation().rad();
 
                 if (std::isnan(angle))
                 {
@@ -262,7 +262,7 @@ void lib15442c::TrackerOdom::startTask()
 #endif
 }
 
-void lib15442c::TrackerOdom::stopTask()
+void lib15442c::TrackerOdom::stop_task()
 {
     task.notify();
     task.join();
@@ -276,63 +276,63 @@ lib15442c::GPSOdom::GPSOdom(int port, double x_offset, double y_offset, double r
     gps.set_offset(x_offset, y_offset);
 };
 
-void lib15442c::GPSOdom::setMirrored(bool mirrored)
+void lib15442c::GPSOdom::set_mirrored(bool mirrored)
 {
     this->mirrored = mirrored;
 }
 
-bool lib15442c::GPSOdom::getMirrored()
+bool lib15442c::GPSOdom::get_mirrored()
 {
     return mirrored;
 }
 
-void lib15442c::GPSOdom::setX(double val)
+void lib15442c::GPSOdom::set_x(double val)
 {
-    gps.set_position((val - 72) / inches_per_meter, (getY() - 72) / inches_per_meter, getRotation().deg() - rotation_offset);
+    gps.set_position((val - 72) / inches_per_meter, (get_y() - 72) / inches_per_meter, get_rotation().deg() - rotation_offset);
 }
 
-void lib15442c::GPSOdom::setY(double val)
+void lib15442c::GPSOdom::set_y(double val)
 {
-    gps.set_position((getX() - 72) / inches_per_meter, (val - 72) / inches_per_meter, getRotation().deg() - rotation_offset);
+    gps.set_position((get_x() - 72) / inches_per_meter, (val - 72) / inches_per_meter, get_rotation().deg() - rotation_offset);
 }
 
-double lib15442c::GPSOdom::getX()
+double lib15442c::GPSOdom::get_x()
 {
-    return getPosition().x;
+    return get_position().x;
 }
 
-double lib15442c::GPSOdom::getY()
+double lib15442c::GPSOdom::get_y()
 {
-    return getPosition().y;
+    return get_position().y;
 }
 
-lib15442c::Vec lib15442c::GPSOdom::getPosition()
+lib15442c::Vec lib15442c::GPSOdom::get_position()
 {
     auto gps_position = gps.get_position();
     lib15442c::Vec position = Vec(gps_position.x * (mirrored ? -1 : 1) + 72 / inches_per_meter, gps_position.y + 72 / inches_per_meter);
 
     return position * inches_per_meter;
 }
-lib15442c::Pose lib15442c::GPSOdom::getPose()
+lib15442c::Pose lib15442c::GPSOdom::get_pose()
 {
-    auto gps_position = getPosition();
-    Angle rotation = getRotation();
+    auto gps_position = get_position();
+    Angle rotation = get_rotation();
     Pose position = pose(gps_position.x, gps_position.y, rotation);
 
     return position;
 }
 
-void lib15442c::GPSOdom::setPosition(lib15442c::Vec position)
+void lib15442c::GPSOdom::set_position(lib15442c::Vec position)
 {
-    gps.set_position((position.x - 72) / inches_per_meter, (position.y - 72) / inches_per_meter, getRotation().deg() - rotation_offset);
+    gps.set_position((position.x - 72) / inches_per_meter, (position.y - 72) / inches_per_meter, get_rotation().deg() - rotation_offset);
 }
 
-lib15442c::Angle lib15442c::GPSOdom::getRotation()
+lib15442c::Angle lib15442c::GPSOdom::get_rotation()
 {
-    return Angle::from_deg((gps.get_heading() + rotation_offset) * (getMirrored() ? -1 : 1));
+    return Angle::from_deg((gps.get_heading() + rotation_offset) * (get_mirrored() ? -1 : 1));
 }
 
-void lib15442c::GPSOdom::setRotation(Angle rotation)
+void lib15442c::GPSOdom::set_rotation(Angle rotation)
 {
     rotation_offset = rotation.deg();
 }

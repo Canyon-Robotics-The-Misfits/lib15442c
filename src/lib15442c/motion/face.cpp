@@ -7,12 +7,12 @@
 lib15442c::Face::Face(FaceTarget target, std::shared_ptr<PID> pid, FaceParameters params, std::string name)
     : target(target), pid(pid), params(params), name(name) {};
 
-bool lib15442c::Face::isAsync()
+bool lib15442c::Face::is_async()
 {
     return params.async;
 }
 
-std::string lib15442c::Face::getName()
+std::string lib15442c::Face::get_name()
 {
     return name;
 }
@@ -85,7 +85,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
         return MotionOutputExit{};
     }
 
-    double rot_speed = pid->calculateError(error);
+    double rot_speed = pid->calculate_error(error);
 
     // keep rot_speed between the min and max speeds
     rot_speed = std::clamp(abs(rot_speed), params.min_speed, params.max_speed) * lib15442c::sgn(rot_speed);

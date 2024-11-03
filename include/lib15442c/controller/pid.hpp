@@ -85,7 +85,7 @@ namespace lib15442c
          * @param error The error from the target
          * @return double The PID output
          */
-        double calculateError(double error);
+        double calculate_error(double error);
 
         /**
          * @brief Reset the PID total_error and last_error

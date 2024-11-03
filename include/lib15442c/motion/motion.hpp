@@ -21,8 +21,8 @@ namespace lib15442c {
 
     class IMotion {
     protected:
-        virtual bool isAsync() = 0;
-        virtual std::string getName() = 0;
+        virtual bool is_async() = 0;
+        virtual std::string get_name() = 0;
 
         lib15442c::Mutex async_mutex;
         bool is_running = false;
@@ -44,7 +44,7 @@ namespace lib15442c {
          * 
          * @return Whether it is running 
          */
-        bool isRunning();
+        bool is_running();
         /**
          * @brief Block until the motion ends
          */

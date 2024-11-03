@@ -5,7 +5,7 @@
 
 void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::shared_ptr<IOdometry> odometry, bool ignore_async)
 {
-    if (!ignore_async && isAsync()) {
+    if (!ignore_async && is_async()) {
         task = pros::Task([this, drivetrain, odometry] {
             execute(drivetrain, odometry, true);
         });
@@ -15,7 +15,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
         return;
     }
     
-    INFO("starting \"%s\"", getName().c_str());
+    INFO("starting \"%s\"", get_name().c_str());
 
     async_mutex.lock();
     is_running = true;
@@ -35,7 +35,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
         }
         async_mutex.unlock();
 
-        Pose current_pose = odometry->getPose();
+        Pose current_pose = odometry->get_pose();
 
         int now = pros::millis();
         int time_since_start = now - start_time;
@@ -56,7 +56,7 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
         pros::delay(20);
     }
 
-    if (!isAsync()) {
+    if (!is_async()) {
         drivetrain->move(0, 0);
     }
 
@@ -64,10 +64,10 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
     is_running = false;
     async_mutex.unlock();
     
-    INFO("ending \"%s\"", getName().c_str());
+    INFO("ending \"%s\"", get_name().c_str());
 }
 
-bool lib15442c::IMotion::isRunning() {
+bool lib15442c::IMotion::is_running() {
     async_mutex.lock();
     bool temp = is_running;
     async_mutex.unlock();
@@ -78,7 +78,7 @@ bool lib15442c::IMotion::isRunning() {
 void lib15442c::IMotion::await()
 {
     auto inital_status = pros::competition::get_status();
-    while (isRunning() && pros::competition::get_status() == inital_status)
+    while (is_running() && pros::competition::get_status() == inital_status)
     {
         pros::delay(10);
     }

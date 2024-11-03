@@ -64,8 +64,8 @@ namespace lib15442c
     class Boomerang: public IMotion
     {
     protected:
-        bool isAsync();
-        std::string getName();
+        bool is_async();
+        std::string get_name();
 
     private:
         Pose target_pose;
@@ -134,8 +134,8 @@ namespace lib15442c
     class DriveToAB: public IMotion
     {
     protected:
-        bool isAsync();
-        std::string getName();
+        bool is_async();
+        std::string get_name();
 
     private:
         Pose target_pose;
@@ -201,8 +201,8 @@ namespace lib15442c
     class DriveToIntermediate: public IMotion
     {
     protected:
-        bool isAsync();
-        std::string getName();
+        bool is_async();
+        std::string get_name();
 
     private:
         Pose target_pose;

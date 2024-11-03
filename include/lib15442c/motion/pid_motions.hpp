@@ -56,8 +56,8 @@ namespace lib15442c
     class DriveStraight : public virtual IMotion
     {
     protected:
-        bool isAsync();
-        std::string getName();
+        bool is_async();
+        std::string get_name();
 
     private:
         double target_distance;
@@ -149,8 +149,8 @@ namespace lib15442c
     class Face : public virtual IMotion
     {
     protected:
-        bool isAsync();
-        std::string getName();
+        bool is_async();
+        std::string get_name();
 
     private:
         FaceTarget target;
