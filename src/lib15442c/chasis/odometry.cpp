@@ -47,6 +47,11 @@ lib15442c::TrackerOdom::~TrackerOdom()
     stop_task();
 }
 
+void lib15442c::TrackerOdom::initialize(double initial_x, double initial_y, Angle initial_theta)
+{
+    start_task(initial_x, initial_y, initial_theta);
+}
+
 void lib15442c::TrackerOdom::set_mirrored(bool mirrored)
 {
     position_mutex.lock();
@@ -101,8 +106,6 @@ lib15442c::Vec lib15442c::TrackerOdom::get_position()
     Vec temp = position;
     position_mutex.unlock();
 
-    // std::cout << inertial->get_rotation() * inertial_scale << ", " << parallel_tracker->get_position() / 100.0 * parallel_tracker_circumfrance / 360 / 1.00771827217 << ", " << perpendicular_tracker->get_position() / 100.0 * perpendicular_tracker_circumfrance / 360 / 1.00771827217 << std::endl;
-
     return temp;
 }
 lib15442c::Pose lib15442c::TrackerOdom::get_pose()
@@ -146,10 +149,16 @@ void lib15442c::TrackerOdom::set_rotation(Angle rotationOffset)
     pros::delay(15);
 }
 
-void lib15442c::TrackerOdom::start_task()
+void lib15442c::TrackerOdom::start_task(double initial_x, double initial_y, Angle initial_theta)
 {
 
 #ifndef LIB15442C_MOCK_DEVICES_ONLY
+
+    position_mutex.lock();
+    position.x = initial_x;
+    position.y = initial_y;
+    rotation_offset = initial_theta.deg();
+    position_mutex.unlock();
 
     task = pros::Task([this]
                       {
@@ -259,6 +268,8 @@ void lib15442c::TrackerOdom::start_task()
             time += 10;
             tickTimer++;
         } });
+    
+    pros::delay(5); // make sure task starts
 #endif
 }
 
@@ -275,6 +286,13 @@ lib15442c::GPSOdom::GPSOdom(int port, double x_offset, double y_offset, double r
 {
     gps.set_offset(x_offset, y_offset);
 };
+
+void lib15442c::GPSOdom::initialize(double initial_x, double initial_y, Angle initial_theta)
+{
+    set_x(initial_x);
+    set_y(initial_y);
+    set_rotation(initial_theta);
+}
 
 void lib15442c::GPSOdom::set_mirrored(bool mirrored)
 {

@@ -11,6 +11,8 @@
 #include "pros/rotation.hpp"
 #include "pros/gps.hpp"
 #include "pros/imu.hpp"
+#include "pros/distance.hpp"
+#include <random>
 #endif
 
 namespace lib15442c
@@ -21,6 +23,15 @@ namespace lib15442c
     class IOdometry
     {
     public:
+        /**
+         * @brief Initialize the odometry algorithm. If the algorithm runs in a seperate task, it starts the task
+         * 
+         * @param x The initial X position
+         * @param y The inital Y position
+         * @param theta The initial heading
+         */
+        virtual void initialize(double x, double y, Angle theta) = 0;
+
         /**
          * @brief Set whether the position should be mirrored over the y-axis
          * 
@@ -50,25 +61,6 @@ namespace lib15442c
          * @brief Get the pose of the robot
          */
         virtual lib15442c::Pose get_pose() = 0;
-
-        /**
-         * @brief Set the x position of the robot
-         *
-         * @param x The new x position
-         */
-        virtual void set_x(double x) = 0;
-        /**
-         * @brief Set the y position of the robot
-         *
-         * @param y The new y position
-         */
-        virtual void set_y(double y) = 0;
-        /**
-         * @brief Set the position of the robot
-         *
-         * @param position The new position
-         */
-        virtual void set_position(lib15442c::Vec position) = 0;
 
         /**
          * @brief Get the rotation of the robot
@@ -160,6 +152,8 @@ namespace lib15442c
             TrackerIMU inertial_2 = { .imu = std::make_shared<pros::IMU>(22), .scale = 0});
 
         ~TrackerOdom();
+        
+        void initialize(double initial_x, double initial_y, Angle initial_theta);
 
         void set_mirrored(bool mirrored);
         bool get_mirrored();
@@ -169,9 +163,24 @@ namespace lib15442c
         Vec get_position();
         Pose get_pose();
 
+        /**
+         * @brief Set the x position of the robot
+         *
+         * @param x The new x position
+         */
         void set_x(double x);
+        /**
+         * @brief Set the y position of the robot
+         *
+         * @param y The new y position
+         */
         void set_y(double y);
-        void set_position(Vec position);
+        /**
+         * @brief Set the position of the robot
+         *
+         * @param position The new position
+         */
+        void set_position(lib15442c::Vec position);
 
         Angle get_rotation();
         void set_rotation(Angle rotation);
@@ -179,7 +188,7 @@ namespace lib15442c
         /**
          * @brief Start the odometry background task
          */
-        void start_task();
+        void start_task(double initial_x, double initial_y, Angle initial_theta);
         /**
          * @brief Stop the odometry background task
          */
@@ -201,6 +210,8 @@ namespace lib15442c
 
     public:
         GPSOdom(int port, double x_offset, double y_offset, double rotation_offset = 0, bool mirrored = false);
+        
+        void initialize(double initial_x, double initial_y, Angle initial_theta);
 
         void set_mirrored(bool mirrored);
         bool get_mirrored();
@@ -216,6 +227,103 @@ namespace lib15442c
 
         Angle get_rotation();
         void set_rotation(Angle rotation);
+    };
+
+    struct MCLSensorParams
+    {
+        int port;
+        double x_offset;
+        double y_offset;
+        double theta_offset;
+    };
+
+    struct MCLConfig
+    {
+        int particle_count;
+        double uniform_random_percent;
+        double tracker_odom_sd;
+    };
+
+    class MCLOdom : public virtual IOdometry
+    {
+    private:
+        struct MCLSensor
+        {
+            std::shared_ptr<pros::Distance> sensor;
+            double x_offset;
+            double y_offset;
+            double theta_offset;  
+        };
+
+        struct MCLParticle
+        {
+            double x;
+            double y;
+            double weight;
+        };
+
+        std::shared_ptr<TrackerOdom> tracker_odom;
+        double last_x;
+        double last_y;
+
+        MCLSensor front_sensor;
+        MCLSensor back_sensor;
+        MCLSensor left_sensor;
+        MCLSensor right_sensor;
+
+        std::vector<MCLParticle> particles;
+
+        pros::Mutex position_mutex;
+        double predicted_x = 0;
+        double predicted_y = 0;
+
+        std::mt19937 rng;
+
+        int particle_count;
+        double uniform_random_percent;
+        double tracker_odom_sd;
+        
+        bool mirrored = false;
+
+        pros::Task task = pros::Task([] { return; });
+
+        static double sensor_sd(double distance);
+        static double get_particle_chance(double x, double y, MCLSensor sensor, double theta);
+
+        static double gaussian_distribution(double x, double mean, double sd);
+
+        double random();
+        double gaussian_random(double mean, double sd);
+
+        void motion_update();
+        void resample();
+        void sensor_update();
+
+    public:
+        MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, MCLSensorParams front_sensor, MCLSensorParams back_sensor, MCLSensorParams left_sensor, MCLSensorParams right_sensor);
+        ~MCLOdom();
+        
+        void initialize(double initial_x, double initial_y, Angle initial_theta);
+
+        void set_mirrored(bool mirrored);
+        bool get_mirrored();
+
+        double get_x();
+        double get_y();
+        Vec get_position();
+        Pose get_pose();
+
+        Angle get_rotation();
+        void set_rotation(Angle rotation);
+
+        /**
+         * @brief Start the odometry background task
+         */
+        void start_task(double initial_x, double initial_y, Angle initial_theta);
+        /**
+         * @brief Stop the odometry background task
+         */
+        void stop_task();
     };
 
     #endif
