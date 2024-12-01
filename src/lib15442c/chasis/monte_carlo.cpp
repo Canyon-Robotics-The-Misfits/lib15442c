@@ -1,15 +1,9 @@
 #include "lib15442c/chasis/odometry.hpp"
 
-#define CONVERT_SENSOR_PARAMS(sensor_name) sensor_name({         \
-    sensor : std::make_shared<pros::Distance>(sensor_name.port), \
-    x_offset : sensor_name.x_offset,                             \
-    y_offset : sensor_name.y_offset,                             \
-    theta_offset : sensor_name.theta_offset                      \
-})
+#define FIELD_WIDTH 144
 
-lib15442c::MCLOdom::MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, MCLSensorParams front_sensor, MCLSensorParams back_sensor, MCLSensorParams left_sensor, MCLSensorParams right_sensor)
-    : tracker_odom(tracker_odom), CONVERT_SENSOR_PARAMS(front_sensor), CONVERT_SENSOR_PARAMS(back_sensor),
-      CONVERT_SENSOR_PARAMS(left_sensor), CONVERT_SENSOR_PARAMS(right_sensor), particle_count(config.particle_count),
+lib15442c::MCLOdom::MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, std::vector<MCLSensorParams> sensor_params)
+    : tracker_odom(tracker_odom),
       uniform_random_percent(config.uniform_random_percent), tracker_odom_sd(config.tracker_odom_sd)
 {
     // random seed stolen from vexcode
@@ -20,6 +14,16 @@ lib15442c::MCLOdom::MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> track
     int seed = int(batteryVoltage + batteryCurrent * 100) + systemTime;
 
     rng.seed(seed);
+    
+    for (MCLSensorParams params : sensor_params)
+    {
+        sensors.push_back(MCLSensor {
+            sensor : std::make_shared<pros::Distance>(params.port),
+            x_offset : params.x_offset,
+            y_offset : params.y_offset,
+            theta_offset : params.theta_offset
+        });
+    }
 }
 
 lib15442c::MCLOdom::~MCLOdom()
@@ -45,8 +49,8 @@ double lib15442c::MCLOdom::get_particle_chance(double x, double y, MCLSensor sen
     double x_offset = sensor.y_offset * cos(theta) + sensor.x_offset * cos(theta - M_PI / 2.0);
     double y_offset = sensor.y_offset * sin(theta) + sensor.x_offset * sin(theta - M_PI / 2.0);
 
-    double x_predict = (cos(theta) > 0 ? 144 - distance * cos(theta) : distance * abs(cos(theta))) + x_offset;
-    double y_predict = (sin(theta) > 0 ? 144 - distance * sin(theta) : distance * abs(sin(theta))) + y_offset;
+    double x_predict = (cos(theta) > 0 ? FIELD_WIDTH - distance * cos(theta) : distance * abs(cos(theta))) + x_offset;
+    double y_predict = (sin(theta) > 0 ? FIELD_WIDTH - distance * sin(theta) : distance * abs(sin(theta))) + y_offset;
 
     return std::max(gaussian_distribution(x, x_predict, sensor_sd(distance)),
                     gaussian_distribution(y, y_predict, sensor_sd(distance)));
@@ -131,8 +135,8 @@ void lib15442c::MCLOdom::resample()
     for (int i = 0; i < UNIFORM_RANDOM_PARTICLES; i++)
     {
         new_particles.push_back(MCLParticle{
-            x : random() * 144,
-            y : random() * 144,
+            x : random() * FIELD_WIDTH,
+            y : random() * FIELD_WIDTH,
             weight : 1
         });
     }
@@ -146,21 +150,28 @@ void lib15442c::MCLOdom::sensor_update()
 {
     position_mutex.lock();
 
-    double theta_front = -tracker_odom->get_rotation().rad();
-    double theta_back = theta_front + M_PI;
-    double theta_left = theta_front + M_PI / 2.0;
-    double theta_right = theta_front - M_PI / 2.0;
-
     for (MCLParticle particle : particles)
     {
-        particle.weight =
-            get_particle_chance(particle.x, particle.y, front_sensor, theta_front) *
-            get_particle_chance(particle.x, particle.y, back_sensor, theta_back) *
-            get_particle_chance(particle.x, particle.y, left_sensor, theta_left) *
-            get_particle_chance(particle.x, particle.y, right_sensor, theta_right);
+        particle.weight = 1;
+        for (MCLSensor sensor : sensors)
+        {
+            double theta = -tracker_odom->get_rotation().rad() + sensor.theta_offset;
+
+            particle.weight *= get_particle_chance(particle.x, particle.y, sensor, theta);
+        }
     }
 
     position_mutex.unlock();
+}
+
+void lib15442c::MCLOdom::set_mirrored(bool mirrored)
+{
+    this->mirrored = mirrored;
+}
+
+bool lib15442c::MCLOdom::get_mirrored()
+{
+    return mirrored;
 }
 
 double lib15442c::MCLOdom::get_x()
@@ -169,7 +180,7 @@ double lib15442c::MCLOdom::get_x()
     double temp = predicted_x;
     position_mutex.unlock();
 
-    return temp;
+    return (mirrored ? FIELD_WIDTH - temp : temp);
 }
 
 double lib15442c::MCLOdom::get_y()
@@ -202,7 +213,7 @@ lib15442c::Pose lib15442c::MCLOdom::get_pose()
 
 lib15442c::Angle lib15442c::MCLOdom::get_rotation()
 {
-    return tracker_odom->get_rotation();
+    return tracker_odom->get_rotation() * (mirrored ? -1 : 1);
 }
 
 void lib15442c::MCLOdom::set_rotation(Angle rotation)
@@ -222,51 +233,53 @@ void lib15442c::MCLOdom::start_task(double initial_x, double initial_y, Angle in
 
     tracker_odom->set_rotation(initial_theta);
 
-    task = pros::Task([initial_x, initial_y, this]
-                      {
-                          particles.push_back(MCLParticle{
-                              x : initial_x,
-                              y : initial_y,
-                              weight : 1
-                          });
-                          for (int i = 1; i < particle_count; i++)
-                          {
-                              particles.push_back(MCLParticle{
-                                  x : random() * 144,
-                                  y : random() * 144,
-                                  weight : 1
-                              });
-                          }
+    task = pros::Task(
+        [initial_x, initial_y, this]
+        {
+            particles.push_back(MCLParticle{
+                x : initial_x,
+                y : initial_y,
+                weight : 1
+            });
+            for (int i = 1; i < particle_count; i++)
+            {
+                particles.push_back(MCLParticle{
+                    x : random() * FIELD_WIDTH,
+                    y : random() * FIELD_WIDTH,
+                    weight : 1
+                });
+            }
 
-                          auto initial_comp_state = pros::c::competition_get_status();
-                          while (initial_comp_state == pros::c::competition_get_status())
-                          {
-                              motion_update();
-                              resample();
-                              sensor_update();
+            auto initial_comp_state = pros::c::competition_get_status();
+            while (initial_comp_state == pros::c::competition_get_status())
+            {
+                motion_update();
+                resample();
+                sensor_update();
 
-                              position_mutex.lock();
-                              predicted_x = 0;
-                              predicted_y = 0;
-                              double total_weight = 0;
+                position_mutex.lock();
+                predicted_x = 0;
+                predicted_y = 0;
+                double total_weight = 0;
 
-                              for (MCLParticle particle : particles)
-                              {
-                                  predicted_x += particle.x * particle.weight;
-                                  predicted_y += particle.y * particle.weight;
-                                  total_weight += particle.weight;
-                              }
+                for (MCLParticle particle : particles)
+                {
+                    predicted_x += particle.x * particle.weight;
+                    predicted_y += particle.y * particle.weight;
+                    total_weight += particle.weight;
+                }
 
-                              predicted_x /= total_weight;
-                              predicted_y /= total_weight;
-                              position_mutex.unlock();
+                predicted_x /= total_weight;
+                predicted_y /= total_weight;
+                position_mutex.unlock();
 
-                              if (pros::Task::notify_take(true, 10) > 0)
-                              {
-                                  break;
-                              }
-                          }
-                      });
+                if (pros::Task::notify_take(true, 10) > 0)
+                {
+                    break;
+                }
+            }
+        }
+    );
 }
 
 void lib15442c::MCLOdom::stop_task()

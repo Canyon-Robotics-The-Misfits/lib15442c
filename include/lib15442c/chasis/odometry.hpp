@@ -266,10 +266,7 @@ namespace lib15442c
         double last_x;
         double last_y;
 
-        MCLSensor front_sensor;
-        MCLSensor back_sensor;
-        MCLSensor left_sensor;
-        MCLSensor right_sensor;
+        std::vector<MCLSensor> sensors;
 
         std::vector<MCLParticle> particles;
 
@@ -300,7 +297,7 @@ namespace lib15442c
         void sensor_update();
 
     public:
-        MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, MCLSensorParams front_sensor, MCLSensorParams back_sensor, MCLSensorParams left_sensor, MCLSensorParams right_sensor);
+        MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, std::vector<MCLSensorParams>);
         ~MCLOdom();
         
         void initialize(double initial_x, double initial_y, Angle initial_theta);
