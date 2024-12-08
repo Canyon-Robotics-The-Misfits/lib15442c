@@ -239,8 +239,11 @@ namespace lib15442c
 
     struct MCLConfig
     {
+        // The number of particles to use for the particle filter
         int particle_count;
+        // What percent of the particles should be uniformly random; the rest are based on the previous probability distribution
         double uniform_random_percent;
+        // The standard deviation of the tracking wheel measurements
         double tracker_odom_sd;
     };
 

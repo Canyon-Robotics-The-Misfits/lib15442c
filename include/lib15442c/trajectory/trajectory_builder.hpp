@@ -1,6 +1,6 @@
 #pragma once
 
-#include <variant>
+#include <functional>
 #include <vector>
 
 #include "lib15442c/math/vector.hpp"
@@ -16,28 +16,11 @@ namespace lib15442c
         Vec tangent;
     };
 
-    struct CircleZone
-    {
-        // The center of the circle
-        Vec center;
-        // The radius of the circle
-        double radius;
-        // The value to apply over the zone
-        double value;
-    };
+    // A function which returns a value based on a position. Should return INFINITY if it should have no effect
+    using Zone = std::function<double (lib15442c::Vec)>;
 
-    struct RectangleZone
-    {
-        // One corner of the rectangle
-        Vec corner_a;
-        // The other corner of the rectangle
-        Vec corner_b;
-        // The value to apply over the zone
-        double value;
-    };
-
-    // A generic 2d zone with a value
-    using Zone = std::variant<CircleZone, RectangleZone>;
+    Zone circle_zone(Vec center, double radius, double value);
+    Zone rect_zone(Vec corner_a, Vec corner_b, double value);
 
     // Robot constraints and important info for trajectory computation
     struct TrajectoryConstraints
@@ -52,6 +35,14 @@ namespace lib15442c
     private:
         std::vector<HermitePair> hermite_spline;
         std::vector<Zone> max_speed_zones;
+
+        static Vec lerp_hermite(double t, Vec p0, Vec t0, Vec p1, Vec t1);
+
+        static std::vector<TrajectoryState> calculate_hermite(double resolution, Vec p0, Vec t0, Vec p1, Vec t1);
+
+        double get_max_speed(Vec position);
+
+        double calculate_velocity(TrajectoryState final, TrajectoryState initial, double max_speed, double max_acceleration);
 
     public:
         /**
@@ -82,6 +73,6 @@ namespace lib15442c
          * @param resolution How closely points should be to each other (inches)
          * @return Trajectory The computed trajectory
          */
-        Trajectory compute(TrajectoryConstraints constraints, double resolution);
+        Trajectory compute(TrajectoryConstraints constraints, double resolution = 1);
     };
 } // namespace lib15442c

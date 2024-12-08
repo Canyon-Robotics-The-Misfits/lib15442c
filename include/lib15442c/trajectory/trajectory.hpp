@@ -10,17 +10,21 @@ namespace lib15442c
     {
         // The position in a trajectory
         Vec position;
-        // The target speed of the left side of the drive
-        double left_speed;
-        // The target speed of the right side of the drive
-        double right_speed;
+        // The target throttle
+        double drive_velocity;
+        // The target turn speed
+        double turn_velocity;
+        // The time the state is at
+        double time;
     };
 
     class Trajectory {
     friend class TrajectoryBuilder;
-    protected: 
+    private:
         std::vector<TrajectoryState> states;
 
+        static TrajectoryState lerp_state(TrajectoryState a, TrajectoryState b, double t);
+    protected: 
         Trajectory(std::vector<TrajectoryState> states);
 
     public:
