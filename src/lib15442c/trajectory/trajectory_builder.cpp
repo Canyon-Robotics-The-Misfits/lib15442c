@@ -43,17 +43,24 @@ lib15442c::Vec lib15442c::TrajectoryBuilder::lerp_hermite(double t, Vec p0, Vec 
         m1 * (pow(t, 3) - pow(t, 2));
 }
 
-std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_hermite(double resolution, Vec p0, Vec m0, Vec p1, Vec m1)
+std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_hermite(int resolution, Vec p0, Vec m0, Vec p1, Vec m1)
 {
     std::vector<TrajectoryState> states;
 
-    double t = 0.0;
-    while (t < 1.0)
+    if (resolution == -1)
     {
-        double dt = 0.05;
-        t += dt;
+        // roughly auto-caluclate the resolution based on the size of the curve to put about one state per inch.
+        // approximation is kinda bad for extreme curves which go far outside of the range of the start/end points,
+        // but is suprisingly good within the range
+        resolution = floor(std::max(std::abs((p0 - p1).x), std::abs((p0 - p1).y)) * 1.0);
+    }
 
-        if (t > 1.0 - 0.001)
+    for (int i = 1; i < resolution; i++)
+    {
+        double dt = 1.0 / (double)resolution;
+        double t = (double)i * dt;
+
+        if (t > 1.0 - 0.0001)
         {
             t = 1.0;
         }
@@ -118,7 +125,7 @@ void lib15442c::TrajectoryBuilder::add_max_speed_zone(Zone zone)
     max_speed_zones.push_back(zone);
 }
 
-lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, double resolution)
+lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, int resolution)
 {
     std::vector<TrajectoryState> states;
 

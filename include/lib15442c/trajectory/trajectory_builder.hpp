@@ -27,8 +27,6 @@ namespace lib15442c
     {
         double max_speed;
         double max_acceleration;
-
-        double track_width;
     };
 
     class TrajectoryBuilder {
@@ -38,7 +36,7 @@ namespace lib15442c
 
         static Vec lerp_hermite(double t, Vec p0, Vec t0, Vec p1, Vec t1);
 
-        static std::vector<TrajectoryState> calculate_hermite(double resolution, Vec p0, Vec t0, Vec p1, Vec t1);
+        static std::vector<TrajectoryState> calculate_hermite(int resolution, Vec p0, Vec t0, Vec p1, Vec t1);
 
         double get_max_speed(Vec position);
 
@@ -70,9 +68,9 @@ namespace lib15442c
          * @brief Process the spline and return a computed trajectory motion profile
          * 
          * @param constraints Motion constraints for the robot
-         * @param resolution How closely points should be to each other (inches)
+         * @param resolution How many points to calculate per curve. -1 to auto-calculate a resolution
          * @return Trajectory The computed trajectory
          */
-        Trajectory compute(TrajectoryConstraints constraints, double resolution = 1);
+        Trajectory compute(TrajectoryConstraints constraints, int resolution = -1);
     };
 } // namespace lib15442c
