@@ -154,6 +154,8 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     }
 
     states[0].time = 0;
+    states[0].heading = Angle::from_rad(atan2(hermite_spline[0].tangent.x, hermite_spline[0].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
+    states[states.size()-1].heading = Angle::from_rad(atan2(hermite_spline[hermite_spline.size()-1].tangent.x, hermite_spline[hermite_spline.size()-1].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
     for (int i = 1; i < (int)states.size(); i++)
     {
         double velocity_initial = states[i-1].drive_velocity;
@@ -162,9 +164,31 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
         double distance = states[i-1].position.distance_to(states[i].position);
 
-        double delta_time = distance / velocity_avg;
+        double delta_time = (distance / velocity_avg) * 1000; // convert in/s to in/ms
 
         states[i].time = states[i-1].time + delta_time;
+
+        if (i != states.size() - 1)
+        {
+            Angle angle_to_next = Angle::from_rad(atan2(states[i+1].position.x - states[i].position.x, states[i+1].position.y - states[i].position.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
+
+            states[i].heading = (states[i - 1].heading + angle_to_next) / 2.0;
+
+            // solve for menger curvature
+            // a = states[i-1].position
+            // b = states[i].position
+            // c = states[i+1].position
+            double triangle_area =   
+                (states[i].position.x - states[i-1].position.x) * (states[i+1].position.y * states[i-1].position.y) -
+                (states[i].position.y - states[i-1].position.y) * (states[i+1].position.x - states[i-1].position.x);
+            double dist_a_b = states[i-1].position.distance_to(states[i].position);
+            double dist_b_c = states[i].position.distance_to(states[i+1].position);
+            double dist_c_d = states[i+1].position.distance_to(states[i-1].position);
+
+            double curvature = 4 * triangle_area / (dist_a_b * dist_b_c * dist_c_d);
+
+            states[i].turn_velocity = states[i].drive_velocity * curvature;
+        }
     }
 
     return Trajectory(states);

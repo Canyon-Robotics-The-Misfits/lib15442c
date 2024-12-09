@@ -10,12 +10,14 @@ namespace lib15442c
     {
         // The position in a trajectory
         Vec position;
-        // The target throttle
+        // The target drive velocity (in/s)
         double drive_velocity;
-        // The target turn speed
+        // The target turn velocity (rad/s)
         double turn_velocity;
         // The time the state is at
         double time;
+        // The angle the robot should be facing
+        Angle heading;
     };
 
     class Trajectory {
