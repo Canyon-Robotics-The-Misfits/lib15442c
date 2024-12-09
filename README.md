@@ -3,7 +3,8 @@ Team 15442c's library for programming vex robots
 This repo contains the following:
 * Drivetrain control code
 * Odometry (using tracking wheels, the GPS sensor, or monte carlo localization)
-* Motion Algorithms, like simple PIDs, Boomerang, and more
+* Trajectory/2D Motion Profile generation using Cubic Hermite Splines
+* Motion Algorithms, like simple PIDs, Boomerang, RAMSETE, and more
 * Math utilities, like for managing angles, vectors, and poses
 * Wrapper classes for motors and pneumatics
 * Logger macros
