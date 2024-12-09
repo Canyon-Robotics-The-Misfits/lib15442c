@@ -4,12 +4,10 @@
 
 lib15442c::Zone lib15442c::circle_zone(lib15442c::Vec center, double radius, double value)
 {
-    double center_x = center.x;
-    double center_y = center.y;
     
-    return [&center_x, &center_y, &radius, &value](lib15442c::Vec point)
+    return [center, radius, value](lib15442c::Vec point)
     {
-        if (pow(center_x - point.x, 2) + pow(center_y - point.y, 2) < radius * radius)
+        if (pow(point.x - center.x, 2) + pow(point.y - center.y, 2) < radius * radius)
         {
             return value;
         }
@@ -21,7 +19,7 @@ lib15442c::Zone lib15442c::circle_zone(lib15442c::Vec center, double radius, dou
 }
 lib15442c::Zone lib15442c::rect_zone(lib15442c::Vec corner_a, lib15442c::Vec corner_b, double value)
 {
-    return [&corner_a, &corner_b, &value](lib15442c::Vec point)
+    return [corner_a, corner_b, value](lib15442c::Vec point)
     {
         if ((point - corner_a).x < corner_b.x && (point - corner_a).y < corner_b.y)
         {
@@ -167,11 +165,6 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         double delta_time = distance / velocity_avg;
 
         states[i].time = states[i-1].time + delta_time;
-    }
-
-    for (TrajectoryState state : states)
-    {
-        std::cout << state.time << ", " << state.position.x << ", " << state.position.y << ", " << state.drive_velocity << std::endl;
     }
 
     return Trajectory(states);

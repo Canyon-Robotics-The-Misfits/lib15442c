@@ -42,5 +42,7 @@ namespace lib15442c
          * @return double How long it takes to follow the trajectory (ms)
          */
         double get_total_time();
+
+        void debug_log();
     };
 } // namespace lib15442c
