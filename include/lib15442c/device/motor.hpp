@@ -36,6 +36,13 @@ namespace lib15442c
         virtual void move_velocity(double velocity) = 0;
 
         /**
+         * @brief Get the motor velocity
+         * 
+         * @return double the motor velocity
+         */
+        virtual double get_velocity() = 0;
+
+        /**
          * @brief Set the brake mode of the motor
          * 
          * @param brake_mode The new brake mode
@@ -87,6 +94,13 @@ namespace lib15442c
          * @return bool 
          */
         virtual bool is_installed() = 0;
+
+        /**
+         * @brief Get a list of the uninstalled motors by port. Returns the port of the motor if not a motor group
+         * 
+         * @return std::vector<int> 
+         */
+        virtual std::vector<int> get_uninstalled_motors() = 0;
     };
 
     #ifndef LIB15442C_MOCK_DEVICES_ONLY
@@ -116,6 +130,8 @@ namespace lib15442c
         void move(double voltage) override;
         void move_velocity(double velocity) override;
 
+        double get_velocity() override;
+
         void set_brake_mode(MotorBrakeMode brake_mode) override;
         MotorBrakeMode get_brake_mode() override;
 
@@ -130,6 +146,8 @@ namespace lib15442c
         bool is_installed();
 
         int get_port();
+
+        std::vector<int> get_uninstalled_motors() override;
     };
 
     class MotorGroup : public virtual IMotor {
@@ -139,28 +157,30 @@ namespace lib15442c
         MotorGroup(std::initializer_list<MotorParameters> parameters);
         MotorGroup(MotorGroupParameters parameters, std::initializer_list<int> ports);
 
-        void move(double voltage);
-        void move_velocity(double velocity);
+        void move(double voltage) override;
+        void move_velocity(double velocity) override;
 
-        void set_brake_mode(MotorBrakeMode brake_mode);
-        MotorBrakeMode get_brake_mode();
+        double get_velocity() override;
 
-        void set_reversed(bool reversed);
-        bool get_reversed();
+        void set_brake_mode(MotorBrakeMode brake_mode) override;
+        MotorBrakeMode get_brake_mode() override;
 
-        double get_temp();
+        void set_reversed(bool reversed) override;
+        bool get_reversed() override;
 
-        void set_ratio(double ratio);
-        double get_ratio();
+        double get_temp() override;
 
-        bool is_installed();
+        void set_ratio(double ratio) override;
+        double get_ratio() override;
+
+        bool is_installed() override;
 
         /**
          * @brief Get a list of the uninstalled motors by port
          * 
          * @return std::vector<int> 
          */
-        std::vector<int> get_uninstalled_motors();
+        std::vector<int> get_uninstalled_motors() override;
     };
 
     #endif

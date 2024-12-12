@@ -31,6 +31,11 @@ void Motor::move_velocity(double velocity)
     pros::c::motor_move_velocity(port, velocity / ratio * MOTOR_RED * (reversed ? -1 : 1)); // multiply by MOTOR_RED because motors are configured as red ones
 }
 
+double Motor::get_velocity()
+{
+    return pros::c::motor_get_actual_velocity(port) / MOTOR_RED * ratio * (reversed ? -1 : 1);
+}
+
 void Motor::set_brake_mode(MotorBrakeMode brake_mode)
 {
     this->brake_mode = brake_mode;
@@ -93,6 +98,11 @@ int Motor::get_port()
     return port;
 }
 
+std::vector<int> Motor::get_uninstalled_motors()
+{
+    return is_installed() ? std::vector<int>() : std::vector<int>({get_port()});
+}
+
 
 MotorGroup::MotorGroup(std::initializer_list<MotorParameters> parameters)
 {
@@ -124,6 +134,16 @@ void MotorGroup::move_velocity(double velocity)
     for (int i = 0; i < (int)motors.size(); i++) {
         motors[i]->move_velocity(velocity);
     }
+}
+
+double MotorGroup::get_velocity()
+{
+    double total_velocity = 0;
+    for (int i = 0; i < (int)motors.size(); i++) {
+        total_velocity += motors[i]->get_velocity();
+    }
+
+    return total_velocity / (double)motors.size();
 }
 
 void MotorGroup::set_brake_mode(MotorBrakeMode brake_mode)

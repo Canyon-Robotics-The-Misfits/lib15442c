@@ -3,8 +3,8 @@
 #include <cmath>
 
 lib15442c::TankDrive::TankDrive(
-    std::shared_ptr<lib15442c::MotorGroup> left_motors,
-    std::shared_ptr<lib15442c::MotorGroup> right_motors,
+    std::shared_ptr<lib15442c::IMotor> left_motors,
+    std::shared_ptr<lib15442c::IMotor> right_motors,
     double wheel_diameter,
     double gear_ratio,
     double track_width) : left_motors(left_motors),
