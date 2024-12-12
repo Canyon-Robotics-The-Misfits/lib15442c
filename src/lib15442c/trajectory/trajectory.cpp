@@ -15,7 +15,7 @@ lib15442c::TrajectoryState lib15442c::Trajectory::lerp_state(TrajectoryState a, 
             lerp(a.position.y, b.position.y, t)
         ),
         drive_velocity: lerp(a.drive_velocity, b.drive_velocity, t),
-        turn_velocity: lerp(a.turn_velocity, b.turn_velocity, t),
+        rotational_velocity: lerp(a.rotational_velocity, b.rotational_velocity, t),
         time: lerp(a.time, b.time, t)
     };
 }
@@ -29,7 +29,7 @@ lib15442c::Trajectory::Trajectory(std::vector<TrajectoryState> states): states(s
 lib15442c::TrajectoryState lib15442c::Trajectory::get_state(double time)
 {
     int index = -1;
-    for (int i = 1; i < states.size(); i++)
+    for (int i = 1; i < (int)states.size(); i++)
     {
         if (states[i].time >= time)
         {
@@ -56,6 +56,6 @@ void lib15442c::Trajectory::debug_log()
 {
     for (TrajectoryState state : states)
     {
-        std::cout << state.time << ", " << state.position.x << ", " << state.position.y << ", " << state.drive_velocity << std::endl;
+        std::cout << state.time << ", " << state.position.x << ", " << state.position.y << ", " << state.heading.rad() << ", " << state.drive_velocity << ", " << state.rotational_velocity << std::endl;
     }
 }

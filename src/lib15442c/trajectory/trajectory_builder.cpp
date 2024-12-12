@@ -1,6 +1,10 @@
-#include "trajectory_builder.hpp"
-
 #include <iostream>
+#include "pros/rtos.h"
+
+#include "trajectory_builder.hpp"
+#include "lib15442c/logger.hpp"
+
+#define LOGGER "trajectory_builder.cpp"
 
 lib15442c::Zone lib15442c::circle_zone(lib15442c::Vec center, double radius, double value)
 {
@@ -13,7 +17,7 @@ lib15442c::Zone lib15442c::circle_zone(lib15442c::Vec center, double radius, dou
         }
         else
         {
-            return infinity();
+            return (double)INFINITY;
         }
     };
 }
@@ -27,7 +31,7 @@ lib15442c::Zone lib15442c::rect_zone(lib15442c::Vec corner_a, lib15442c::Vec cor
         }
         else
         {
-            return infinity();
+            return (double)INFINITY;
         }
     };
 }
@@ -70,7 +74,7 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
         states.push_back({
             position: next,
             drive_velocity: INFINITY,
-            turn_velocity: INFINITY,
+            rotational_velocity: INFINITY,
             time: INFINITY
         });
     }
@@ -84,8 +88,6 @@ double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
     for (lib15442c::Zone zone : max_speed_zones)
     {
         double value = zone(position);
-
-        // std::cout << value << std::endl;
 
         if (value < min_value)
         {
@@ -125,14 +127,16 @@ void lib15442c::TrajectoryBuilder::add_max_speed_zone(Zone zone)
     max_speed_zones.push_back(zone);
 }
 
-lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, int resolution)
+lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, int resolution, bool benchmark)
 {
     std::vector<TrajectoryState> states;
+
+    double start_time = pros::c::micros() / 1000.0;
 
     states.push_back({
         position: hermite_spline[0].point,
         drive_velocity: INFINITY,
-        turn_velocity: INFINITY,
+        rotational_velocity: INFINITY,
         time: INFINITY
     });
 
@@ -145,20 +149,26 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         states.insert(states.end(), segment.begin(), segment.end());
     }
 
+    double hermite_end_time = pros::c::micros() / 1000.0;
+
     states[0].drive_velocity = 0;
-    states[0].turn_velocity = 0;
+    states[0].rotational_velocity = 0;
     for (int i = 1; i < (int)states.size(); i++)
     {
         states[i].drive_velocity = calculate_velocity(states[i], states[i-1], constraints.max_speed, constraints.max_acceleration);
     }
+
+    double velocity_1_end_time = pros::c::micros() / 1000.0;
     
     states[states.size() - 1].drive_velocity = 0;
-    states[states.size() - 1].turn_velocity = 0;
+    states[states.size() - 1].rotational_velocity = 0;
     for (int i = (int)states.size() - 2; i > 0; i--)
     {
         states[i].drive_velocity =
             std::min(states[i].drive_velocity, calculate_velocity(states[i], states[i+1], constraints.max_speed, constraints.max_acceleration));
     }
+
+    double velocity_2_end_time = pros::c::micros() / 1000.0;
 
     states[0].time = 0;
     states[0].heading = Angle::from_rad(atan2(hermite_spline[0].tangent.x, hermite_spline[0].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
@@ -171,11 +181,11 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
         double distance = states[i-1].position.distance_to(states[i].position);
 
-        double delta_time = (distance / velocity_avg) * 1000; // convert in/s to in/ms
+        double delta_time = (distance / velocity_avg);
 
         states[i].time = states[i-1].time + delta_time;
 
-        if (i != states.size() - 1)
+        if (i != (int)states.size() - 1)
         {
             Angle angle_to_next = Angle::from_rad(atan2(states[i+1].position.x - states[i].position.x, states[i+1].position.y - states[i].position.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
 
@@ -185,17 +195,29 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
             // a = states[i-1].position
             // b = states[i].position
             // c = states[i+1].position
-            double triangle_area =   
-                (states[i].position.x - states[i-1].position.x) * (states[i+1].position.y * states[i-1].position.y) -
+            double triangle_area_doubled =   
+                (states[i].position.x - states[i-1].position.x) * (states[i+1].position.y - states[i-1].position.y) -
                 (states[i].position.y - states[i-1].position.y) * (states[i+1].position.x - states[i-1].position.x);
-            double dist_a_b = states[i-1].position.distance_to(states[i].position);
-            double dist_b_c = states[i].position.distance_to(states[i+1].position);
-            double dist_c_d = states[i+1].position.distance_to(states[i-1].position);
+            double dist_a_b = states[i-1].position.distance_to_squared(states[i].position);
+            double dist_b_c = states[i].position.distance_to_squared(states[i+1].position);
+            double dist_c_a = states[i+1].position.distance_to_squared(states[i-1].position);
 
-            double curvature = 4 * triangle_area / (dist_a_b * dist_b_c * dist_c_d);
+            double curvature = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
 
-            states[i].turn_velocity = states[i].drive_velocity * curvature;
+            states[i].rotational_velocity = states[i].drive_velocity * curvature;
         }
+    }
+
+    double time_and_heading_end_time = pros::c::micros() / 1000.0;
+
+    if (benchmark)
+    {
+        DEBUG_TEXT("---- TRAJECTORY BENCHMARK ----");
+        DEBUG("hermite calculation: %f", hermite_end_time - start_time);
+        DEBUG("velocity pass forward: %f", velocity_1_end_time - hermite_end_time);
+        DEBUG("velocity pass reverse: %f", velocity_2_end_time - velocity_1_end_time);
+        DEBUG("time and heading pass: %f", time_and_heading_end_time - velocity_2_end_time);
+        DEBUG_TEXT("------------------------------");
     }
 
     return Trajectory(states);

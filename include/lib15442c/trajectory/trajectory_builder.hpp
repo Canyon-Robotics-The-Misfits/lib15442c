@@ -69,8 +69,9 @@ namespace lib15442c
          * 
          * @param constraints Motion constraints for the robot
          * @param resolution How many points to calculate per curve. -1 to auto-calculate a resolution
+         * @param benchmark Whether to log how long each step of the computation took
          * @return Trajectory The computed trajectory
          */
-        Trajectory compute(TrajectoryConstraints constraints, int resolution = -1);
+        Trajectory compute(TrajectoryConstraints constraints, int resolution = -1, bool benchmark = false);
     };
 } // namespace lib15442c
