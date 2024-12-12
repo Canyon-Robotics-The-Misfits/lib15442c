@@ -90,7 +90,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
 
     // std::cout << time_since_start << ", " << error << ", " << speed << ", " << pose.angle.rad() << ", " << params.angle.rad() << ", " << angle_error.rad() << std::endl;
 
-    return MotionOutputSpeeds{
+    return MotionOutputVolts{
         linear_output : speed,
         rotational_output : rot_speed,
     };

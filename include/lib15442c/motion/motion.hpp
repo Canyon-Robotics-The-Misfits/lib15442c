@@ -10,14 +10,19 @@
 #include <variant>
 
 namespace lib15442c {
-    struct MotionOutputSpeeds {
+    struct MotionOutputVolts {
         double linear_output;
         double rotational_output;
+    };
+    
+    struct MotionOutputSpeeds {
+        double drive_velocity; // in/s
+        double rotational_velocity; // rad/s
     };
 
     struct MotionOutputExit {};
 
-    using MotionOutput = std::variant<MotionOutputSpeeds, MotionOutputExit>;
+    using MotionOutput = std::variant<MotionOutputVolts, MotionOutputSpeeds, MotionOutputExit>;
 
     /**
      * An abstract motion algorithm

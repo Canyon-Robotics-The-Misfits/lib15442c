@@ -92,7 +92,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
 
     // std::cout << pose.angle.deg() << ", " << target_angle.deg() << ", " << error << std::endl;
 
-    return MotionOutputSpeeds{
+    return MotionOutputVolts{
         linear_output : 0,
         rotational_output : rot_speed,
     };

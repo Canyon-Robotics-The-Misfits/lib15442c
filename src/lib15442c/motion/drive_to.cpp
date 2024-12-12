@@ -89,7 +89,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
 
     std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
 
-    return MotionOutputSpeeds{
+    return MotionOutputVolts{
         linear_output : drive_speed,
         rotational_output : rot_speed,
     };
@@ -152,7 +152,7 @@ lib15442c::MotionOutput lib15442c::DriveToAB::calculate(Pose pose, double time_s
         return MotionOutputExit{};
     }
 
-    return MotionOutputSpeeds{
+    return MotionOutputVolts{
         linear_output : linear_velocity,
         rotational_output : angular_velocity
     };
@@ -235,7 +235,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
 
     std::cout << time_since_start << "," << pose.x << ", " << pose.y << "," << linear_velocity << "," << angular_velocity << std::endl;
 
-    return MotionOutputSpeeds{
+    return MotionOutputVolts{
         linear_output : linear_velocity,
         rotational_output : angular_velocity
     };
