@@ -15,7 +15,10 @@ lib15442c::Angle Vec::angle_to(Vec vector) {
 }
 
 double Vec::distance_to(Vec vector) {
-    return sqrt(pow(vector.x - x, 2) + pow(vector.y - y, 2));
+    return sqrt(distance_to_squared(vector));
+}
+double Vec::distance_to_squared(Vec vector) {
+    return pow(vector.x - x, 2) + pow(vector.y - y, 2);
 }
 
 Vec Vec::normalized() {

@@ -46,6 +46,13 @@ namespace lib15442c {
          * @return double The distance
          */
         double distance_to(lib15442c::Vec vector);
+        /**
+         * @brief The distance between this vector and another one, squared to save on processing time
+         * 
+         * @param vector The other one
+         * @return double The distance
+         */
+        double distance_to_squared(lib15442c::Vec vector);
 
         /**
          * @brief Returns the normalized vector (same angle, magnitude of 1)
