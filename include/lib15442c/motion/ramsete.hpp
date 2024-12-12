@@ -14,12 +14,18 @@ namespace lib15442c
         std::string get_name();
 
     private:
-        Trajectory trajectory;
+        lib15442c::Trajectory trajectory;
 
+        double track_width = 0;
+
+        double b;
+        double zeta;
+
+        bool async;
         std::string name;
 
     public:
-        RAMSETE(Trajectory trajectory, std::string name = "RAMSETE");
+        RAMSETE(lib15442c::Trajectory trajectory, double b, double zeta, bool async = false, std::string name = "RAMSETE");
         void initialize(std::shared_ptr<IDrivetrain> drivetrain, Pose pose);
 
         MotionOutput calculate(Pose pose, double time_since_start, double delta_time);
