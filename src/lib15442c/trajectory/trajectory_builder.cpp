@@ -59,7 +59,7 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
         resolution = floor(std::max(std::abs((p0 - p1).x), std::abs((p0 - p1).y)) * 1.0);
     }
 
-    for (int i = 1; i < resolution; i++)
+    for (int i = 1; i <= resolution; i++)
     {
         double dt = 1.0 / (double)resolution;
         double t = (double)i * dt;
