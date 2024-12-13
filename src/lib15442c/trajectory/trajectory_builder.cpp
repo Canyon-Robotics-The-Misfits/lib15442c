@@ -11,7 +11,7 @@ lib15442c::Zone lib15442c::circle_zone(lib15442c::Vec center, double radius, dou
     
     return [center, radius, value](lib15442c::Vec point)
     {
-        if (pow(point.x - center.x, 2) + pow(point.y - center.y, 2) < radius * radius)
+        if (point.distance_to_squared(center) < radius * radius)
         {
             return value;
         }
@@ -41,10 +41,10 @@ lib15442c::Zone lib15442c::rect_zone(lib15442c::Vec corner_a, lib15442c::Vec cor
 lib15442c::Vec lib15442c::TrajectoryBuilder::lerp_hermite(double t, Vec p0, Vec m0, Vec p1, Vec m1)
 {
     return
-        p0 * (2 * pow(t, 3) - 3 * pow(t, 2) + 1) +
-        m0 * (pow(t, 3) - 2 * pow(t, 2) + t) + 
-        p1 * (-2 * pow(t, 3) + 3 * pow(t, 2)) +
-        m1 * (pow(t, 3) - pow(t, 2));
+        p0 * (2 * (t * t * t) - 3 * (t * t) + 1) +
+        m0 * ((t * t * t) - 2 * (t * t + t)) + 
+        p1 * (-2 * (t * t * t) + 3 * (t * t)) +
+        m1 * ((t * t * t) - (t * t));
 }
 
 std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_hermite(int resolution, Vec p0, Vec m0, Vec p1, Vec m1)
@@ -181,26 +181,30 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
         double distance = states[i-1].position.distance_to(states[i].position);
 
-        double delta_time = (distance / velocity_avg);
+        double delta_time = distance / velocity_avg;
 
         states[i].time = states[i-1].time + delta_time;
 
         if (i != (int)states.size() - 1)
         {
-            Angle angle_to_next = Angle::from_rad(atan2(states[i+1].position.x - states[i].position.x, states[i+1].position.y - states[i].position.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
+            Vec prev_pos = states[i-1].position;
+            Vec current_pos = states[i].position;
+            Vec next_pos = states[i+1].position;
 
-            states[i].heading = (states[i - 1].heading + angle_to_next) / 2.0;
+            Angle angle_to_next = Angle::from_rad(atan2(next_pos.x - current_pos.x, next_pos.y - current_pos.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
+
+            states[i].heading = (states[i-1].heading + angle_to_next) / 2.0;
 
             // solve for menger curvature
-            // a = states[i-1].position
-            // b = states[i].position
-            // c = states[i+1].position
-            double triangle_area_doubled =   
-                (states[i].position.x - states[i-1].position.x) * (states[i+1].position.y - states[i-1].position.y) -
-                (states[i].position.y - states[i-1].position.y) * (states[i+1].position.x - states[i-1].position.x);
-            double dist_a_b = states[i-1].position.distance_to_squared(states[i].position);
-            double dist_b_c = states[i].position.distance_to_squared(states[i+1].position);
-            double dist_c_a = states[i+1].position.distance_to_squared(states[i-1].position);
+            // a = states[i-1].position = prev_pos
+            // b = states[i].position = current_pos
+            // c = states[i+1].position = next_pos
+            double triangle_area_doubled = 
+                (current_pos.x - prev_pos.x) * (next_pos.y - prev_pos.y) -
+                (current_pos.y - prev_pos.y) * (next_pos.x - prev_pos.x);
+            double dist_a_b = prev_pos.distance_to_squared(current_pos);
+            double dist_b_c = current_pos.distance_to_squared(next_pos);
+            double dist_c_a = next_pos.distance_to_squared(prev_pos);
 
             double curvature = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
 

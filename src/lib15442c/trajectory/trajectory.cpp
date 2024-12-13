@@ -1,11 +1,10 @@
-#include "trajectory.hpp"
-
 #include <iostream>
 
-double lerp(double a, double b, double t)
-{
-    return (b - a) * t + a;
-}
+#include "trajectory.hpp"
+#include "lib15442c/logger.hpp"
+#include "lib15442c/math/vector.hpp"
+
+#define LOGGER "trajectory.cpp"
 
 lib15442c::TrajectoryState lib15442c::Trajectory::lerp_state(TrajectoryState a, TrajectoryState b, double t)
 {
@@ -56,6 +55,6 @@ void lib15442c::Trajectory::debug_log()
 {
     for (TrajectoryState state : states)
     {
-        std::cout << state.time << ", " << state.position.x << ", " << state.position.y << ", " << state.heading.rad() << ", " << state.drive_velocity << ", " << state.rotational_velocity << std::endl;
+        DEBUG("%f, %f, %f, %f, %f, %f", state.time, state.position.x, state.position.y, state.heading.rad(), state.drive_velocity, state.rotational_velocity);
     }
 }

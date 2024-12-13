@@ -2,7 +2,7 @@
 
 #ifndef LIB15442C_MOCK_DEVICES_ONLY
 
-#include "pros/misc.h"
+#include "pros/rtos.h"
 #define GET_TIME pros::c::millis()
 
 #else

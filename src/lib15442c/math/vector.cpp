@@ -18,7 +18,7 @@ double Vec::distance_to(Vec vector) {
     return sqrt(distance_to_squared(vector));
 }
 double Vec::distance_to_squared(Vec vector) {
-    return pow(vector.x - x, 2) + pow(vector.y - y, 2);
+    return (vector.x - x) * (vector.x - x) + (vector.y - y, 2) * (vector.y - y, 2);
 }
 
 Vec Vec::normalized() {
