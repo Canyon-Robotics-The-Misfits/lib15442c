@@ -114,11 +114,14 @@ MotorGroup::MotorGroup(std::initializer_list<MotorParameters> parameters)
 MotorGroup::MotorGroup(MotorGroupParameters parameters, std::initializer_list<int> ports)
 {
     for (auto port : ports) {
-        auto parameter = MotorParameters(parameters);
+        MotorParameters motor_parameters = {
+            port: port,
+            reversed: parameters.reversed,
+            brake_mode: parameters.brake_mode,
+            ratio: parameters.ratio
+        };
 
-        parameter.port = port;
-
-        motors.push_back(std::make_unique<Motor>(parameter));
+        motors.push_back(std::make_unique<Motor>(motor_parameters));
     }
 }
 
