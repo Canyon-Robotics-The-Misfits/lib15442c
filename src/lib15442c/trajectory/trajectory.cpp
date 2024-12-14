@@ -1,21 +1,20 @@
 #include <iostream>
 
 #include "trajectory.hpp"
-#include "lib15442c/logger.hpp"
 #include "lib15442c/math/vector.hpp"
 
-#define LOGGER "trajectory.cpp"
+#include <cmath>
 
 lib15442c::TrajectoryState lib15442c::Trajectory::lerp_state(TrajectoryState a, TrajectoryState b, double t)
 {
     return TrajectoryState {
         position: lib15442c::Vec(
-            lerp(a.position.x, b.position.x, t),
-            lerp(a.position.y, b.position.y, t)
+            std::lerp(a.position.x, b.position.x, t),
+            std::lerp(a.position.y, b.position.y, t)
         ),
-        drive_velocity: lerp(a.drive_velocity, b.drive_velocity, t),
-        rotational_velocity: lerp(a.rotational_velocity, b.rotational_velocity, t),
-        time: lerp(a.time, b.time, t)
+        drive_velocity: std::lerp(a.drive_velocity, b.drive_velocity, t),
+        rotational_velocity: std::lerp(a.rotational_velocity, b.rotational_velocity, t),
+        time: std::lerp(a.time, b.time, t)
     };
 }
 
@@ -55,6 +54,6 @@ void lib15442c::Trajectory::debug_log()
 {
     for (TrajectoryState state : states)
     {
-        DEBUG("%f, %f, %f, %f, %f, %f", state.time, state.position.x, state.position.y, state.heading.rad(), state.drive_velocity, state.rotational_velocity);
+        std::cout << state.time << ", " << state.position.x << ", " << state.position.y << ", " << state.heading.rad() << ", " << state.drive_velocity << ", " << state.rotational_velocity << std::endl;
     }
 }
