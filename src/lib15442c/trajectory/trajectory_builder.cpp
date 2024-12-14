@@ -3,6 +3,7 @@
 
 #include "trajectory_builder.hpp"
 #include "lib15442c/logger.hpp"
+#include "lib15442c/math/math.hpp"
 
 #define LOGGER "trajectory_builder.cpp"
 
@@ -42,7 +43,7 @@ lib15442c::Vec lib15442c::TrajectoryBuilder::lerp_hermite(double t, Vec p0, Vec 
 {
     return
         p0 * (2 * (t * t * t) - 3 * (t * t) + 1) +
-        m0 * ((t * t * t) - 2 * (t * t + t)) + 
+        m0 * ((t * t * t) - 2 * (t * t + t)) +
         p1 * (-2 * (t * t * t) + 3 * (t * t)) +
         m1 * ((t * t * t) - (t * t));
 }
@@ -208,7 +209,20 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
             double curvature = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
 
-            states[i].rotational_velocity = states[i].drive_velocity * curvature;
+            double rotational_velocity = states[i].drive_velocity * curvature;
+
+            if (std::abs(states[i].drive_velocity - constraints.track_width * rotational_velocity) > constraints.max_speed)
+            {
+                states[i].drive_velocity = lib15442c::sgn(states[i].drive_velocity) * constraints.max_speed / (1 - curvature * constraints.track_width);
+                rotational_velocity = states[i].drive_velocity * curvature;
+            }
+            else if (std::abs(states[i].drive_velocity + constraints.track_width * rotational_velocity) > constraints.max_speed)
+            {
+                states[i].drive_velocity = lib15442c::sgn(states[i].drive_velocity) * constraints.max_speed / (1 + curvature * constraints.track_width);
+                rotational_velocity = states[i].drive_velocity * curvature;
+            }
+
+            states[i].rotational_velocity = rotational_velocity;
         }
     }
 

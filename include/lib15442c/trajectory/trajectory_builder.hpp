@@ -27,6 +27,8 @@ namespace lib15442c
     {
         double max_speed;
         double max_acceleration;
+
+        double track_width;
     };
 
     class TrajectoryBuilder {
