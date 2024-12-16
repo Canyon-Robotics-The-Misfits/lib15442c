@@ -43,7 +43,7 @@ lib15442c::Vec lib15442c::TrajectoryBuilder::lerp_hermite(double t, Vec p0, Vec 
 {
     return
         p0 * (2 * (t * t * t) - 3 * (t * t) + 1) +
-        m0 * ((t * t * t) - 2 * (t * t + t)) +
+        m0 * ((t * t * t) - 2 * (t * t) + t) +
         p1 * (-2 * (t * t * t) + 3 * (t * t)) +
         m1 * ((t * t * t) - (t * t));
 }
