@@ -178,10 +178,10 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(DrivetrainConstraint
     states[0].heading = Angle::from_rad(atan2(hermite_spline[0].tangent.x, hermite_spline[0].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
     states[states.size()-1].heading = Angle::from_rad(atan2(hermite_spline[hermite_spline.size()-1].tangent.x, hermite_spline[hermite_spline.size()-1].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
 
-    states[0].drive_accel = 0;
-    states[0].rotational_accel = 0;
-    states[states.size()-1].drive_accel = 0;
-    states[states.size()-1].rotational_accel = 0;
+    states[0].drive_accel = states[1].drive_velocity / states[1].time;
+    states[0].rotational_accel = states[1].rotational_velocity / states[1].time;
+    states[states.size()-1].drive_accel = -states[states.size()-2].drive_velocity / (states[states.size()-1].time - states[states.size()-2].time);
+    states[states.size()-1].rotational_accel = -states[states.size()-2].rotational_velocity / (states[states.size()-1].time - states[states.size()-2].time);
 
     for (int i = 1; i < (int)states.size(); i++)
     {
