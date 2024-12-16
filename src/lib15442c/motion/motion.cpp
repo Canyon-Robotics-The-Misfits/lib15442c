@@ -48,9 +48,9 @@ void lib15442c::IMotion::execute(std::shared_ptr<IDrivetrain> drivetrain, std::s
         {
             drivetrain->move_ratio(speeds->linear_output, speeds->rotational_output);
         }
-        if (MotionOutputSpeeds *speeds = std::get_if<MotionOutputSpeeds>(&out))
+        else if (MotionOutputSpeeds *speeds = std::get_if<MotionOutputSpeeds>(&out))
         {
-            drivetrain->move_speed(speeds->drive_velocity, speeds->rotational_velocity);
+            drivetrain->move_speed(speeds->drive_velocity, speeds->rotational_velocity, speeds->drive_accel, speeds->rotational_accel);
         }
         else
         {

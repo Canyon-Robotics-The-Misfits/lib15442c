@@ -18,6 +18,8 @@ namespace lib15442c {
     struct MotionOutputSpeeds {
         double drive_velocity; // in/s
         double rotational_velocity; // rad/s
+        double drive_accel; // in/s/s
+        double rotational_accel; // rad/s/s
     };
 
     struct MotionOutputExit {};

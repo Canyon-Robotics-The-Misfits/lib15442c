@@ -33,7 +33,7 @@ void Motor::move_velocity(double velocity)
 
 double Motor::get_velocity()
 {
-    return pros::c::motor_get_actual_velocity(port) / MOTOR_RED * ratio * (reversed ? -1 : 1);
+    return pros::c::motor_get_actual_velocity(port) / MOTOR_RED * ratio * 360.0 / 60.0 * (reversed ? -1 : 1);
 }
 
 void Motor::set_brake_mode(MotorBrakeMode brake_mode)

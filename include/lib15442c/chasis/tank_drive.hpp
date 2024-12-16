@@ -20,6 +20,8 @@ namespace lib15442c
         // Settings
         double track_width;
         double deg_inch_ratio;
+        double speed_kP;
+        DrivetrainConstraints constraints;
 
     public:
         TankDrive(
@@ -27,7 +29,8 @@ namespace lib15442c
             std::shared_ptr<lib15442c::IMotor> right_motors,
             double wheel_diameter,
             double gear_ratio,
-            double track_width
+            double speed_kP,
+            DrivetrainConstraints constraints
         );
         
         /**
@@ -53,10 +56,12 @@ namespace lib15442c
         /**
          * Move a drivetrain with a set linear and rotational speed (in/s)
          *
-         * @param linear_speed The speed to drive forward/back with
-         * @param turn_speed The speed to turn at
+         * @param linear_velocity The speed to drive forward/back with
+         * @param turn_velocity The speed to turn at
+         * @param linear_accel The linear acceleration
+         * @param turn_accel The rotational acceleration
          */
-        void move_speed(double linear_speed, double turn_speed);
+        void move_speed(double linear_velocity, double turn_velocity, double linear_accel = 0, double turn_accel = 0);
 
         /**
          * Set the brake mode of the drivetrain motors

@@ -5,6 +5,15 @@
 
 namespace lib15442c
 {
+    // Robot constraints and important info for trajectory computation and more
+    struct DrivetrainConstraints
+    {
+        double max_speed;
+        double max_acceleration;
+
+        double track_width;
+    };
+
     /**
      * An abstract drivetrain
      */
@@ -37,7 +46,7 @@ namespace lib15442c
          * @param linear_speed The speed to drive forward/back with
          * @param turn_speed The speed to turn with
          */
-        virtual void move_speed(double linear_speed, double turn_speed) = 0;
+        virtual void move_speed(double linear_speed, double turn_speed, double linear_accel = 0, double turn_accel = 0) = 0;
 
         /**
          * Set the brake mode of the drivetrain motors

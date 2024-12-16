@@ -20,6 +20,11 @@ void lib15442c::RAMSETE::initialize(std::shared_ptr<IDrivetrain> drivetrain, Pos
 
 lib15442c::MotionOutput lib15442c::RAMSETE::calculate(Pose pose, double time_since_start, double delta_time)
 {
+    if (time_since_start > trajectory.get_total_time() * 1000.0)
+    {
+        return MotionOutputExit{};
+    }
+        
     TrajectoryState target_state = trajectory.get_state(time_since_start / 1000.0);
 
     double heading_rad = -pose.angle.rad() + M_PI / 2.0;

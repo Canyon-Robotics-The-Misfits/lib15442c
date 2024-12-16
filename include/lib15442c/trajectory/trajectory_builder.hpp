@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "lib15442c/math/vector.hpp"
+#include "lib15442c/chasis/drivetrain.hpp"
 #include "trajectory.hpp"
 
 namespace lib15442c
@@ -21,15 +22,6 @@ namespace lib15442c
 
     Zone circle_zone(Vec center, double radius, double value);
     Zone rect_zone(Vec corner_a, Vec corner_b, double value);
-
-    // Robot constraints and important info for trajectory computation
-    struct TrajectoryConstraints
-    {
-        double max_speed;
-        double max_acceleration;
-
-        double track_width;
-    };
 
     class TrajectoryBuilder {
     private:
@@ -74,6 +66,6 @@ namespace lib15442c
          * @param benchmark Whether to log how long each step of the computation took
          * @return Trajectory The computed trajectory
          */
-        Trajectory compute(TrajectoryConstraints constraints, int resolution = -1, bool benchmark = false);
+        Trajectory compute(DrivetrainConstraints constraints, int resolution = -1, bool benchmark = false);
     };
 } // namespace lib15442c

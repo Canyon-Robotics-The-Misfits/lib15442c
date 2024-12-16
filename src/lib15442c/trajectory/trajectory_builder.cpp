@@ -76,6 +76,8 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
             position: next,
             drive_velocity: INFINITY,
             rotational_velocity: INFINITY,
+            drive_accel: INFINITY,
+            rotational_accel: INFINITY,
             time: INFINITY
         });
     }
@@ -128,7 +130,7 @@ void lib15442c::TrajectoryBuilder::add_max_speed_zone(Zone zone)
     max_speed_zones.push_back(zone);
 }
 
-lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, int resolution, bool benchmark)
+lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(DrivetrainConstraints constraints, int resolution, bool benchmark)
 {
     std::vector<TrajectoryState> states;
 
@@ -172,8 +174,15 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     double velocity_2_end_time = pros::c::micros() / 1000.0;
 
     states[0].time = 0;
+
     states[0].heading = Angle::from_rad(atan2(hermite_spline[0].tangent.x, hermite_spline[0].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
     states[states.size()-1].heading = Angle::from_rad(atan2(hermite_spline[hermite_spline.size()-1].tangent.x, hermite_spline[hermite_spline.size()-1].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
+
+    states[0].drive_accel = 0;
+    states[0].rotational_accel = 0;
+    states[states.size()-1].drive_accel = 0;
+    states[states.size()-1].rotational_accel = 0;
+
     for (int i = 1; i < (int)states.size(); i++)
     {
         double velocity_initial = states[i-1].drive_velocity;
@@ -207,7 +216,7 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
             double dist_b_c = current_pos.distance_to_squared(next_pos);
             double dist_c_a = next_pos.distance_to_squared(prev_pos);
 
-            double curvature = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
+            double curvature = sgn(triangle_area_doubled) * sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
 
             double rotational_velocity = states[i].drive_velocity * curvature;
 
@@ -223,18 +232,24 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
             }
 
             states[i].rotational_velocity = rotational_velocity;
+
+            // calculate acceleration
+            states[i].drive_accel = (states[i-1].drive_velocity - states[i+1].drive_velocity) / (states[i-1].time - states[i+1].time);
+            states[i].rotational_accel = (states[i-1].rotational_velocity - states[i+1].rotational_velocity) / (states[i-1].time - states[i+1].time);
         }
     }
 
-    double time_and_heading_end_time = pros::c::micros() / 1000.0;
+    double end_time = pros::c::micros() / 1000.0;
 
     if (benchmark)
     {
         DEBUG_TEXT("---- TRAJECTORY BENCHMARK ----");
+        DEBUG("TOTAL: %f", end_time - start_time);
         DEBUG("hermite calculation: %f", hermite_end_time - start_time);
-        DEBUG("velocity pass forward: %f", velocity_1_end_time - hermite_end_time);
-        DEBUG("velocity pass reverse: %f", velocity_2_end_time - velocity_1_end_time);
-        DEBUG("time and heading pass: %f", time_and_heading_end_time - velocity_2_end_time);
+        DEBUG("velocity pass: %f", velocity_2_end_time - hermite_end_time);
+        DEBUG("    forward: %f", velocity_1_end_time - hermite_end_time);
+        DEBUG("    reverse: %f", velocity_2_end_time - velocity_1_end_time);
+        DEBUG("final pass: %f", end_time - velocity_2_end_time);
         DEBUG_TEXT("------------------------------");
     }
 
