@@ -16,7 +16,7 @@ Motor::Motor(MotorParameters parameters)
     if (port < 0)
     {
         port = abs(port);
-        reversed = true;
+        reversed = !reversed;
     }
     set_brake_mode(brake_mode);
 }

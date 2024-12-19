@@ -9,6 +9,15 @@
 
 namespace lib15442c
 {
+    // Robot constraints and important info for trajectory computation and more
+    struct TrajectoryConstraints
+    {
+        double max_speed;
+        double max_acceleration;
+
+        double track_width;
+    };
+
     struct HermitePair
     {
         // The point for the robot to drive through
@@ -66,6 +75,6 @@ namespace lib15442c
          * @param benchmark Whether to log how long each step of the computation took
          * @return Trajectory The computed trajectory
          */
-        Trajectory compute(DrivetrainConstraints constraints, int resolution = -1, bool benchmark = false);
+        Trajectory compute(TrajectoryConstraints constraints, int resolution = -1, bool benchmark = false);
     };
 } // namespace lib15442c

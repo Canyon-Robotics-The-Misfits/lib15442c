@@ -20,8 +20,7 @@ namespace lib15442c
         // Settings
         double track_width;
         double deg_inch_ratio;
-        double speed_kP;
-        DrivetrainConstraints constraints;
+        FeedforwardConstants feedforward_constants;
 
     public:
         TankDrive(
@@ -29,8 +28,8 @@ namespace lib15442c
             std::shared_ptr<lib15442c::IMotor> right_motors,
             double wheel_diameter,
             double gear_ratio,
-            double speed_kP,
-            DrivetrainConstraints constraints
+            double track_width,
+            FeedforwardConstants feedforward_constants
         );
         
         /**

@@ -130,7 +130,7 @@ void lib15442c::TrajectoryBuilder::add_max_speed_zone(Zone zone)
     max_speed_zones.push_back(zone);
 }
 
-lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(DrivetrainConstraints constraints, int resolution, bool benchmark)
+lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraints constraints, int resolution, bool benchmark)
 {
     std::vector<TrajectoryState> states;
 

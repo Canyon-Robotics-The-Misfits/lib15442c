@@ -5,13 +5,16 @@
 
 namespace lib15442c
 {
-    // Robot constraints and important info for trajectory computation and more
-    struct DrivetrainConstraints
+    struct FeedforwardConstants
     {
-        double max_speed;
-        double max_acceleration;
-
-        double track_width;
+        // voltage required to overcome static friction
+        double kS;
+        // how much voltage to apply per in/s while maintaining speed
+        double kV;
+        // how much voltage to apply per in/s/s of acceleration
+        double kA;
+        // how much voltage to apply per in/s of error in velocity
+        double kP;
     };
 
     /**
