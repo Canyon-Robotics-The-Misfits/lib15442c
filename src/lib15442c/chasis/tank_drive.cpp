@@ -79,7 +79,7 @@ void lib15442c::TankDrive::move_speed(double linear_velocity, double turn_veloci
         target_right_accel * feedforward_constants.kA +
         right_error * feedforward_constants.kP;
 
-    std::cout << target_left_velocity << ", " << target_right_velocity << ", " << current_left_speed << ", " << current_right_speed << std::endl;
+    // std::cout << target_left_velocity << ", " << target_right_velocity << ", " << current_left_speed << ", " << current_right_speed << std::endl;
 
     left_motors->move(left_pwm);
     right_motors->move(right_pwm);
