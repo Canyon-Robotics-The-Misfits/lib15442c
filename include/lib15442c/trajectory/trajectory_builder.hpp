@@ -13,7 +13,7 @@ namespace lib15442c
     struct TrajectoryConstraints
     {
         double max_speed;
-        double max_acceleration;
+        double starting_acceleration;
 
         double track_width;
     };

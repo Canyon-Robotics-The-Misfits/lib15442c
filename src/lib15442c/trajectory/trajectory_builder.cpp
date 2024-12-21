@@ -101,16 +101,17 @@ double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
     return min_value;
 }
 
-double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, TrajectoryState initial, double global_max_speed, double max_acceleration)
+double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, TrajectoryState initial, double max_speed, double starting_acceleration)
 {
     double velocity_initial = initial.drive_velocity;
     double distance = initial.position.distance_to(final.position);
 
+    // accel should decrease as velocity approaches max speed
+    double max_acceleration = starting_acceleration - (starting_acceleration / max_speed) * velocity_initial;
+
     double delta_time = (-velocity_initial + sqrt(velocity_initial * velocity_initial + 2 * distance * max_acceleration)) / max_acceleration;
 
-    double max_speed = std::min(global_max_speed, get_max_speed(final.position));
-
-    // std::cout << "max speed: " << max_speed << std::endl;
+    double max_speed = std::min(max_speed, get_max_speed(final.position));
 
     return std::min(velocity_initial + max_acceleration * delta_time, max_speed);
 }
@@ -158,7 +159,7 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     states[0].rotational_velocity = 0;
     for (int i = 1; i < (int)states.size(); i++)
     {
-        states[i].drive_velocity = calculate_velocity(states[i], states[i-1], constraints.max_speed, constraints.max_acceleration);
+        states[i].drive_velocity = calculate_velocity(states[i], states[i-1], constraints.max_speed, constraints.starting_acceleration);
     }
 
     double velocity_1_end_time = pros::c::micros() / 1000.0;
@@ -168,7 +169,7 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     for (int i = (int)states.size() - 2; i > 0; i--)
     {
         states[i].drive_velocity =
-            std::min(states[i].drive_velocity, calculate_velocity(states[i], states[i+1], constraints.max_speed, constraints.max_acceleration));
+            std::min(states[i].drive_velocity, calculate_velocity(states[i], states[i+1], constraints.max_speed, constraints.starting_acceleration));
     }
 
     double velocity_2_end_time = pros::c::micros() / 1000.0;
