@@ -101,13 +101,13 @@ double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
     return min_value;
 }
 
-double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, TrajectoryState initial, double max_speed, double starting_acceleration)
+double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, TrajectoryState initial, double physical_max_speed, double starting_acceleration)
 {
     double velocity_initial = initial.drive_velocity;
     double distance = initial.position.distance_to(final.position);
 
     // accel should decrease as velocity approaches max speed
-    double max_acceleration = starting_acceleration - (starting_acceleration / max_speed) * velocity_initial;
+    double max_acceleration = starting_acceleration - (starting_acceleration / physical_max_speed) * velocity_initial;
 
     double delta_time = (-velocity_initial + sqrt(velocity_initial * velocity_initial + 2 * distance * max_acceleration)) / max_acceleration;
 
