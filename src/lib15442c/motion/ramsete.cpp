@@ -40,7 +40,7 @@ lib15442c::MotionOutput lib15442c::RAMSETE::calculate(Pose pose, double time_sin
     double k = 2 * zeta * sqrt(target_state.rotational_velocity * target_state.rotational_velocity + b * target_state.drive_velocity * target_state.drive_velocity);
 
     double drive_velocity = target_state.drive_velocity * cos(error_theta) + k * error_local_x;
-    double rotational_velocity = target_state.rotational_velocity + k * error_theta + (b * target_state.drive_velocity * sin(error_theta) * error_local_y) / error_theta;
+    double rotational_velocity = target_state.rotational_velocity + k * error_theta + (b * target_state.drive_velocity * error_local_y) * (error_theta != 0 ? (sin(error_theta) / error_theta) : 1);
     
     return MotionOutputSpeeds {
         drive_velocity: drive_velocity,
