@@ -111,7 +111,9 @@ double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, T
 
     double delta_time = (-velocity_initial + sqrt(velocity_initial * velocity_initial + 2 * distance * max_acceleration)) / max_acceleration;
 
-    double max_speed = std::min(max_speed, get_max_speed(final.position));
+    double max_speed = std::min(physical_max_speed, get_max_speed(final.position));
+
+    // std::cout << max_acceleration << ", " << velocity_initial + max_acceleration * delta_time << std::endl;
 
     return std::min(velocity_initial + max_acceleration * delta_time, max_speed);
 }
