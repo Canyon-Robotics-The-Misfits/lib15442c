@@ -71,12 +71,12 @@ void lib15442c::TankDrive::move_speed(double linear_velocity, double turn_veloci
     double left_pwm =
         feedforward_constants.kS * lib15442c::sgn(target_left_velocity) +
         target_left_velocity * feedforward_constants.kV +
-        target_left_accel * feedforward_constants.kA +
+        target_left_accel * (target_left_accel > 0 ? feedforward_constants.kA : feedforward_constants.kA_down) +
         left_error * feedforward_constants.kP;
     double right_pwm = 
         feedforward_constants.kS * lib15442c::sgn(target_right_velocity) +
         target_right_velocity * feedforward_constants.kV +
-        target_right_accel * feedforward_constants.kA +
+        target_right_accel * (target_right_accel > 0 ? feedforward_constants.kA : feedforward_constants.kA_down) +
         right_error * feedforward_constants.kP;
 
     // std::cout << target_left_velocity << ", " << target_right_velocity << ", " << current_left_speed << ", " << current_right_speed << std::endl;

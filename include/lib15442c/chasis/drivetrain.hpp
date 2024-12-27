@@ -13,6 +13,7 @@ namespace lib15442c
         double kV;
         // how much voltage to apply per in/s/s of acceleration
         double kA;
+        double kA_down;
         // how much voltage to apply per in/s of error in velocity
         double kP;
     };
