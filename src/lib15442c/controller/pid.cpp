@@ -6,7 +6,7 @@ double lib15442c::PID::calculate(double current, double target)
     return calculate_error(target - current);
 }
 
-double lib15442c::PID::calculate_error(double error) {
+double lib15442c::PID::calculate_error(double error, bool disable_i) {
     if (last_error == INFINITY) {
         last_error = error;
     }
@@ -15,17 +15,17 @@ double lib15442c::PID::calculate_error(double error) {
         total_error = 0;
     }
 
-    if (error < integral_active_zone) {
+    if (std::abs(error) < integral_active_zone) {
         total_error += error;
     } else {
         total_error = 0;
     }
 
-    if (total_error > integral_max) {
-        total_error = integral_max;
+    if (std::abs(total_error) > integral_max) {
+        total_error = integral_max * sgn(total_error);
     }
 
-    if (error < integral_reset_zone) {
+    if (std::abs(error) < integral_reset_zone) {
         total_error = 0;
     }
 
@@ -35,7 +35,7 @@ double lib15442c::PID::calculate_error(double error) {
 
     last_error = error;
 
-    double output = proportional + integral + derivative;
+    double output = proportional + ( !disable_i ? integral : 0 ) + derivative;
 
     if (std::fabs(output - last_output) > slew_rate) {
         output = last_output + slew_rate * lib15442c::sgn(output - last_output);

@@ -86,9 +86,10 @@ namespace lib15442c
          * @brief Calculate the output of the PID
          *
          * @param error The error from the target
+         * @param disable_i Disable the integral term
          * @return double The PID output
          */
-        double calculate_error(double error);
+        double calculate_error(double error, bool disable_i = false);
 
         /**
          * @brief Reset the PID total_error and last_error
