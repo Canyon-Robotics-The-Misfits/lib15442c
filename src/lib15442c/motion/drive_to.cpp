@@ -61,8 +61,12 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
         return MotionOutputExit{};
     }
 
-    Angle angle_error = (pose.angle).error_from(target_angle);
-    double rot_speed = turn_pid->calculate_error(angle_error.deg());
+    Angle angle_error = pose.angle.error_from(target_angle);
+    double rot_speed = turn_pid->calculate_error(angle_error.deg(), true);
+
+    if (std::abs(angle_error.deg()) < 0.5) {
+        rot_speed = 0;
+    }
 
     double drive_speed = drive_pid->calculate_error(error) * (params.backwards ? -1 : 1) * (abs(angle_error.deg()) > 90.0 ? -1 : 1);
 
@@ -211,7 +215,11 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
     }
 
     float linear_velocity = drive_pid->calculate_error(distance) * (params.backwards ? -1 : 1);
-    float angular_velocity = turn_pid->calculate_error(turnError.deg());
+    float angular_velocity = turn_pid->calculate_error(turnError.deg(), true);
+
+    if (std::abs(turnError.deg()) < 0.5) {
+        angular_velocity = 0;
+    }
 
     if (abs(linear_velocity) > params.max_speed)
     {
@@ -232,8 +240,11 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
     {
         return MotionOutputExit{};
     }
+    
 
-    std::cout << time_since_start << "," << pose.x << ", " << pose.y << "," << linear_velocity << "," << angular_velocity << std::endl;
+    // std::cout << pose.x << ", " << pose.y << std::endl;
+
+    // std::cout << time_since_start << ", " << pose.x << ", " << pose.y << ", " << linear_velocity << ", " << angular_velocity << std::endl;
 
     return MotionOutputVolts{
         linear_output : linear_velocity,
