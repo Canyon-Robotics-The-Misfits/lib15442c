@@ -188,7 +188,7 @@ namespace lib15442c
         /**
          * @brief Start the odometry background task
          */
-        void start_task(double initial_x, double initial_y, Angle initial_theta);
+        void start_task();
         /**
          * @brief Stop the odometry background task
          */

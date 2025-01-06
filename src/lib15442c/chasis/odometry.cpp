@@ -49,7 +49,10 @@ lib15442c::TrackerOdom::~TrackerOdom()
 
 void lib15442c::TrackerOdom::initialize(double initial_x, double initial_y, Angle initial_theta)
 {
-    start_task(initial_x, initial_y, initial_theta);
+    start_task();
+    set_rotation(initial_theta);
+    set_x(initial_x);
+    set_y(initial_y);
 }
 
 void lib15442c::TrackerOdom::set_mirrored(bool mirrored)
@@ -149,17 +152,8 @@ void lib15442c::TrackerOdom::set_rotation(Angle rotationOffset)
     pros::delay(15);
 }
 
-void lib15442c::TrackerOdom::start_task(double initial_x, double initial_y, Angle initial_theta)
+void lib15442c::TrackerOdom::start_task()
 {
-
-#ifndef LIB15442C_MOCK_DEVICES_ONLY
-
-    position_mutex.lock();
-    position.x = initial_x;
-    position.y = initial_y;
-    rotation_offset = initial_theta.deg();
-    position_mutex.unlock();
-
     task = pros::Task([this]
                       {
         inertial->tare();
@@ -169,9 +163,6 @@ void lib15442c::TrackerOdom::start_task(double initial_x, double initial_y, Angl
 
         double last_parallel = parallel_tracker->get_position() / 100.0;
         double last_perpendicular = perpendicular_tracker->get_position() / 100.0;
-
-        int time = 0;
-        int tickTimer = 0;
 
         double offset_zero = 0;
         double last_angle = get_rotation().rad();
@@ -199,7 +190,7 @@ void lib15442c::TrackerOdom::start_task(double initial_x, double initial_y, Angl
                 double perpendicular = perpendicular_tracker->get_position() / 100.0;
 
                 // Get the current robot rotation
-                double angle = get_rotation().rad();
+                double angle = get_rotation().rad_unwrapped();
 
                 if (std::isnan(angle))
                 {
@@ -265,12 +256,9 @@ void lib15442c::TrackerOdom::start_task(double initial_x, double initial_y, Angl
             if (pros::Task::notify_take(true, 10) > 0 || ((pros::c::competition_get_status() & COMPETITION_DISABLED) != 0)) {
                 break;
             }
-            time += 10;
-            tickTimer++;
         } });
     
-    pros::delay(5); // make sure task starts
-#endif
+    // pros::delay(5); // make sure task starts
 }
 
 void lib15442c::TrackerOdom::stop_task()
