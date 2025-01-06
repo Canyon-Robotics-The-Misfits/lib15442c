@@ -40,17 +40,30 @@ namespace lib15442c {
         static Angle from_deg(double deg);
 
         /**
-         * @brief Return the value of the angle in radians
+         * @brief Return the value of the angle in radians, wrapped
          * 
          * @return double The angle
          */
         double rad();
         /**
-         * @brief Return the value of the angle in degrees
+         * @brief Return the value of the angle in degrees, wrapped
          * 
          * @return double The angle
          */
         double deg();
+
+        /**
+         * @brief Return the value of the angle in radians, unwrapped
+         * 
+         * @return double The angle
+         */
+        double rad_unwrapped();
+        /**
+         * @brief Return the value of the angle in degrees, unwrapped
+         * 
+         * @return double The angle
+         */
+        double deg_unwrapped();
 
         /**
          * @brief Whether the angle is non-existant

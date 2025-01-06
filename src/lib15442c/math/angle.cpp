@@ -14,10 +14,10 @@ Angle Angle::none() {
     return Angle(INFINITY);
 }
 Angle Angle::from_rad(double rad) {
-    return Angle(wrap(rad * 180.0 / M_PI));
+    return Angle(rad * 180.0 / M_PI);
 }
 Angle Angle::from_deg(double deg) {
-    return Angle(wrap(deg));
+    return Angle(deg);
 }
 
 bool Angle::is_none() {
@@ -29,6 +29,13 @@ double Angle::rad() {
 }
 double Angle::deg() {
     return wrap(theta);
+}
+
+double Angle::rad_unwrapped() {
+    return theta * M_PI / 180.0;
+}
+double Angle::deg_unwrapped() {
+    return theta;
 }
 
 Angle Angle::error_from(Angle target) {
@@ -71,23 +78,23 @@ void Angle::operator=(const Angle& rhs) {
 }
 
 void Angle::operator+=(const Angle& rhs) {
-    theta = wrap(theta + rhs.theta);
+    theta = theta + rhs.theta;
 }
 void Angle::operator-=(const Angle& rhs) {
-    theta = wrap(theta - rhs.theta);
+    theta = theta - rhs.theta;
 }
 void Angle::operator*=(const Angle& rhs) {
-    theta = wrap(theta * rhs.theta);
+    theta = theta * rhs.theta;
 }
 void Angle::operator/=(const Angle& rhs) {
-    theta = wrap(theta / rhs.theta);
+    theta = theta / rhs.theta;
 }
 
 void Angle::operator*=(const double& rhs) {
-    theta = wrap(theta * rhs);
+    theta = theta * rhs;
 }
 void Angle::operator/=(const double& rhs) {
-    theta = wrap(theta / rhs);
+    theta = theta / rhs;
 }
 
 
