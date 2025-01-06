@@ -18,7 +18,7 @@ namespace lib15442c
         /**
          * @brief The threshold which error must be in to end
          */
-        double threshold = 0.5;
+        double threshold = 0.3;
         /**
          * @brief The time the error needs to be within the threshold for in order to exit
          */

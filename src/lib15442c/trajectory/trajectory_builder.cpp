@@ -78,7 +78,8 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
             rotational_velocity: INFINITY,
             drive_accel: INFINITY,
             rotational_accel: INFINITY,
-            time: INFINITY
+            time: INFINITY,
+            heading: Angle::none()
         });
     }
 
@@ -143,7 +144,10 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         position: hermite_spline[0].point,
         drive_velocity: INFINITY,
         rotational_velocity: INFINITY,
-        time: INFINITY
+        drive_accel: INFINITY,
+        rotational_accel: INFINITY,
+        time: INFINITY,
+        heading: Angle::none()
     });
 
     for (int i = 1; i < (int)hermite_spline.size(); i++)
@@ -177,7 +181,6 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     double velocity_2_end_time = pros::c::micros() / 1000.0;
 
     states[0].time = 0;
-
     states[0].heading = Angle::from_rad(atan2(hermite_spline[0].tangent.x, hermite_spline[0].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
     states[states.size()-1].heading = Angle::from_rad(atan2(hermite_spline[hermite_spline.size()-1].tangent.x, hermite_spline[hermite_spline.size()-1].tangent.y)); // x and y swapped to make 0 degrees face in the direction of the y-axis
     for (int i = 1; i < (int)states.size(); i++)
