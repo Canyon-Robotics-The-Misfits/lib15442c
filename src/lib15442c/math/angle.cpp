@@ -7,7 +7,7 @@ double Angle::wrap(double angle) {
     if (std::isnan(angle) || angle == INFINITY)
         return angle;
 
-    return fmod(angle + 180, 360) - 180;
+    return fmod(angle + 180.0, 360.0) - 180.0 + (angle < -180.0 ? 360.0 : 0.0);
 }
 
 Angle Angle::none() {
