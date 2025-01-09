@@ -76,8 +76,6 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
             position: next,
             drive_velocity: INFINITY,
             rotational_velocity: INFINITY,
-            drive_accel: INFINITY,
-            rotational_accel: INFINITY,
             time: INFINITY,
             heading: Angle::none()
         });
@@ -85,6 +83,51 @@ std::vector<lib15442c::TrajectoryState> lib15442c::TrajectoryBuilder::calculate_
 
     return states;
 }
+
+    
+std::vector<double> lib15442c::TrajectoryBuilder::cache_curvatures(std::vector<TrajectoryState> states)
+{
+    std::vector<double> curvature_cache;
+
+    curvature_cache.push_back(0); // first point curvature is set to 0, technically incorrect
+
+    for (int i = 1; i < states.size() - 1; i++) {
+        Vec prev_pos = states[i - 1].position;
+        Vec current_pos = states[i].position;
+        Vec next_pos = states[i + 1].position;
+
+        double triangle_area_doubled =
+            (current_pos.x - prev_pos.x) * (next_pos.y - prev_pos.y) -
+            (current_pos.y - prev_pos.y) * (next_pos.x - prev_pos.x);
+        double dist_a_b = prev_pos.distance_to_squared(current_pos);
+        double dist_b_c = current_pos.distance_to_squared(next_pos);
+        double dist_c_a = next_pos.distance_to_squared(prev_pos);
+
+        double curvature_unsigned = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
+        curvature_cache.push_back(curvature_unsigned * lib15442c::sgn(triangle_area_doubled));
+    }
+
+    curvature_cache.push_back(0); // last point curvature is set to 0, technically incorrect
+
+    return curvature_cache;
+}
+std::vector<double> lib15442c::TrajectoryBuilder::cache_distances(std::vector<TrajectoryState> states)
+{
+    std::vector<double> distance_cache;
+
+    for (int i = 0; i < states.size() - 1; i++) {
+        Vec prev_pos = states[i - 1].position;
+        Vec current_pos = states[i].position;
+        
+        double distance = prev_pos.distance_to(current_pos);
+        distance_cache.push_back(distance);
+    }
+
+    distance_cache.push_back(0); // last point distance set to zero as there is no next point
+
+    return distance_cache;
+}
+
 
 double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
 {
@@ -102,21 +145,39 @@ double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
     return min_value;
 }
 
-double lib15442c::TrajectoryBuilder::calculate_velocity(TrajectoryState final, TrajectoryState initial, double physical_max_speed, double starting_acceleration)
+double lib15442c::TrajectoryBuilder::calculate_velocity(double distance, double curvature, double last_curvature, double last_velocity, Vec position, TrajectoryConstraints constraints, bool deceleration_pass)
 {
-    double velocity_initial = initial.drive_velocity;
-    double distance = initial.position.distance_to(final.position);
+        double left_velocity_initial = last_velocity * (1 - constraints.track_width * last_curvature);
+        double right_velocity_initial = last_velocity * (1 + constraints.track_width * last_curvature);
 
-    // accel should decrease as velocity approaches max speed
-    double max_acceleration = starting_acceleration - (starting_acceleration / physical_max_speed) * velocity_initial;
+        double left_max_acceleration = constraints.starting_acceleration * 0.5;
+        double right_max_acceleration = constraints.starting_acceleration * 0.5;
 
-    double delta_time = (-velocity_initial + sqrt(velocity_initial * velocity_initial + 2 * distance * max_acceleration)) / max_acceleration;
+        if (!deceleration_pass && left_velocity_initial >= 0) {
+            left_max_acceleration = constraints.starting_acceleration - (constraints.starting_acceleration / constraints.max_speed) * left_velocity_initial;
+        }
+        if (!deceleration_pass && right_velocity_initial >= 0) {
+            right_max_acceleration = constraints.starting_acceleration - (constraints.starting_acceleration / constraints.max_speed) * right_velocity_initial;
+        }
 
-    double max_speed = std::min(physical_max_speed, get_max_speed(final.position));
+        double left_distance = distance * (1 - constraints.track_width * curvature);
+        double left_velocity_final = lib15442c::sgn(left_distance) * std::min(
+            sqrt(left_velocity_initial * left_velocity_initial + 2 * std::abs(left_distance) * left_max_acceleration),
+            constraints.max_speed
+        );
+        double right_distance = distance * (1 + constraints.track_width * curvature);
+        double right_velocity_final = lib15442c::sgn(right_distance) * std::min(
+            sqrt(right_velocity_initial * right_velocity_initial + 2 * std::abs(right_distance) * right_max_acceleration),
+            constraints.max_speed
+        );
 
-    // std::cout << max_acceleration << ", " << velocity_initial + max_acceleration * delta_time << std::endl;
+        double velocity_final = std::min(
+            get_max_speed(position),
+            left_velocity_final / (1 - constraints.track_width * curvature),
+            right_velocity_final / (1 + constraints.track_width * curvature)
+        );
 
-    return std::min(velocity_initial + max_acceleration * delta_time, max_speed);
+        return velocity_final;
 }
 
 lib15442c::TrajectoryBuilder::TrajectoryBuilder(HermitePair initial_pair)
@@ -144,8 +205,6 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         position: hermite_spline[0].point,
         drive_velocity: INFINITY,
         rotational_velocity: INFINITY,
-        drive_accel: INFINITY,
-        rotational_accel: INFINITY,
         time: INFINITY,
         heading: Angle::none()
     });
@@ -161,11 +220,22 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
     double hermite_end_time = pros::c::micros() / 1000.0;
 
+    std::vector<double> curvature_cache = cache_curvatures(states);
+    std::vector<double> distance_cache = cache_distances(states);
+    
+    double cache_end_time = pros::c::micros() / 1000.0;
+
     states[0].drive_velocity = 0;
     states[0].rotational_velocity = 0;
     for (int i = 1; i < (int)states.size(); i++)
     {
-        states[i].drive_velocity = calculate_velocity(states[i], states[i-1], constraints.max_speed, constraints.starting_acceleration);
+        double curvature = curvature_cache[i];
+        double distance = distance_cache[i];
+
+        double last_curvature = curvature_cache[i-1];
+        double last_velocity = states[i-1].drive_velocity;
+
+        states[i].drive_velocity = calculate_velocity(distance, curvature, last_curvature, last_velocity, states[i].position, constraints, false);
     }
 
     double velocity_1_end_time = pros::c::micros() / 1000.0;
@@ -174,8 +244,16 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
     states[states.size() - 1].rotational_velocity = 0;
     for (int i = (int)states.size() - 2; i > 0; i--)
     {
-        states[i].drive_velocity =
-            std::min(states[i].drive_velocity, calculate_velocity(states[i], states[i+1], constraints.max_speed, constraints.starting_acceleration));
+        double curvature = curvature_cache[i];
+        double distance = distance_cache[i];
+
+        double last_curvature = curvature_cache[i+1];
+        double last_velocity = states[i+1].drive_velocity;
+
+        states[i].drive_velocity = std::min(
+            calculate_velocity(distance, curvature, last_curvature, last_velocity, states[i].position, constraints, true),
+            states[i].drive_velocity
+        );
     }
 
     double velocity_2_end_time = pros::c::micros() / 1000.0;
@@ -189,15 +267,14 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         double velocity_final = states[i].drive_velocity;
         double velocity_avg = (velocity_initial + velocity_final) / 2.0;
 
-        double distance = states[i-1].position.distance_to(states[i].position);
+        double distance = distance_cache[i-1];
 
-        double delta_time = distance / velocity_avg;
+        double delta_time = distance / std::abs(velocity_avg);
 
         states[i].time = states[i-1].time + delta_time;
 
         if (i != (int)states.size() - 1)
         {
-            Vec prev_pos = states[i-1].position;
             Vec current_pos = states[i].position;
             Vec next_pos = states[i+1].position;
 
@@ -205,46 +282,10 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
 
             states[i].heading = (states[i-1].heading + angle_to_next) / 2.0;
 
-            // solve for menger curvature
-            // a = states[i-1].position = prev_pos
-            // b = states[i].position = current_pos
-            // c = states[i+1].position = next_pos
-            double triangle_area_doubled = 
-                (current_pos.x - prev_pos.x) * (next_pos.y - prev_pos.y) -
-                (current_pos.y - prev_pos.y) * (next_pos.x - prev_pos.x);
-            double dist_a_b = prev_pos.distance_to_squared(current_pos);
-            double dist_b_c = current_pos.distance_to_squared(next_pos);
-            double dist_c_a = next_pos.distance_to_squared(prev_pos);
+            double curvature = curvature_cache[i];
 
-            double curvature = sgn(triangle_area_doubled) * sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
-
-            double rotational_velocity = states[i].drive_velocity * curvature;
-
-            if (std::abs(states[i].drive_velocity - constraints.track_width * rotational_velocity) > constraints.max_speed)
-            {
-                states[i].drive_velocity = lib15442c::sgn(states[i].drive_velocity) * constraints.max_speed / (1 - curvature * constraints.track_width);
-                rotational_velocity = states[i].drive_velocity * curvature;
-            }
-            else if (std::abs(states[i].drive_velocity + constraints.track_width * rotational_velocity) > constraints.max_speed)
-            {
-                states[i].drive_velocity = lib15442c::sgn(states[i].drive_velocity) * constraints.max_speed / (1 + curvature * constraints.track_width);
-                rotational_velocity = states[i].drive_velocity * curvature;
-            }
-
-            states[i].rotational_velocity = rotational_velocity;
+            states[i].rotational_velocity = states[i].drive_velocity * curvature;
         }
-    }
-
-    double rotation_pass_end_time = pros::c::micros() / 1000.0;
-
-    states[0].drive_accel = states[1].drive_velocity / states[1].time;
-    states[0].rotational_accel = states[1].rotational_velocity / states[1].time;
-    states[states.size()-1].drive_accel = -states[states.size()-2].drive_velocity / (states[states.size()-1].time - states[states.size()-2].time);
-    states[states.size()-1].rotational_accel = -states[states.size()-2].rotational_velocity / (states[states.size()-1].time - states[states.size()-2].time);
-    for (int i = 1; i < (int)states.size()-1; i++)
-    {
-        states[i].drive_accel = (states[i+1].drive_velocity - states[i-1].drive_velocity) / (states[i+1].time - states[i-1].time);
-        states[i].rotational_accel = (states[i+1].rotational_velocity - states[i-1].rotational_velocity) / (states[i+1].time - states[i-1].time);
     }
 
     double end_time = pros::c::micros() / 1000.0;
@@ -257,8 +298,7 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         DEBUG("velocity pass: %f", velocity_2_end_time - hermite_end_time);
         DEBUG("    forward: %f", velocity_1_end_time - hermite_end_time);
         DEBUG("    reverse: %f", velocity_2_end_time - velocity_1_end_time);
-        DEBUG("rotation pass: %f", rotation_pass_end_time - velocity_2_end_time);
-        DEBUG("accel pass: %f", end_time - rotation_pass_end_time);
+        DEBUG("rotation pass: %f", end_time - velocity_2_end_time);
         DEBUG_TEXT("------------------------------");
     }
 

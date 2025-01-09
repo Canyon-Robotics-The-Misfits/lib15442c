@@ -14,10 +14,6 @@ namespace lib15442c
         double drive_velocity;
         // The target turn velocity (rad/s)
         double rotational_velocity;
-        // The target drive acceleration (in/s/s)
-        double drive_accel;
-        // The target rotational acceleration (rad/s/s)
-        double rotational_accel;
         // The time the state is at
         double time;
         // The angle the robot should be facing

@@ -41,9 +41,12 @@ namespace lib15442c
 
         static std::vector<TrajectoryState> calculate_hermite(int resolution, Vec p0, Vec t0, Vec p1, Vec t1);
 
+        static std::vector<double> cache_curvatures(std::vector<TrajectoryState> states);
+        static std::vector<double> cache_distances(std::vector<TrajectoryState> states);
+
         double get_max_speed(Vec position);
 
-        double calculate_velocity(TrajectoryState final, TrajectoryState initial, double max_speed, double max_acceleration);
+        double calculate_velocity(double distance, double curvature, double last_curvature, double last_velocity, Vec position, TrajectoryConstraints constraints, bool deceleration_pass);
 
     public:
         /**
