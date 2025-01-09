@@ -45,7 +45,7 @@ lib15442c::MotionOutput lib15442c::RAMSETE::calculate(Pose pose, double time_sin
     return MotionOutputSpeeds {
         drive_velocity: drive_velocity,
         rotational_velocity: rotational_velocity,
-        drive_accel: target_state.drive_accel,
-        rotational_accel: target_state.rotational_accel
+        drive_accel: 0,
+        rotational_accel: 0 // TODO: get accel
     };
 }

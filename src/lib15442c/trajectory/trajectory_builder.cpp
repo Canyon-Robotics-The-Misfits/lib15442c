@@ -91,7 +91,7 @@ std::vector<double> lib15442c::TrajectoryBuilder::cache_curvatures(std::vector<T
 
     curvature_cache.push_back(0); // first point curvature is set to 0, technically incorrect
 
-    for (int i = 1; i < states.size() - 1; i++) {
+    for (int i = 1; i < (int)states.size() - 1; i++) {
         Vec prev_pos = states[i - 1].position;
         Vec current_pos = states[i].position;
         Vec next_pos = states[i + 1].position;
@@ -115,7 +115,7 @@ std::vector<double> lib15442c::TrajectoryBuilder::cache_distances(std::vector<Tr
 {
     std::vector<double> distance_cache;
 
-    for (int i = 0; i < states.size() - 1; i++) {
+    for (int i = 0; i < (int)states.size() - 1; i++) {
         Vec prev_pos = states[i - 1].position;
         Vec current_pos = states[i].position;
         
@@ -173,8 +173,10 @@ double lib15442c::TrajectoryBuilder::calculate_velocity(double distance, double 
 
         double velocity_final = std::min(
             get_max_speed(position),
-            left_velocity_final / (1 - constraints.track_width * curvature),
-            right_velocity_final / (1 + constraints.track_width * curvature)
+            std::min(
+                left_velocity_final / (1 - constraints.track_width * curvature),
+                right_velocity_final / (1 + constraints.track_width * curvature)
+            )
         );
 
         return velocity_final;
@@ -295,7 +297,8 @@ lib15442c::Trajectory lib15442c::TrajectoryBuilder::compute(TrajectoryConstraint
         DEBUG_TEXT("---- TRAJECTORY BENCHMARK ----");
         DEBUG("TOTAL: %f", end_time - start_time);
         DEBUG("hermite calculation: %f", hermite_end_time - start_time);
-        DEBUG("velocity pass: %f", velocity_2_end_time - hermite_end_time);
+        DEBUG("cache: %f", cache_end_time - hermite_end_time);
+        DEBUG("velocity pass: %f", velocity_2_end_time - cache_end_time);
         DEBUG("    forward: %f", velocity_1_end_time - hermite_end_time);
         DEBUG("    reverse: %f", velocity_2_end_time - velocity_1_end_time);
         DEBUG("rotation pass: %f", end_time - velocity_2_end_time);
