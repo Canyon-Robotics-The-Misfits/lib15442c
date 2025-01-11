@@ -21,6 +21,10 @@ namespace lib15442c
         double b;
         double zeta;
 
+        double last_drive_velocity = 0;
+        double last_rotational_velocity = 0;
+        double last_time = 0;
+
         bool async;
         std::string name;
 

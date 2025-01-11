@@ -116,10 +116,10 @@ std::vector<double> lib15442c::TrajectoryBuilder::cache_distances(std::vector<Tr
     std::vector<double> distance_cache;
 
     for (int i = 0; i < (int)states.size() - 1; i++) {
-        Vec prev_pos = states[i - 1].position;
         Vec current_pos = states[i].position;
+        Vec next_pos = states[i+1].position;
         
-        double distance = prev_pos.distance_to(current_pos);
+        double distance = current_pos.distance_to(next_pos);
         distance_cache.push_back(distance);
     }
 

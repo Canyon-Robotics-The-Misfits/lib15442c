@@ -40,6 +40,9 @@ lib15442c::TrackerOdom::TrackerOdom(
 
     this->parallel_tracker->reset_position();
     this->perpendicular_tracker->reset_position();
+
+    this->parallel_tracker->set_data_rate(5);
+    this->perpendicular_tracker->set_data_rate(5);
 }
 
 lib15442c::TrackerOdom::~TrackerOdom()
@@ -171,6 +174,8 @@ void lib15442c::TrackerOdom::start_task()
         double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360 / 1.00771827217;
         // double degrees_per_inch = tracker_circumfrance / 360;
 
+        // int i = 0;
+
         while (true)
         {
 
@@ -201,6 +206,8 @@ void lib15442c::TrackerOdom::start_task()
                 // Modify the horizontal encoder to compensate for turning
                 perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset;
                 parallel -= (angle - offset_zero) * parallel_tracker_offset;
+
+                // std::cout << angle << ", " << parallel << ", " << perpendicular << std::endl;
 
                 // Calculate the change in the horizontal and vertical encoder
                 double deltaTheta = angle - last_angle;
@@ -242,7 +249,8 @@ void lib15442c::TrackerOdom::start_task()
                 }
 
                 // Log position in terminal
-                // if (tickTimer % 10 == 0)
+                // i++;
+                // if (i % 3 == 0)
                 //     std::cout << position.x << ", " << position.y << std::endl;
 
                 position_mutex.unlock(); // unlock the mutex

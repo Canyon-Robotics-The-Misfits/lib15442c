@@ -62,11 +62,11 @@ void lib15442c::TankDrive::move_speed(double linear_velocity, double turn_veloci
     double target_left_accel = linear_accel - track_width * turn_accel;
     double target_right_accel = linear_accel + track_width * turn_accel;
 
-    double current_left_speed = left_motors->get_velocity() * deg_inch_ratio;
-    double current_right_speed = right_motors->get_velocity() * deg_inch_ratio;
+    double current_left_velocity = left_motors->get_velocity() * deg_inch_ratio;
+    double current_right_velocity = right_motors->get_velocity() * deg_inch_ratio;
 
-    double left_error = target_left_velocity - current_left_speed;
-    double right_error = target_right_velocity - current_right_speed;
+    double left_error = target_left_velocity - current_left_velocity;
+    double right_error = target_right_velocity - current_right_velocity;
 
     double left_pwm =
         feedforward_constants.kS * lib15442c::sgn(target_left_velocity) +
@@ -79,7 +79,7 @@ void lib15442c::TankDrive::move_speed(double linear_velocity, double turn_veloci
         target_right_accel * (target_right_accel > 0 ? feedforward_constants.kA : feedforward_constants.kA_down) +
         right_error * feedforward_constants.kP;
 
-    // std::cout << target_left_velocity << ", " << target_right_velocity << ", " << current_left_speed << ", " << current_right_speed << std::endl;
+    // std::cout << target_left_velocity << ", " << target_left_accel << ", " << current_left_velocity << ", " << left_pwm << std::endl;
 
     left_motors->move(left_pwm);
     right_motors->move(right_pwm);
