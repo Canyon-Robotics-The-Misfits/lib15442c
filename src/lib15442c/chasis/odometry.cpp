@@ -52,10 +52,11 @@ lib15442c::TrackerOdom::~TrackerOdom()
 
 void lib15442c::TrackerOdom::initialize(double initial_x, double initial_y, Angle initial_theta)
 {
-    start_task();
     set_rotation(initial_theta);
     set_x(initial_x);
     set_y(initial_y);
+    
+    start_task();
 }
 
 void lib15442c::TrackerOdom::set_mirrored(bool mirrored)
@@ -72,6 +73,21 @@ bool lib15442c::TrackerOdom::get_mirrored()
     position_mutex.unlock();
 
     return temp;
+}
+
+void lib15442c::TrackerOdom::set_parallel_offset(double offset)
+{
+    position_mutex.lock();
+    parallel_tracker_offset = offset;
+    updated_offsets = true;
+    position_mutex.unlock();
+}
+void lib15442c::TrackerOdom::set_perpendicular_offset(double offset)
+{
+    position_mutex.lock();
+    perpendicular_tracker_offset = offset;
+    updated_offsets = true;
+    position_mutex.unlock();
 }
 
 void lib15442c::TrackerOdom::set_x(double val)
@@ -131,7 +147,7 @@ void lib15442c::TrackerOdom::set_position(lib15442c::Vec position)
     position_mutex.unlock();
 }
 
-lib15442c::Angle lib15442c::TrackerOdom::get_rotation()
+lib15442c::Angle lib15442c::TrackerOdom::get_rotation(bool ignore_offset)
 {
     position_mutex.lock();
     double imu_1 = inertial->get_rotation() * inertial_scale;
@@ -143,16 +159,15 @@ lib15442c::Angle lib15442c::TrackerOdom::get_rotation()
     }
     position_mutex.unlock();
 
-    return Angle::from_deg((imu_1 + imu_2) / 2.0) * (get_mirrored() ? -1 : 1);
+    return Angle::from_deg((imu_1 + imu_2) / 2.0) * (get_mirrored() ? -1 : 1) + (!ignore_offset ? rotation_offset : 0_deg);
 }
 
-void lib15442c::TrackerOdom::set_rotation(Angle rotationOffset)
+void lib15442c::TrackerOdom::set_rotation(Angle heading)
 {
+    Angle current_rotation = get_rotation();
     position_mutex.lock();
-    rotation_offset = rotationOffset.deg();
+    rotation_offset = heading - current_rotation;
     position_mutex.unlock();
-    // Makes sure odometry updates before continuing
-    pros::delay(15);
 }
 
 void lib15442c::TrackerOdom::start_task()
@@ -167,106 +182,101 @@ void lib15442c::TrackerOdom::start_task()
         double last_parallel = parallel_tracker->get_position() / 100.0;
         double last_perpendicular = perpendicular_tracker->get_position() / 100.0;
 
-        double offset_zero = 0;
-        double last_angle = get_rotation().rad();
+        double last_angle = get_rotation().rad_unwrapped();
 
         double degrees_per_inch_parallel = parallel_tracker_circumfrance / 360 / 1.00771827217;
         double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360 / 1.00771827217;
         // double degrees_per_inch = tracker_circumfrance / 360;
 
-        // int i = 0;
+        int i = 0;
 
         while (true)
         {
+            // Get the tracker wheel encoder positions
+            double parallel = parallel_tracker->get_position() / 100.0;
+            double perpendicular = perpendicular_tracker->get_position() / 100.0;
 
-            if (rotation_offset != 0)
+            // Get the current robot rotation
+            double angle = get_rotation().rad_unwrapped();
+            double angle_raw = get_rotation(true).rad_unwrapped();
+
+            if (std::isnan(angle))
             {
-                inertial->set_rotation(rotation_offset / inertial_scale);
-                if (inertial_scale_2 != 0) {
-                    inertial_2->set_rotation(rotation_offset / inertial_scale_2);
-                }
-                offset_zero = rotation_offset;
-                rotation_offset = 0;
+                last_angle = 0;
+                continue;
+            }
+
+            position_mutex.lock();
+
+            // std::cout << angle_raw << ", " << parallel << ", " << perpendicular << std::endl;
+
+            // Modify the horizontal encoder to compensate for turning
+            perpendicular -= angle_raw * perpendicular_tracker_offset;
+            parallel -= angle_raw * parallel_tracker_offset;
+
+            // Calculate the change in the horizontal and vertical encoder
+            double deltaTheta = angle - last_angle;
+            double deltaParallel = (parallel - last_parallel) * degrees_per_inch_parallel;
+            double deltaPerpendicular = (perpendicular - last_perpendicular) * degrees_per_inch_perpendicular;
+
+            if (updated_offsets) {
+                deltaParallel = 0;
+                deltaPerpendicular = 0;
+
+                updated_offsets = false;
+            }
+            
+            if (std::isnan(position.x) || std::isnan(position.y))
+            {
+                position.x = 0;
+                position.y = 0;
+                continue;
+            }
+
+            if (deltaTheta == 0)
+            {
+                position += Vec(
+                    cos(-angle) * deltaParallel +
+                        cos(-angle + M_PI / 2.0) * deltaPerpendicular,
+                    sin(-angle) * deltaParallel +
+                        sin(-angle + M_PI / 2.0) * deltaPerpendicular);
             }
             else
             {
-                // Get the tracker wheel encoder positions
-                double parallel = parallel_tracker->get_position() / 100.0;
-                double perpendicular = perpendicular_tracker->get_position() / 100.0;
+                double radiusParallel = deltaParallel / deltaTheta;
+                double radiusPerpendicular = deltaPerpendicular / deltaTheta;
 
-                // Get the current robot rotation
-                double angle = get_rotation().rad_unwrapped();
+                double delta_x = (cos(-angle) - cos(-last_angle)) * radiusParallel;
+                delta_x += (cos(-angle + M_PI / 2.0) - cos(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
-                if (std::isnan(angle))
-                {
-                    last_angle = 0;
-                    continue;
-                }
+                double delta_y = (sin(-angle) - sin(-last_angle)) * radiusParallel;
+                delta_y += (sin(-angle + M_PI / 2.0) - sin(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
-                // Modify the horizontal encoder to compensate for turning
-                perpendicular -= (angle - offset_zero) * perpendicular_tracker_offset;
-                parallel -= (angle - offset_zero) * parallel_tracker_offset;
-
-                // std::cout << angle << ", " << parallel << ", " << perpendicular << std::endl;
-
-                // Calculate the change in the horizontal and vertical encoder
-                double deltaTheta = angle - last_angle;
-                double deltaParallel = (parallel - last_parallel) * degrees_per_inch_parallel;
-                double deltaPerpendicular = (perpendicular - last_perpendicular) * degrees_per_inch_perpendicular;
-
-                position_mutex.lock();
-                
-                if (std::isnan(position.x) || std::isnan(position.y))
-                {
-                    position.x = 0;
-                    position.y = 0;
-                    continue;
-                }
-
-                if (deltaTheta == 0)
-                {
-                    position += Vec(
-                        cos(-angle) * deltaParallel +
-                            cos(-angle + M_PI / 2.0) * deltaPerpendicular,
-                        sin(-angle) * deltaParallel +
-                            sin(-angle + M_PI / 2.0) * deltaPerpendicular);
-                }
-                else
-                {
-                    double radiusParallel = deltaParallel / deltaTheta;
-                    double radiusPerpendicular = deltaPerpendicular / deltaTheta;
-
-                    double delta_x = (cos(-angle) - cos(-last_angle)) * radiusParallel;
-                    delta_x += (cos(-angle + M_PI / 2.0) - cos(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
-
-                    double delta_y = (sin(-angle) - sin(-last_angle)) * radiusParallel;
-                    delta_y += (sin(-angle + M_PI / 2.0) - sin(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
-
-                    position += Vec(
-                        delta_x,
-                        delta_y
-                    );
-                }
-
-                // Log position in terminal
-                // i++;
-                // if (i % 3 == 0)
-                //     std::cout << position.x << ", " << position.y << std::endl;
-
-                position_mutex.unlock(); // unlock the mutex
-
-                // Set the last variables
-                last_perpendicular = perpendicular;
-                last_parallel = parallel;
-                last_angle = angle;
+                position += Vec(
+                    delta_x,
+                    delta_y
+                );
             }
+
+            // Log position in terminal
+            // i++;
+            // if (i % 10 == 0)
+            //     std::cout << position.x << ", " << position.y << std::endl;
+
+            position_mutex.unlock(); // unlock the mutex
+
+            // Set the last variables
+            last_perpendicular = perpendicular;
+            last_parallel = parallel;
+            last_angle = angle;
 
             if (pros::Task::notify_take(true, 10) > 0 || ((pros::c::competition_get_status() & COMPETITION_DISABLED) != 0)) {
                 break;
             }
-        } });
+        }
+    });
     
-    // pros::delay(5); // make sure task starts
+    pros::delay(5); // make sure task starts
 }
 
 void lib15442c::TrackerOdom::stop_task()
@@ -341,7 +351,7 @@ void lib15442c::GPSOdom::set_position(lib15442c::Vec position)
     gps.set_position((position.x - 72) / inches_per_meter, (position.y - 72) / inches_per_meter, get_rotation().deg() - rotation_offset);
 }
 
-lib15442c::Angle lib15442c::GPSOdom::get_rotation()
+lib15442c::Angle lib15442c::GPSOdom::get_rotation(bool get_rotation)
 {
     return Angle::from_deg((gps.get_heading() + rotation_offset) * (get_mirrored() ? -1 : 1));
 }

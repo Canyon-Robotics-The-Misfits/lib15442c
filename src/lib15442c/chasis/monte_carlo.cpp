@@ -211,7 +211,7 @@ lib15442c::Pose lib15442c::MCLOdom::get_pose()
     return pose(x, y, rotation);
 }
 
-lib15442c::Angle lib15442c::MCLOdom::get_rotation()
+lib15442c::Angle lib15442c::MCLOdom::get_rotation(bool get_rotation)
 {
     return tracker_odom->get_rotation() * (mirrored ? -1 : 1);
 }

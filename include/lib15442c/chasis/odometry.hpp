@@ -65,7 +65,7 @@ namespace lib15442c
         /**
          * @brief Get the rotation of the robot
          */
-        virtual lib15442c::Angle get_rotation() = 0;
+        virtual lib15442c::Angle get_rotation(bool ignore_offset = false) = 0;
         /**
          * @brief Set the rotation of the robot
          *
@@ -128,12 +128,14 @@ namespace lib15442c
         double perpendicular_tracker_circumfrance;
         bool mirrored;
 
+        bool updated_offsets = false;
+
         // Inertial 2
         std::shared_ptr<pros::v5::IMU> inertial_2;
         double inertial_scale_2;
 
         // Rotation Offset
-        double rotation_offset = 0;
+        Angle rotation_offset = 0_deg;
 
         // Robot position
         pros::rtos::Mutex position_mutex = pros::rtos::Mutex();
@@ -157,6 +159,9 @@ namespace lib15442c
 
         void set_mirrored(bool mirrored);
         bool get_mirrored();
+
+        void set_parallel_offset(double offset);
+        void set_perpendicular_offset(double offset);
 
         double get_x();
         double get_y();
@@ -182,7 +187,7 @@ namespace lib15442c
          */
         void set_position(lib15442c::Vec position);
 
-        Angle get_rotation();
+        Angle get_rotation(bool ignore_offset = false);
         void set_rotation(Angle rotation);
 
         /**
@@ -225,7 +230,7 @@ namespace lib15442c
         void set_y(double y);
         void set_position(Vec position);
 
-        Angle get_rotation();
+        Angle get_rotation(bool ignore_offset = false);
         void set_rotation(Angle rotation);
     };
 
@@ -313,7 +318,7 @@ namespace lib15442c
         Vec get_position();
         Pose get_pose();
 
-        Angle get_rotation();
+        Angle get_rotation(bool ignore_offset = false);
         void set_rotation(Angle rotation);
 
         /**
