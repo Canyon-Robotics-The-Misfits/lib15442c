@@ -184,13 +184,14 @@ void lib15442c::TrackerOdom::start_task()
 
         double last_angle = get_rotation().rad_unwrapped();
 
-        double degrees_per_inch_parallel = parallel_tracker_circumfrance / 360 / 1.00771827217;
-        double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360 / 1.00771827217;
+        double degrees_per_inch_parallel = parallel_tracker_circumfrance / 360;
+        double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360;
         // double degrees_per_inch = tracker_circumfrance / 360;
 
         int i = 0;
 
-        while (true)
+        auto initial_comp_status = pros::c::competition_get_status();
+        while (pros::c::competition_get_status() == initial_comp_status)
         {
             // Get the tracker wheel encoder positions
             double parallel = parallel_tracker->get_position() / 100.0;
@@ -230,26 +231,28 @@ void lib15442c::TrackerOdom::start_task()
             {
                 position.x = 0;
                 position.y = 0;
+                position_mutex.unlock();
                 continue;
             }
 
             if (deltaTheta == 0)
             {
                 position += Vec(
-                    cos(-angle) * deltaParallel +
-                        cos(-angle + M_PI / 2.0) * deltaPerpendicular,
-                    sin(-angle) * deltaParallel +
-                        sin(-angle + M_PI / 2.0) * deltaPerpendicular);
+                    cos(-angle + M_PI / 2.0) * deltaParallel +
+                    cos(-angle) * deltaPerpendicular,
+                    sin(-angle + M_PI / 2.0) * deltaParallel +
+                    sin(-angle) * deltaPerpendicular
+                );
             }
             else
             {
                 double radiusParallel = deltaParallel / deltaTheta;
                 double radiusPerpendicular = deltaPerpendicular / deltaTheta;
 
-                double delta_x = (cos(-angle) - cos(-last_angle)) * radiusParallel;
+                double delta_x = -(cos(-angle) - cos(-last_angle)) * radiusParallel;
                 delta_x += (cos(-angle + M_PI / 2.0) - cos(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
-                double delta_y = (sin(-angle) - sin(-last_angle)) * radiusParallel;
+                double delta_y = -(sin(-angle) - sin(-last_angle)) * radiusParallel;
                 delta_y += (sin(-angle + M_PI / 2.0) - sin(-last_angle + M_PI / 2.0)) * radiusPerpendicular;
 
                 position += Vec(
@@ -260,7 +263,7 @@ void lib15442c::TrackerOdom::start_task()
 
             // Log position in terminal
             // i++;
-            // if (i % 10 == 0)
+            // if (i % 5 == 0)
             //     std::cout << position.x << ", " << position.y << std::endl;
 
             position_mutex.unlock(); // unlock the mutex
@@ -270,7 +273,7 @@ void lib15442c::TrackerOdom::start_task()
             last_parallel = parallel;
             last_angle = angle;
 
-            if (pros::Task::notify_take(true, 10) > 0 || ((pros::c::competition_get_status() & COMPETITION_DISABLED) != 0)) {
+            if (pros::Task::notify_take(true, 10) > 0) {
                 break;
             }
         }

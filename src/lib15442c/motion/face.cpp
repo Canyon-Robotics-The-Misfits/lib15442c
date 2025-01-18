@@ -81,7 +81,7 @@ lib15442c::MotionOutput lib15442c::Face::calculate(Pose pose, double time_since_
 
     if (params.end_condition(pose))
     {
-        WARN("\"%s\" reached end condition!", name.c_str());
+        INFO("\"%s\" reached end condition!", name.c_str());
         return MotionOutputExit{};
     }
 

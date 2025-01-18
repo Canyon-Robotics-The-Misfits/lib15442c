@@ -88,7 +88,7 @@ lib15442c::MotionOutput lib15442c::DriveStraight::calculate(Pose pose, double ti
 
     if (params.end_condition(pose))
     {
-        WARN("\"%s\" reached end condition!", name.c_str());
+        INFO("\"%s\" reached end condition!", name.c_str());
         return MotionOutputExit{};
     }
 
