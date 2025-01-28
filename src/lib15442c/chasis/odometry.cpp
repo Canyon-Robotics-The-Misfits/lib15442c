@@ -188,7 +188,7 @@ void lib15442c::TrackerOdom::start_task()
         double degrees_per_inch_perpendicular = perpendicular_tracker_circumfrance / 360;
         // double degrees_per_inch = tracker_circumfrance / 360;
 
-        int i = 0;
+        // int i = 0;
 
         auto initial_comp_status = pros::c::competition_get_status();
         while (pros::c::competition_get_status() == initial_comp_status)
