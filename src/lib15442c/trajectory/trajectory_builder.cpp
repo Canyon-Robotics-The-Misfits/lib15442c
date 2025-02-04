@@ -147,8 +147,8 @@ double lib15442c::TrajectoryBuilder::get_max_speed(Vec position)
 
 double lib15442c::TrajectoryBuilder::calculate_velocity(double distance, double curvature, double last_curvature, double last_velocity, Vec position, TrajectoryConstraints constraints, bool deceleration_pass)
 {
-        double left_velocity_initial = last_velocity * (1 - constraints.track_width * last_curvature);
-        double right_velocity_initial = last_velocity * (1 + constraints.track_width * last_curvature);
+        double left_velocity_initial = last_velocity * (1 - 0.5 * constraints.track_width * last_curvature);
+        double right_velocity_initial = last_velocity * (1 + 0.5 * constraints.track_width * last_curvature);
 
         double left_max_acceleration = constraints.starting_acceleration * 0.5;
         double right_max_acceleration = constraints.starting_acceleration * 0.5;
@@ -160,12 +160,12 @@ double lib15442c::TrajectoryBuilder::calculate_velocity(double distance, double 
             right_max_acceleration = constraints.starting_acceleration - (constraints.starting_acceleration / constraints.max_speed) * right_velocity_initial;
         }
 
-        double left_distance = distance * (1 - constraints.track_width * curvature);
+        double left_distance = distance * (1 - 0.5 * constraints.track_width * curvature);
         double left_velocity_final = lib15442c::sgn(left_distance) * std::min(
             sqrt(left_velocity_initial * left_velocity_initial + 2 * std::abs(left_distance) * left_max_acceleration),
             constraints.max_speed
         );
-        double right_distance = distance * (1 + constraints.track_width * curvature);
+        double right_distance = distance * (1 + 0.5 * constraints.track_width * curvature);
         double right_velocity_final = lib15442c::sgn(right_distance) * std::min(
             sqrt(right_velocity_initial * right_velocity_initial + 2 * std::abs(right_distance) * right_max_acceleration),
             constraints.max_speed
@@ -174,8 +174,8 @@ double lib15442c::TrajectoryBuilder::calculate_velocity(double distance, double 
         double velocity_final = std::min(
             get_max_speed(position),
             std::min(
-                left_velocity_final / (1 - constraints.track_width * curvature),
-                right_velocity_final / (1 + constraints.track_width * curvature)
+                left_velocity_final / (1 - 0.5 * constraints.track_width * curvature),
+                right_velocity_final / (1 + 0.5 * constraints.track_width * curvature)
             )
         );
 

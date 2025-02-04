@@ -56,11 +56,11 @@ void lib15442c::TankDrive::move_ratio(double linear_speed, double turn_speed) {
 }
 
 void lib15442c::TankDrive::move_speed(double linear_velocity, double turn_velocity, double linear_accel, double turn_accel) {
-    double target_left_velocity = linear_velocity - track_width * turn_velocity;
-    double target_right_velocity = linear_velocity + track_width * turn_velocity;
+    double target_left_velocity = linear_velocity - 0.5 * track_width * turn_velocity;
+    double target_right_velocity = linear_velocity + 0.5 * track_width * turn_velocity;
 
-    double target_left_accel = linear_accel - track_width * turn_accel;
-    double target_right_accel = linear_accel + track_width * turn_accel;
+    double target_left_accel = linear_accel - 0.5 * track_width * turn_accel;
+    double target_right_accel = linear_accel + 0.5 * track_width * turn_accel;
 
     double current_left_velocity = left_motors->get_velocity() * deg_inch_ratio;
     double current_right_velocity = right_motors->get_velocity() * deg_inch_ratio;
