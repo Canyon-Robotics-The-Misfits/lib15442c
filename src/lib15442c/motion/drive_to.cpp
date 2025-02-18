@@ -41,7 +41,7 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     // If it is close to the end, focus on getting to the right angle and use cross track error
     if (error < params.angle_priority_threshold && !target_pose.angle.is_none())
     {
-        target_angle = target_pose.angle + (180_deg * params.backwards);
+        target_angle = target_pose.angle;
     }
 
     bool above_approach_line = pose.y > (-1.0 / tan(-target_pose.angle.rad())) * (pose.x - target_pose.x) + target_pose.y;
@@ -91,7 +91,10 @@ lib15442c::MotionOutput lib15442c::Boomerang::calculate(Pose pose, double time_s
     //     drive_speed *= fmax(fmin(fabs(15 / std::abs(angle_error.deg())), 1), 0);
     // }
 
-    // std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
+    if (params.debug)
+    {
+        std::cout << pose.x << ", " << pose.y << ", " << caret.x << ", " << caret.y << ", " << target_angle.deg() << std::endl;
+    }
 
     return MotionOutputVolts{
         linear_output : drive_speed,

@@ -59,6 +59,11 @@ namespace lib15442c
          * @brief How far away the robot should be from the end before the the chain exit condition can succeed
          */
         double chain_threshold = 5;
+
+        /**
+         * @brief Whether to enable the debug log
+         */
+        bool debug = false;
     };
 
     class Boomerang: public IMotion
