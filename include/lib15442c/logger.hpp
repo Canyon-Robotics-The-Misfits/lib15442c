@@ -20,7 +20,8 @@
 // log level debug
 #define DEBUG(format, ...) LOG("DEBUG", format, __VA_ARGS__)
 // log level info
-#define INFO(format, ...) LOG("\033[34mINFO\033[0m", format, __VA_ARGS__)
+// #define INFO(format, ...) LOG("\033[34mINFO\033[0m", format, __VA_ARGS__)
+#define INFO(format, ...) 
 // log level warn
 #define WARN(format, ...) LOG("\033[33mWARN\033[0m", format, __VA_ARGS__)
 // log level error
@@ -29,7 +30,8 @@
 // log level debug with text only
 #define DEBUG_TEXT(format) LOG_TEXT("DEBUG", format)
 // log level info with text only
-#define INFO_TEXT(format) LOG_TEXT("\033[34mINFO\033[0m", format)
+// #define INFO_TEXT(format) LOG_TEXT("\033[34mINFO\033[0m", format)
+#define INFO_TEXT(format) 
 // log level warn with text only
 #define WARN_TEXT(format) LOG_TEXT("\033[33mWARN\033[0m", format)
 // log level error with text only
