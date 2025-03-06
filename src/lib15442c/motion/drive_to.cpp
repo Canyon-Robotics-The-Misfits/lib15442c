@@ -220,7 +220,7 @@ lib15442c::MotionOutput lib15442c::DriveToIntermediate::calculate(Pose pose, dou
     float linear_velocity = drive_pid->calculate_error(distance) * (params.backwards ? -1 : 1);
     float angular_velocity = turn_pid->calculate_error(turnError.deg(), true);
 
-    if (std::abs(turnError.deg()) < 0.5) {
+    if (std::abs(turnError.deg()) < 1.0) {
         angular_velocity = 0;
     }
 
