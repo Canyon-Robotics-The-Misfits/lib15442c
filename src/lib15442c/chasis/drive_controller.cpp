@@ -129,6 +129,12 @@ void lib15442c::DriveController::drive_time(double voltage, double time, DriveTi
             turn_speed = 0;
         }
 
+        if (parameters.end_condition(odometry->get_pose()))
+        {
+            INFO_TEXT("Time drive reached end condition!");
+            break;
+        }
+
         drivetrain->move(out, turn_speed);
     }
 

@@ -34,6 +34,11 @@ namespace lib15442c
         double ramp_speed = 127.0/0.5;
 
         /**
+         * @brief An extra end condition for special cases
+         */
+        EndCondition end_condition = default_end_condition;
+
+        /**
          * @brief Whether to run asynchronously
          */
         bool async = false;
