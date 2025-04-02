@@ -103,7 +103,7 @@ std::vector<double> lib15442c::TrajectoryBuilder::cache_curvatures(std::vector<T
         double dist_b_c = current_pos.distance_to_squared(next_pos);
         double dist_c_a = next_pos.distance_to_squared(prev_pos);
 
-        double curvature_unsigned = sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
+        double curvature_unsigned = 2 * sqrt((triangle_area_doubled * triangle_area_doubled) / (dist_a_b * dist_b_c * dist_c_a));
         curvature_cache.push_back(curvature_unsigned * lib15442c::sgn(triangle_area_doubled));
     }
 
