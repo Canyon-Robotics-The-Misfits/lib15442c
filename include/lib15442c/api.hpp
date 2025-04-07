@@ -22,3 +22,6 @@
 #include "motion/end_condition.hpp"
 #include "motion/motion.hpp"
 #include "motion/pid_motions.hpp"
+
+#include "trajectory/trajectory_builder.hpp"
+#include "trajectory/trajectory.hpp"
