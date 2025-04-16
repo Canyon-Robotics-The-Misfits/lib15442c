@@ -18,11 +18,11 @@ namespace lib15442c
         /**
          * @brief The threshold which error must be in to end
          */
-        double threshold = 0.3;
+        double threshold = 0.1;
         /**
          * @brief The time the error needs to be within the threshold for in order to exit
          */
-        double threshold_time = 40;
+        double threshold_time = 60;
 
         /**
          * @brief The timeout in case the move takes too long (ms)
