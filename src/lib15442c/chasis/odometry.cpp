@@ -209,11 +209,11 @@ void lib15442c::TrackerOdom::start_task()
 
             position_mutex.lock();
 
-            // std::cout << angle_raw << ", " << parallel << ", " << perpendicular << std::endl;
-
             // Modify the horizontal encoder to compensate for turning
             perpendicular -= angle_raw * perpendicular_tracker_offset;
             parallel -= angle_raw * parallel_tracker_offset;
+
+            // std::cout << angle_raw << ", " << parallel << ", " << perpendicular << std::endl;
 
             // Calculate the change in the horizontal and vertical encoder
             double deltaTheta = angle - last_angle;

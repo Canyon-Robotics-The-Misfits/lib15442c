@@ -37,8 +37,12 @@ double lib15442c::PID::calculate_error(double error, bool disable_i) {
 
     double output = proportional + ( !disable_i ? integral : 0 ) + derivative;
 
-    if (std::fabs(output - last_output) > slew_rate) {
-        output = last_output + slew_rate * lib15442c::sgn(output - last_output);
+    // if (abs(output - last_output) > slew_rate) {
+    //     output = last_output + slew_rate * lib15442c::sgn(output - last_output);
+    // }
+
+    if (output - last_output > slew_rate) {
+        output = last_output + slew_rate;
     }
 
     last_output = output;
