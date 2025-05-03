@@ -8,14 +8,14 @@ Pneumatic::Pneumatic(char adi_port, bool default_state, bool extended_state) :
 {
     pros::c::ext_adi_port_set_config(INTERNAL_ADI_PORT, adi_port, pros::adi_port_config_e::E_ADI_DIGITAL_OUT);
 
-    if (extended_state == true)
-    {
-        set_value(default_state);
-    }
-    else
-    {
-        set_value(!default_state);
-    }
+    // if (default_state == true)
+    // {
+    //     extend();
+    // }
+    // else
+    // {
+        // retract();
+    // }
 }
 
 Pneumatic::Pneumatic(int extender_port, char adi_port, bool default_state, bool extended_state) :
@@ -23,14 +23,14 @@ Pneumatic::Pneumatic(int extender_port, char adi_port, bool default_state, bool 
 {
     pros::c::ext_adi_port_set_config(extender_port, adi_port, pros::adi_port_config_e::E_ADI_DIGITAL_OUT);
 
-    if (extended_state == true)
-    {
-        set_value(default_state);
-    }
-    else
-    {
-        set_value(!default_state);
-    }
+    // if (extended_state == true)
+    // {
+    //     set_value(default_state);
+    // }
+    // else
+    // {
+    //     set_value(!default_state);
+    // }
 }
 
 void Pneumatic::set_value(bool value)
