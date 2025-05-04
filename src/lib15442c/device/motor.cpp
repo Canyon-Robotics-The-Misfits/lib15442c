@@ -1,4 +1,5 @@
 #include "motor.hpp"
+#include <iostream>
 
 using lib15442c::MotorBrakeMode;
 
@@ -23,7 +24,14 @@ Motor::Motor(MotorParameters parameters)
 
 void Motor::move(double voltage)
 {
-    pros::c::motor_move(port, voltage * (reversed ? -1 : 1));
+    if (voltage == 0)
+    {
+        pros::c::motor_brake(port);
+    }
+    else
+    {
+        pros::c::motor_move(port, voltage * (reversed ? -1 : 1));
+    }
 }
 
 void Motor::move_velocity(double velocity)
