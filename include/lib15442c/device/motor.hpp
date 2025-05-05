@@ -43,6 +43,13 @@ namespace lib15442c
         virtual double get_velocity() = 0;
 
         /**
+         * @brief Get the motor power draw in watts
+         * 
+         * @return double the motor power draw
+         */
+        virtual double get_power() = 0;
+
+        /**
          * @brief Set the brake mode of the motor
          * 
          * @param brake_mode The new brake mode
@@ -131,6 +138,7 @@ namespace lib15442c
         void move_velocity(double velocity) override;
 
         double get_velocity() override;
+        double get_power() override;
 
         void set_brake_mode(MotorBrakeMode brake_mode) override;
         MotorBrakeMode get_brake_mode() override;
@@ -161,6 +169,7 @@ namespace lib15442c
         void move_velocity(double velocity) override;
 
         double get_velocity() override;
+        double get_power() override;
 
         void set_brake_mode(MotorBrakeMode brake_mode) override;
         MotorBrakeMode get_brake_mode() override;

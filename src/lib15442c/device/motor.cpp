@@ -44,6 +44,11 @@ double Motor::get_velocity()
     return pros::c::motor_get_actual_velocity(port) / MOTOR_RED * ratio * 360.0 / 60.0 * (reversed ? -1 : 1);
 }
 
+double Motor::get_power()
+{
+    return pros::c::motor_get_power(port);
+}
+
 void Motor::set_brake_mode(MotorBrakeMode brake_mode)
 {
     this->brake_mode = brake_mode;
@@ -155,6 +160,16 @@ double MotorGroup::get_velocity()
     }
 
     return total_velocity / (double)motors.size();
+}
+
+double MotorGroup::get_power()
+{
+    double total_power = 0;
+    for (int i = 0; i < (int)motors.size(); i++) {
+        total_power += motors[i]->get_power();
+    }
+
+    return total_power / (double)motors.size();
 }
 
 void MotorGroup::set_brake_mode(MotorBrakeMode brake_mode)
