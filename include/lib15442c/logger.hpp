@@ -19,7 +19,7 @@
 
 // log level debug
 #define DEBUG(format, ...) LOG("DEBUG", format, __VA_ARGS__)
-// log level info
+// log level info (DISABLED TO PREVENT RADIO DISCONNECTS)
 // #define INFO(format, ...) LOG("\033[34mINFO\033[0m", format, __VA_ARGS__)
 #define INFO(format, ...) 
 // log level warn

@@ -8,7 +8,7 @@ namespace lib15442c {
      */
     class Angle {
     protected:
-        // The angle, in degrees from -180 to 180
+        // The angle, in degrees
         double theta;
 
         static double wrap(double angle);

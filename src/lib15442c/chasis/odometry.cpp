@@ -235,6 +235,7 @@ void lib15442c::TrackerOdom::start_task()
                 continue;
             }
 
+            // default to straight-line odom if change in heading = 0, else use arc odom
             if (deltaTheta == 0)
             {
                 position += Vec(

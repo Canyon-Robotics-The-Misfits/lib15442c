@@ -201,7 +201,7 @@ namespace lib15442c
     };
 
     /**
-     * Position tracking using the Vex GPS sensor
+     * Position tracking using the Vex GPS sensor (minimally tested but should work)
      */
     class GPSOdom : public virtual IOdometry
     {
@@ -252,6 +252,7 @@ namespace lib15442c
         double tracker_odom_sd;
     };
 
+    // Odometry using monte carlo localization, never tested outside of simulation and probably doesn't work, look up 2654E's stuff if you wana make your own
     class MCLOdom : public virtual IOdometry
     {
     private:

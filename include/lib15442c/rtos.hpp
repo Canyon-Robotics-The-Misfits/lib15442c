@@ -5,6 +5,8 @@
 #endif
 #include <chrono>
 
+// whole file is mostly unused, artifact of when I tried making unit tests
+
 #ifdef LIB15442C_MOCK_DEVICES_ONLY
 namespace pros
 {

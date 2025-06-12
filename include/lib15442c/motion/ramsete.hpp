@@ -7,6 +7,7 @@
 
 namespace lib15442c
 {
+    // minimally tested, not currently functional
     class RAMSETE: public IMotion
     {
     protected:

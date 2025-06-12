@@ -32,6 +32,7 @@ namespace lib15442c
     Zone circle_zone(Vec center, double radius, double value);
     Zone rect_zone(Vec corner_a, Vec corner_b, double value);
 
+    // minimally tested, not completely functional
     class TrajectoryBuilder {
     private:
         std::vector<HermitePair> hermite_spline;

@@ -1,5 +1,7 @@
 #include "lib15442c/chasis/odometry.hpp"
 
+// MCL never tested outside of a simulation, likely doesn't work without a lot of fixing
+
 #define FIELD_WIDTH 144
 
 lib15442c::MCLOdom::MCLOdom(MCLConfig config, std::shared_ptr<TrackerOdom> tracker_odom, std::vector<MCLSensorParams> sensor_params)
